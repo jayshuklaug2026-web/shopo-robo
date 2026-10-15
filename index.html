@@ -1,0 +1,1582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopo Robo — Mark AI | Smart Shopkeeper Assistant</title>
+    
+    <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome 6 CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Three.js for 3D Holographic Head -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <style>
+        :root {
+            --primary: #84CC16;
+            --primary-dark: #65A30D;
+            --primary-light: #ECFCCB;
+            --primary-glow: rgba(132, 204, 22, 0.45);
+            --bg-dark: #091008;
+            --card-dark: #111A10;
+            --panel-border: rgba(132, 204, 22, 0.35);
+            --text-main: #FFFFFF;
+            --text-muted: #A3B899;
+            --accent-green: #22C55E;
+            --accent-red: #EF4444;
+            --accent-yellow: #F59E0B;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 50% 20%, rgba(132, 204, 22, 0.08) 0%, transparent 60%),
+                linear-gradient(rgba(132, 204, 22, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(132, 204, 22, 0.03) 1px, transparent 1px);
+            background-size: 100% 100%, 30px 30px, 30px 30px;
+        }
+
+        /* ── WELCOME ANIMATED SPLASH MODAL ─────────────────────────────────────── */
+        #welcomeOverlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(9, 16, 8, 0.95);
+            backdrop-filter: blur(12px);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+        #welcomeOverlay.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+        .splash-card {
+            background: #111A10;
+            border: 2px solid var(--primary);
+            box-shadow: 0 0 50px var(--primary-glow);
+            border-radius: 28px;
+            padding: 40px;
+            max-width: 520px;
+            width: 90%;
+            text-align: center;
+            animation: zoomIn 0.4s ease;
+        }
+        @keyframes zoomIn {
+            from { transform: scale(0.85); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        .splash-mascot-icon {
+            font-size: 72px;
+            color: var(--primary);
+            text-shadow: 0 0 30px var(--primary);
+            margin-bottom: 16px;
+            animation: pulseWave 1.8s infinite;
+        }
+        @keyframes pulseWave {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); filter: drop-shadow(0 0 15px #84CC16); }
+        }
+        .splash-title {
+            font-size: 28px;
+            font-weight: 800;
+            color: #FFFFFF;
+            margin-bottom: 8px;
+        }
+        .splash-subtitle {
+            font-size: 16px;
+            color: var(--text-muted);
+            margin-bottom: 24px;
+            line-height: 1.5;
+        }
+        .btn-enter-shop {
+            background: var(--primary);
+            color: #091008;
+            font-size: 18px;
+            font-weight: 800;
+            padding: 16px 36px;
+            border-radius: 16px;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 0 25px var(--primary-glow);
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .btn-enter-shop:hover {
+            background: #A3E635;
+            transform: translateY(-2px);
+            box-shadow: 0 0 40px var(--primary);
+        }
+
+        /* ── TOP HEADER HUD BAR ───────────────────────────────────────────────── */
+        .hud-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 28px;
+            background: rgba(17, 26, 16, 0.85);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid var(--panel-border);
+        }
+        .hud-brand {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .hud-logo {
+            width: 44px;
+            height: 44px;
+            background: var(--primary);
+            color: #091008;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            box-shadow: 0 0 20px var(--primary-glow);
+        }
+        .hud-title-wrap h1 {
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            color: #FFFFFF;
+        }
+        .hud-title-wrap h1 span {
+            color: var(--primary);
+            text-shadow: 0 0 15px var(--primary-glow);
+        }
+        .hud-title-wrap p {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .hud-center-stats {
+            display: flex;
+            gap: 18px;
+        }
+        .hud-stat-pill {
+            background: rgba(132, 204, 22, 0.08);
+            border: 1px solid var(--panel-border);
+            padding: 8px 16px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .hud-stat-pill i {
+            color: var(--primary);
+            font-size: 16px;
+        }
+        .hud-stat-pill .stat-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .hud-stat-pill .stat-value {
+            font-size: 15px;
+            font-weight: 700;
+            color: #FFFFFF;
+        }
+
+        .hud-right-controls {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .lang-select {
+            background: rgba(17, 26, 16, 0.9);
+            color: #FFFFFF;
+            border: 1px solid var(--panel-border);
+            padding: 8px 14px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            outline: none;
+            cursor: pointer;
+        }
+        .lang-select option {
+            background: #111A10;
+            color: white;
+        }
+        .btn-live-mic {
+            background: var(--primary);
+            color: #091008;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 0 20px var(--primary-glow);
+            transition: all 0.2s;
+        }
+        .btn-live-mic:hover {
+            background: #A3E635;
+            box-shadow: 0 0 30px var(--primary);
+        }
+        .btn-live-mic.listening {
+            background: #EF4444;
+            color: white;
+            animation: pulseRed 1s infinite;
+        }
+        @keyframes pulseRed {
+            0%, 100% { box-shadow: 0 0 15px rgba(239, 68, 68, 0.5); }
+            50% { box-shadow: 0 0 35px rgba(239, 68, 68, 0.9); }
+        }
+
+        /* ── MAIN COCKPIT GRID ────────────────────────────────────────────────── */
+        .cockpit-grid {
+            display: grid;
+            grid-template-columns: 420px 1fr;
+            gap: 20px;
+            padding: 20px 28px;
+            flex: 1;
+        }
+
+        /* ── LEFT COLUMN: 3D JARVIS HEAD & VOICE ASSISTANT ────────────────────── */
+        .assistant-panel {
+            background: rgba(17, 26, 16, 0.85);
+            border: 1px solid var(--panel-border);
+            border-radius: 20px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        .panel-header-hud {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--primary);
+            border-bottom: 1px solid var(--panel-border);
+            padding-bottom: 10px;
+            margin-bottom: 12px;
+        }
+        .hologram-viewport {
+            height: 270px;
+            width: 100%;
+            background: radial-gradient(circle at center, rgba(132, 204, 22, 0.15) 0%, transparent 70%);
+            border: 1px solid rgba(132, 204, 22, 0.2);
+            border-radius: 16px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #threeCanvas {
+            width: 100%;
+            height: 100%;
+        }
+        .hologram-tag {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(9, 16, 8, 0.8);
+            border: 1px solid var(--primary);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--primary);
+        }
+
+        /* Chat Logs & Transcript */
+        .chat-history {
+            flex: 1;
+            overflow-y: auto;
+            margin: 14px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 240px;
+            padding-right: 6px;
+        }
+        .chat-bubble {
+            padding: 10px 14px;
+            border-radius: 12px;
+            font-size: 13px;
+            line-height: 1.4;
+            max-width: 90%;
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .chat-bubble.assistant {
+            background: rgba(132, 204, 22, 0.12);
+            border: 1px solid var(--panel-border);
+            color: #FFFFFF;
+            align-self: flex-start;
+        }
+        .chat-bubble.user {
+            background: var(--primary);
+            color: #091008;
+            font-weight: 600;
+            align-self: flex-end;
+        }
+
+        /* 1-Tap Quick Commands for Tier 3 Shopkeepers */
+        .quick-voice-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 12px;
+        }
+        .voice-chip {
+            background: rgba(132, 204, 22, 0.08);
+            border: 1px solid var(--panel-border);
+            color: #E2E8F0;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .voice-chip:hover {
+            background: var(--primary);
+            color: #091008;
+        }
+
+        /* Mic Command Input */
+        .command-bar {
+            display: flex;
+            gap: 8px;
+        }
+        .command-input {
+            flex: 1;
+            background: rgba(9, 16, 8, 0.8);
+            border: 1px solid var(--panel-border);
+            border-radius: 12px;
+            padding: 12px 16px;
+            color: #FFFFFF;
+            font-size: 14px;
+            outline: none;
+        }
+        .command-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 15px var(--primary-glow);
+        }
+        .btn-send-cmd {
+            background: var(--primary);
+            color: #091008;
+            border: none;
+            padding: 0 18px;
+            border-radius: 12px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        /* ── RIGHT COLUMN: INTERACTIVE NAVIGATION TABS ───────────────────────── */
+        .workspace-panel {
+            background: rgba(17, 26, 16, 0.85);
+            border: 1px solid var(--panel-border);
+            border-radius: 20px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        .nav-tabs {
+            display: flex;
+            gap: 8px;
+            border-bottom: 1px solid var(--panel-border);
+            padding-bottom: 14px;
+            margin-bottom: 18px;
+            overflow-x: auto;
+        }
+        .tab-btn {
+            background: rgba(132, 204, 22, 0.08);
+            color: var(--text-muted);
+            border: 1px solid transparent;
+            padding: 10px 18px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .tab-btn:hover {
+            color: #FFFFFF;
+            background: rgba(132, 204, 22, 0.15);
+        }
+        .tab-btn.active {
+            background: var(--primary);
+            color: #091008;
+            box-shadow: 0 0 20px var(--primary-glow);
+        }
+
+        .tab-pane {
+            display: none;
+            flex: 1;
+            overflow-y: auto;
+        }
+        .tab-pane.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ── TAB 1: CARD-STYLE INVENTORY ──────────────────────────────────────── */
+        .inventory-top-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .search-box {
+            flex: 1;
+            min-width: 260px;
+            background: rgba(9, 16, 8, 0.8);
+            border: 1px solid var(--panel-border);
+            border-radius: 10px;
+            padding: 10px 16px;
+            color: white;
+            font-size: 14px;
+            outline: none;
+        }
+        .cat-pills {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .cat-pill {
+            background: rgba(132, 204, 22, 0.08);
+            border: 1px solid var(--panel-border);
+            color: var(--text-muted);
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .cat-pill.active {
+            background: var(--primary);
+            color: #091008;
+        }
+        .btn-add-item {
+            background: var(--primary);
+            color: #091008;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 10px;
+            font-weight: 800;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        /* Product Cards Grid */
+        .items-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 14px;
+        }
+        .product-card {
+            background: rgba(9, 16, 8, 0.85);
+            border: 1px solid var(--panel-border);
+            border-radius: 16px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            transition: all 0.2s;
+        }
+        .product-card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 0 20px var(--primary-glow);
+            transform: translateY(-2px);
+        }
+        .card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+        .card-name {
+            font-size: 16px;
+            font-weight: 800;
+            color: #FFFFFF;
+        }
+        .card-cat {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .status-badge {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .status-badge.optimal { background: rgba(34, 197, 94, 0.2); color: #4ADE80; border: 1px solid #22C55E; }
+        .status-badge.low { background: rgba(245, 158, 11, 0.2); color: #FBBF24; border: 1px solid #F59E0B; }
+        .status-badge.loss { background: rgba(239, 68, 68, 0.2); color: #F87171; border: 1px solid #EF4444; }
+
+        .card-details-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            color: var(--text-muted);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding-bottom: 8px;
+        }
+        .card-details-row b {
+            color: #FFFFFF;
+        }
+
+        .profit-gain-banner {
+            background: rgba(132, 204, 22, 0.12);
+            border: 1px solid var(--panel-border);
+            border-radius: 10px;
+            padding: 8px 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .profit-gain-banner.loss-banner {
+            background: rgba(239, 68, 68, 0.12);
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+        .profit-gain-banner .profit-text {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        .profit-gain-banner.loss-banner .profit-text {
+            color: #EF4444;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 8px;
+        }
+        .btn-card-action {
+            flex: 1;
+            padding: 6px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            border: 1px solid var(--panel-border);
+            background: rgba(132, 204, 22, 0.08);
+            color: #FFFFFF;
+            transition: all 0.2s;
+        }
+        .btn-card-action:hover {
+            background: var(--primary);
+            color: #091008;
+        }
+
+        /* ── TAB 2: LIVE WEBCAM BARCODE SCANNER ───────────────────────────────── */
+        .scanner-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+            padding: 10px;
+        }
+        .camera-view-wrap {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            height: 380px;
+            background: #000;
+            border: 2px solid var(--primary);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 0 40px var(--primary-glow);
+        }
+        #webcamVideo {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .scan-reticle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 70%;
+            height: 50%;
+            border: 2px dashed var(--primary);
+            border-radius: 16px;
+            box-shadow: 0 0 25px var(--primary-glow);
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .scan-laser-line {
+            width: 100%;
+            height: 2px;
+            background: var(--primary);
+            box-shadow: 0 0 10px var(--primary);
+            animation: scanLaser 2s infinite ease-in-out;
+        }
+        @keyframes scanLaser {
+            0%, 100% { transform: translateY(-70px); }
+            50% { transform: translateY(70px); }
+        }
+        .scanner-status-card {
+            background: rgba(132, 204, 22, 0.1);
+            border: 1px solid var(--primary);
+            border-radius: 12px;
+            padding: 12px 24px;
+            font-size: 14px;
+            font-weight: 700;
+            color: #FFFFFF;
+            text-align: center;
+        }
+        .sim-barcode-btns {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .btn-sim-code {
+            background: rgba(132, 204, 22, 0.12);
+            color: #FFFFFF;
+            border: 1px solid var(--panel-border);
+            padding: 8px 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        .btn-sim-code:hover {
+            background: var(--primary);
+            color: #091008;
+        }
+
+        /* ── TAB 3: MANDI COMMODITY TRENDS ────────────────────────────────────── */
+        .mandi-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .mandi-row {
+            background: rgba(9, 16, 8, 0.8);
+            border: 1px solid var(--panel-border);
+            border-radius: 14px;
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .mandi-info h3 {
+            font-size: 16px;
+            font-weight: 800;
+        }
+        .mandi-info p {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .mandi-pricing {
+            text-align: right;
+        }
+        .mandi-rate {
+            font-size: 18px;
+            font-weight: 800;
+            color: #FFFFFF;
+        }
+        .mandi-change {
+            font-size: 13px;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .mandi-change.up { color: #22C55E; }
+        .mandi-change.down { color: #EF4444; }
+
+        /* ── TAB 4: EBITDA & PROFIT CALCULATOR ────────────────────────────────── */
+        .calc-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .calc-inputs-card, .calc-results-card {
+            background: rgba(9, 16, 8, 0.8);
+            border: 1px solid var(--panel-border);
+            border-radius: 16px;
+            padding: 20px;
+        }
+        .calc-field {
+            margin-bottom: 14px;
+        }
+        .calc-field label {
+            display: block;
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+        .calc-input {
+            width: 100%;
+            background: #111A10;
+            border: 1px solid var(--panel-border);
+            border-radius: 8px;
+            padding: 10px 14px;
+            color: white;
+            font-size: 15px;
+            font-weight: 700;
+            outline: none;
+        }
+        .calc-results-card {
+            background: rgba(132, 204, 22, 0.05);
+            border: 2px solid var(--primary);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .res-line {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .res-line h4 {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+        .res-line .res-val {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--primary);
+        }
+        .btn-speak-fin {
+            background: var(--primary);
+            color: #091008;
+            border: none;
+            padding: 14px;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 15px;
+            cursor: pointer;
+            margin-top: 14px;
+        }
+
+        /* Responsive */
+        @media (max-width: 960px) {
+            .cockpit-grid { grid-template-columns: 1fr; }
+            .calc-grid { grid-template-columns: 1fr; }
+            .hud-center-stats { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ── ANIMATED WELCOME SCREEN (INDIAN SHOPO ROBO) ────────────────────────── -->
+    <div id="welcomeOverlay">
+        <div class="splash-card">
+            <div class="splash-mascot-icon">
+                <i class="fa-solid fa-robot"></i>
+            </div>
+            <h2 class="splash-title">नमस्ते! मैं हूँ आपका शोपो रोबो</h2>
+            <p class="splash-subtitle">
+                Welcome! I am your <b>Shopo Robo</b>.<br>
+                Aapki Dukaan Ka AI Assistant for Stock, Mandi Rates & Profits.
+            </p>
+            <button class="btn-enter-shop" onclick="dismissWelcome()">
+                <i class="fa-solid fa-store"></i> दुकान शुरू करें / Start Shop ➔
+            </button>
+        </div>
+    </div>
+
+    <!-- ── TOP HUD HEADER BAR ────────────────────────────────────────────────── -->
+    <header class="hud-header">
+        <div class="hud-brand">
+            <div class="hud-logo">
+                <i class="fa-solid fa-robot"></i>
+            </div>
+            <div class="hud-title-wrap">
+                <h1>Shopo <span>Robo</span> — Mark AI</h1>
+                <p>AI STOCK KNOWLEDGE & STORE COPILOT</p>
+            </div>
+        </div>
+
+        <div class="hud-center-stats">
+            <div class="hud-stat-pill">
+                <i class="fa-solid fa-boxes-stacked"></i>
+                <div>
+                    <div class="stat-label">Stock Value</div>
+                    <div class="stat-value" id="hudStockVal">₹ 1,84,500</div>
+                </div>
+            </div>
+            <div class="hud-stat-pill">
+                <i class="fa-solid fa-chart-line"></i>
+                <div>
+                    <div class="stat-label">Monthly Profit</div>
+                    <div class="stat-value" id="hudProfitVal">₹ 21,560 (+24%)</div>
+                </div>
+            </div>
+            <div class="hud-stat-pill">
+                <i class="fa-solid fa-triangle-exclamation" style="color: #F59E0B;"></i>
+                <div>
+                    <div class="stat-label">Alerts</div>
+                    <div class="stat-value" id="hudAlertsVal" style="color: #F59E0B;">1 Low Stock</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="hud-right-controls">
+            <select class="lang-select" id="langSelector" onchange="changeLanguage(this.value)">
+                <option value="hi-IN" selected>🇮🇳 हिन्दी (Hindi)</option>
+                <option value="en-IN">🇮🇳 English (India)</option>
+                <option value="mr-IN">🇮🇳 मराठी (Marathi)</option>
+                <option value="gu-IN">🇮🇳 ગુજરાતી (Gujarati)</option>
+                <option value="ta-IN">🇮🇳 தமிழ் (Tamil)</option>
+                <option value="te-IN">🇮🇳 తెలుగు (Telugu)</option>
+                <option value="bn-IN">🇮🇳 বাংলা (Bengali)</option>
+                <option value="pa-IN">🇮🇳 ਪੰਜਾਬੀ (Punjabi)</option>
+            </select>
+
+            <button class="btn-live-mic" id="headerMicBtn" onclick="toggleVoiceRecording()">
+                <i class="fa-solid fa-microphone"></i>
+                <span id="micBtnText">Speak to Robo</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- ── COCKPIT WORKSPACE GRID ───────────────────────────────────────────── -->
+    <main class="cockpit-grid">
+
+        <!-- ── LEFT: 3D HOLOGRAM AVATAR & VOICE HUD ────────────────────────── -->
+        <section class="assistant-panel">
+            <div class="panel-header-hud">
+                <span>[ PROTOCOL: MARK-AI ]</span>
+                <span id="aiCoreStatus">● AI CORE ONLINE</span>
+            </div>
+
+            <!-- 3D Holographic Canvas (Three.js Wireframe Hologram) -->
+            <div class="hologram-viewport">
+                <canvas id="threeCanvas"></canvas>
+                <div class="hologram-tag" id="hologramTag">SHOPO ROBO AVATAR</div>
+            </div>
+
+            <!-- Chat Transcript -->
+            <div class="chat-history" id="chatHistory">
+                <div class="chat-bubble assistant">
+                    <b>Shopo Robo:</b> नमस्ते! मैं आपका शोपो रोबो हूँ। आप बोलकर नया सामान जोड़ सकते हैं, मुनाफा जान सकते हैं, या मंडी भाव पूछ सकते हैं।
+                </div>
+            </div>
+
+            <!-- Tier 3 Quick 1-Tap Chips -->
+            <div class="quick-voice-chips">
+                <div class="voice-chip" onclick="handleVoiceInput('Sugar is 100kg available in shop')">🗣️ 100kg Sugar Available</div>
+                <div class="voice-chip" onclick="handleVoiceInput('Rice stock is going to end')">🗣️ Rice Stock Ending</div>
+                <div class="voice-chip" onclick="handleVoiceInput('What is the profit this month and EBITDA?')">🗣️ Monthly Profit & EBITDA</div>
+                <div class="voice-chip" onclick="handleVoiceInput('Which item is in loss?')">🗣️ Which Item In Loss?</div>
+                <div class="voice-chip" onclick="handleVoiceInput('What are the wholesale mandi price changes?')">🗣️ Mandi Price Trends</div>
+            </div>
+
+            <!-- Command Input Bar -->
+            <div class="command-bar">
+                <input type="text" id="voiceCommandInput" class="command-input" placeholder="Type or speak command (e.g., '100 kg sugar buy 34 sell 42')..." onkeydown="if(event.key==='Enter') submitTextCommand()">
+                <button class="btn-send-cmd" onclick="submitTextCommand()">
+                    <i class="fa-solid fa-paper-plane"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- ── RIGHT: WORKSPACE TABS & MENUS ───────────────────────────────── -->
+        <section class="workspace-panel">
+            <div class="nav-tabs">
+                <button class="tab-btn active" onclick="switchTab('inventoryTab')">
+                    <i class="fa-solid fa-boxes-stacked"></i> 📦 Stock Menu
+                </button>
+                <button class="tab-btn" onclick="switchTab('scannerTab')">
+                    <i class="fa-solid fa-barcode"></i> 📷 Barcode Scanner
+                </button>
+                <button class="tab-btn" onclick="switchTab('mandiTab')">
+                    <i class="fa-solid fa-arrow-trend-up"></i> 📈 Mandi Market Trends
+                </button>
+                <button class="tab-btn" onclick="switchTab('calcTab')">
+                    <i class="fa-solid fa-calculator"></i> 🧮 Profit & EBITDA
+                </button>
+            </div>
+
+            <!-- ── TAB 1: INVENTORY CARDS ─────────────────────────────────── -->
+            <div class="tab-pane active" id="inventoryTab">
+                <div class="inventory-top-row">
+                    <input type="text" id="inventorySearch" class="search-box" placeholder="🔍 Search stock, commodities or barcode..." oninput="filterInventory()">
+                    <div class="cat-pills">
+                        <div class="cat-pill active" onclick="filterCategory('All', this)">All</div>
+                        <div class="cat-pill" onclick="filterCategory('Groceries', this)">Groceries</div>
+                        <div class="cat-pill" onclick="filterCategory('Edible Oils', this)">Edible Oils</div>
+                        <div class="cat-pill" onclick="filterCategory('Dairy', this)">Dairy</div>
+                        <div class="cat-pill" onclick="filterCategory('Snacks & Instant', this)">Snacks</div>
+                        <div class="cat-pill" onclick="filterCategory('Personal Care', this)">Personal Care</div>
+                    </div>
+                    <button class="btn-add-item" onclick="promptAddItem()">+ Add Item</button>
+                </div>
+
+                <div class="items-grid" id="itemsGrid">
+                    <!-- Cards dynamically rendered here -->
+                </div>
+            </div>
+
+            <!-- ── TAB 2: LIVE WEBCAM BARCODE SCANNER ─────────────────────── -->
+            <div class="tab-pane" id="scannerTab">
+                <div class="scanner-container">
+                    <div class="camera-view-wrap">
+                        <video id="webcamVideo" autoplay playsinline></video>
+                        <div class="scan-reticle">
+                            <div class="scan-laser-line"></div>
+                        </div>
+                    </div>
+                    <div class="scanner-status-card" id="scannerStatus">
+                        📷 Camera Ready. Hold any product barcode or QR code inside the box!
+                    </div>
+                    <div class="sim-barcode-btns">
+                        <button class="btn-sim-code" onclick="simulateBarcode('8901058852393')">⚡ Scan Maggi (8901058852393)</button>
+                        <button class="btn-sim-code" onclick="simulateBarcode('8904043901005')">⚡ Scan Tata Salt (8904043901005)</button>
+                        <button class="btn-sim-code" onclick="simulateBarcode('8901719101038')">⚡ Scan Parle-G (8901719101038)</button>
+                        <button class="btn-sim-code" onclick="simulateBarcode('8901262010054')">⚡ Scan Amul Butter (8901262010054)</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── TAB 3: MANDI COMMODITY TRENDS ──────────────────────────── -->
+            <div class="tab-pane" id="mandiTab">
+                <div style="background: rgba(245, 158, 11, 0.1); border: 1px solid #F59E0B; border-radius: 12px; padding: 14px; margin-bottom: 16px;">
+                    <b style="color: #FBBF24;"><i class="fa-solid fa-shield-halved"></i> AI Margin Guard Alert:</b>
+                    <span style="color: #E2E8F0; font-size: 13px;"> Sugar wholesale prices increased by 8.2% in NCDEX mandi today. We recommend raising retail price from ₹40 to ₹42 to protect your margin.</span>
+                </div>
+                <div class="mandi-list" id="mandiList">
+                    <!-- Rendered via JS -->
+                </div>
+            </div>
+
+            <!-- ── TAB 4: PROFIT & EBITDA CALCULATOR ──────────────────────── -->
+            <div class="tab-pane" id="calcTab">
+                <div class="calc-grid">
+                    <div class="calc-inputs-card">
+                        <h3 style="margin-bottom: 14px; font-size: 16px;"><i class="fa-solid fa-sliders"></i> Store Revenue & Expenses</h3>
+                        <div class="calc-field">
+                            <label>Monthly Sales (कुल बिक्री)</label>
+                            <input type="number" id="calcSales" class="calc-input" value="156000" oninput="recalcEbitda()">
+                        </div>
+                        <div class="calc-field">
+                            <label>Cost of Goods Sold (COGS खरीद लागत)</label>
+                            <input type="number" id="calcCogs" class="calc-input" value="118000" oninput="recalcEbitda()">
+                        </div>
+                        <div class="calc-field">
+                            <label>Shop Rent (दुकान किराया)</label>
+                            <input type="number" id="calcRent" class="calc-input" value="8000" oninput="recalcEbitda()">
+                        </div>
+                        <div class="calc-field">
+                            <label>Electricity & Utility Bills</label>
+                            <input type="number" id="calcElec" class="calc-input" value="2500" oninput="recalcEbitda()">
+                        </div>
+                        <div class="calc-field">
+                            <label>Staff Wages (कर्मचारी वेतन)</label>
+                            <input type="number" id="calcStaff" class="calc-input" value="6000" oninput="recalcEbitda()">
+                        </div>
+                        <div class="calc-field">
+                            <label>Wastage / Spoilage (नुकसान)</label>
+                            <input type="number" id="calcSpoilage" class="calc-input" value="800" oninput="recalcEbitda()">
+                        </div>
+                    </div>
+
+                    <div class="calc-results-card">
+                        <div>
+                            <h3 style="margin-bottom: 14px; font-size: 16px; color: var(--primary);"><i class="fa-solid fa-chart-pie"></i> Financial Audit Breakdown</h3>
+                            <div class="res-line">
+                                <h4>Gross Profit (सकल लाभ)</h4>
+                                <div class="res-val" id="resGross">₹ 38,000</div>
+                            </div>
+                            <div class="res-line">
+                                <h4>Operating Expenses (OpEx)</h4>
+                                <div class="res-val" id="resOpex" style="color: #F59E0B;">₹ 17,300</div>
+                            </div>
+                            <div class="res-line">
+                                <h4>EBITDA</h4>
+                                <div class="res-val" id="resEbitda">₹ 20,700</div>
+                            </div>
+                            <div class="res-line" style="border: none;">
+                                <h4>Net Take-Home Profit</h4>
+                                <div class="res-val" id="resNet" style="font-size: 26px; color: #4ADE80;">₹ 17,200</div>
+                            </div>
+                        </div>
+                        <button class="btn-speak-fin" onclick="speakFinancialReport()">
+                            <i class="fa-solid fa-volume-high"></i> वित्तीय रिपोर्ट बोलकर सुनाएं / Speak Report
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ── APPLICATION JAVASCRIPT LOGIC ────────────────────────────────────── -->
+    <script>
+        // ── STORE DATA & STATE ──────────────────────────────────────────────
+        const storeState = {
+            lang: 'hi-IN',
+            isListening: false,
+            activeCategory: 'All',
+            inventory: [
+                { id: 1, name: "Sugar (Supreme M-30)", category: "Groceries", stock: 100, unit: "kg", buyPrice: 34, sellPrice: 42, expiry: "2027-05", status: "optimal", barcode: "8904043901012" },
+                { id: 2, name: "Rice (Basmati 1121)", category: "Groceries", stock: 8, unit: "kg", buyPrice: 60, sellPrice: 75, expiry: "2027-03", status: "low", barcode: "8901111002023" },
+                { id: 3, name: "Maggi 2-Min Noodles", category: "Snacks & Instant", stock: 45, unit: "packet", buyPrice: 14.5, sellPrice: 14, expiry: "2026-11", status: "loss", barcode: "8901058852393" },
+                { id: 4, name: "Fortune Mustard Oil", category: "Edible Oils", stock: 35, unit: "litre", buyPrice: 132, sellPrice: 150, expiry: "2027-02", status: "optimal", barcode: "8906007281023" },
+                { id: 5, name: "Tata Salt Evaporated", category: "Groceries", stock: 60, unit: "packet", buyPrice: 22, sellPrice: 28, expiry: "2027-10", status: "optimal", barcode: "8904043901005" },
+                { id: 6, name: "Amul Butter Pasteurized", category: "Dairy", stock: 18, unit: "packet", buyPrice: 50, sellPrice: 58, expiry: "2026-12", status: "optimal", barcode: "8901262010054" },
+                { id: 7, name: "Parle-G Gold Biscuits", category: "Snacks & Instant", stock: 80, unit: "packet", buyPrice: 8.5, sellPrice: 10, expiry: "2026-10", status: "optimal", barcode: "8901719101038" },
+                { id: 8, name: "Dettol Original Soap", category: "Personal Care", stock: 25, unit: "pcs", buyPrice: 32, sellPrice: 40, expiry: "2028-01", status: "optimal", barcode: "8901396388419" }
+            ],
+            mandiTrends: [
+                { name: "Sugar M-30 Benchmark", mandi: "Kolhapur / Muzaffarnagar", price: 41.50, unit: "kg", change: "+8.2%", trend: "up", advice: "Wholesale sugar rate up 8.2%! Raise retail price by ₹2/kg to protect margin." },
+                { name: "Basmati Rice 1121 Pusa", mandi: "Karnal Mandi", price: 62.00, unit: "kg", change: "-4.8%", trend: "down", advice: "Wholesale price down 4.8%. Great window to restock inventory." },
+                { name: "Jeera (Cumin Seeds) Unjha", mandi: "Unjha Mandi (Gujarat)", price: 275.00, unit: "kg", change: "+6.8%", trend: "up", advice: "Export demand lifting cumin rates. Maintain selling price." },
+                { name: "Mustard Oil Crude Mill", mandi: "Jaipur Mandi", price: 138.00, unit: "litre", change: "-2.4%", trend: "down", advice: "Edible oil rate softening. Avoid excessive advance inventory buildup." },
+                { name: "Wheat Mill Quality Dara", mandi: "Delhi Mandi", price: 28.40, unit: "kg", change: "+3.1%", trend: "up", advice: "Procurement rates firming up in northern mandis." }
+            ]
+        };
+
+        // ── 3D THREE.JS HOLOGRAPHIC WIREFRAME HEAD ────────────────────────────
+        let scene, camera, renderer, headMesh;
+        function initThreeHologram() {
+            if (typeof THREE === 'undefined') return;
+            const canvas = document.getElementById('threeCanvas');
+            if (!canvas || !canvas.parentElement) return;
+            const wrap = canvas.parentElement;
+            
+            try {
+                scene = new THREE.Scene();
+                camera = new THREE.PerspectiveCamera(45, wrap.clientWidth / wrap.clientHeight, 0.1, 1000);
+                camera.position.z = 4.5;
+
+                renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+                renderer.setSize(wrap.clientWidth, wrap.clientHeight);
+                renderer.setPixelRatio(window.devicePixelRatio);
+
+                // Create Futuristic Polygonal Head Geometry
+                const headGeo = new THREE.IcosahedronGeometry(1.6, 3);
+                const wireframeMat = new THREE.MeshBasicMaterial({
+                    color: 0x84CC16,
+                    wireframe: true,
+                    transparent: true,
+                    opacity: 0.85
+                });
+                headMesh = new THREE.Mesh(headGeo, wireframeMat);
+                scene.add(headMesh);
+
+                // Glowing Core Orb inside Head
+                const coreGeo = new THREE.SphereGeometry(0.7, 16, 16);
+                const coreMat = new THREE.MeshBasicMaterial({
+                    color: 0xA3E635,
+                    wireframe: true,
+                    transparent: true,
+                    opacity: 0.4
+                });
+                const coreMesh = new THREE.Mesh(coreGeo, coreMat);
+                headMesh.add(coreMesh);
+
+                // Ambient glow light
+                const light = new THREE.PointLight(0x84CC16, 2, 50);
+                light.position.set(2, 3, 4);
+                scene.add(light);
+
+                function animate() {
+                    requestAnimationFrame(animate);
+                    if (headMesh) {
+                        headMesh.rotation.y += 0.008;
+                        headMesh.rotation.x = Math.sin(Date.now() * 0.001) * 0.1;
+                    }
+                    if (coreMesh) {
+                        coreMesh.rotation.y -= 0.015;
+                    }
+                    renderer.render(scene, camera);
+                }
+                animate();
+
+                window.addEventListener('resize', () => {
+                    if (!wrap) return;
+                    camera.aspect = wrap.clientWidth / wrap.clientHeight;
+                    camera.updateProjectionMatrix();
+                    renderer.setSize(wrap.clientWidth, wrap.clientHeight);
+                });
+            } catch (threeErr) {
+                console.warn("Hologram initialization failed gracefully:", threeErr);
+            }
+        }
+
+        // ── SPEECH SYNTHESIS & VOICE FEEDBACK ─────────────────────────────────
+        function speakVoice(text) {
+            try {
+                if (!('speechSynthesis' in window)) return;
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = storeState.lang || 'hi-IN';
+                utterance.rate = 1.0;
+                
+                // Pulse head animation while speaking
+                if (headMesh && headMesh.material) {
+                    headMesh.material.color.setHex(0xA3E635);
+                    utterance.onend = () => {
+                        if (headMesh && headMesh.material) headMesh.material.color.setHex(0x84CC16);
+                    };
+                }
+                window.speechSynthesis.speak(utterance);
+            } catch (err) {
+                console.warn("Speech synthesis error:", err);
+            }
+        }
+
+        // ── SPEECH RECOGNITION (MIC) ──────────────────────────────────────────
+        let recognition = null;
+        function setupSpeechRecognition() {
+            const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (SpeechRec) {
+                recognition = new SpeechRec();
+                recognition.continuous = false;
+                recognition.interimResults = false;
+                recognition.lang = storeState.lang;
+
+                recognition.onstart = () => {
+                    storeState.isListening = true;
+                    document.getElementById('headerMicBtn').classList.add('listening');
+                    document.getElementById('micBtnText').innerText = "Listening...";
+                };
+                recognition.onresult = (e) => {
+                    const text = e.results[0][0].transcript;
+                    handleVoiceInput(text);
+                };
+                recognition.onend = () => {
+                    storeState.isListening = false;
+                    document.getElementById('headerMicBtn').classList.remove('listening');
+                    document.getElementById('micBtnText').innerText = "Speak to Robo";
+                };
+            }
+        }
+
+        function toggleVoiceRecording() {
+            if (!recognition) setupSpeechRecognition();
+            if (!recognition) {
+                alert("Speech recognition not supported in this browser. Please use Chrome.");
+                return;
+            }
+            if (storeState.isListening) {
+                recognition.stop();
+            } else {
+                recognition.lang = storeState.lang;
+                recognition.start();
+            }
+        }
+
+        // ── AI ASSISTANT PARSER & EXECUTION (UNIVERSAL AI UPGRADE) ───────────
+        async function handleVoiceInput(cmd) {
+            addChatBubble("You", cmd, true);
+            const thinkingBubble = addChatBubble("Shopo Robo", "<i class='fas fa-spinner fa-spin'></i> सोच रहा हूँ (Thinking...)...", false);
+
+            let reply = "";
+            let spoken = "";
+            let token = localStorage.getItem('shopo_auth_token');
+            let stagedAction = null;
+
+            try {
+                const headers = { 'Content-Type': 'application/json' };
+                if (token) headers['Authorization'] = `Bearer ${token}`;
+
+                const resp = await fetch('/api/ai/chat', {
+                    method: 'POST',
+                    headers: headers,
+                    body: JSON.stringify({
+                        message: cmd,
+                        language: storeState.lang || 'hi'
+                    })
+                });
+                const res = await resp.json();
+
+                if (res.success && res.data) {
+                    reply = res.data.reply_text;
+                    spoken = res.data.spoken_text || res.data.reply_text;
+                    stagedAction = res.data.action_staged;
+
+                    // Switch tabs contextually if relevant
+                    if (res.data.intent === 'mandi_market_query' || res.data.intent === 'industrial_materials_query') {
+                        switchTab('mandiTab');
+                    } else if (res.data.intent === 'business_inventory_query') {
+                        switchTab('inventoryTab');
+                    } else if (res.data.intent === 'business_financials_query') {
+                        switchTab('calcTab');
+                    }
+                }
+            } catch (err) {
+                console.warn("AI API request failed, falling back to local fallback:", err);
+            }
+
+            // Fallback if network fails
+            if (!reply) {
+                const lower = cmd.toLowerCase();
+                if (lower.includes("profit") || lower.includes("munafa") || lower.includes("ebitda")) {
+                    reply = "दुकान का शुद्ध मुनाफ़ा और बिक्री विवरण देखने के लिए फाइनेंस टैब खोलें।";
+                    switchTab('calcTab');
+                } else if (lower.includes("loss") || lower.includes("ghata")) {
+                    const lossItems = storeState.inventory.filter(i => i.buyPrice > i.sellPrice);
+                    if (lossItems.length > 0) {
+                        reply = `सावधान! ${lossItems.map(i=>i.name).join(", ")} घाटे (Loss) में बिक रहा है।`;
+                    } else {
+                        reply = "बधाई! आपकी दुकान का कोई भी सामान घाटे में नहीं बिक रहा है।";
+                    }
+                    switchTab('inventoryTab');
+                } else if (lower.includes("market") || lower.includes("mandi") || lower.includes("rate") || lower.includes("bhav")) {
+                    reply = "मंडी और बाज़ार भाव रिपोर्ट लोड की जा रही है...";
+                    switchTab('mandiTab');
+                } else {
+                    reply = `नोट कर लिया गया: "${cmd}"।`;
+                }
+                spoken = reply;
+            }
+
+            // Render Markdown formatting
+            let formattedHtml = reply
+                .replace(/^### (.*$)/gim, '<h4 style="color:#A3E635; margin:8px 0 4px; font-size:14px;">$1</h4>')
+                .replace(/^## (.*$)/gim, '<h3 style="color:#A3E635; margin:10px 0 6px; font-size:15px;">$1</h3>')
+                .replace(/^# (.*$)/gim, '<h2 style="color:#A3E635; margin:12px 0 8px; font-size:16px;">$1</h2>')
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                .replace(/`([^`]+)`/g, '<code style="background:rgba(255,255,255,0.1); padding:2px 5px; border-radius:4px; font-size:12px;">$1</code>')
+                .replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank" rel="noopener" style="color:#A3E635; text-decoration:underline;">$1</a>')
+                .replace(/^\s*[\-\*]\s+(.*$)/gim, '<div style="margin-left:12px;">&bull; $1</div>')
+                .replace(/\n\n/g, '<br><br>')
+                .replace(/\n/g, '<br>');
+
+            // Staged action confirmation widget in chat
+            if (stagedAction && stagedAction.confirmation_token) {
+                const actionId = `action_btn_${Date.now()}`;
+                formattedHtml += `
+                    <div style="margin-top:10px; padding:10px; background:rgba(234,179,8,0.15); border:1px solid #EAB308; border-radius:8px;">
+                        <p style="margin:0 0 8px; font-weight:600; color:#FACC15;">⚠️ पुष्टि की आवश्यकता है: ${stagedAction.summary}</p>
+                        <div style="display:flex; gap:8px;">
+                            <button id="${actionId}_confirm" style="background:#22C55E; color:#000; border:none; padding:4px 12px; border-radius:4px; font-weight:bold; cursor:pointer;">पुष्टि करें (Confirm)</button>
+                            <button id="${actionId}_cancel" style="background:#EF4444; color:#fff; border:none; padding:4px 12px; border-radius:4px; font-weight:bold; cursor:pointer;">रद्द करें (Cancel)</button>
+                        </div>
+                    </div>
+                `;
+                setTimeout(() => {
+                    const cBtn = document.getElementById(`${actionId}_confirm`);
+                    const xBtn = document.getElementById(`${actionId}_cancel`);
+                    if (cBtn) {
+                        cBtn.onclick = async () => {
+                            cBtn.disabled = true;
+                            const ok = await executeJarvisStagedAction(stagedAction.confirmation_token, 'confirm');
+                            addChatBubble("Shopo Robo", ok ? "✅ कार्रवाई सफलतापूर्वक निष्पादित हो गई!" : "❌ कार्रवाई विफल रही।", false);
+                        };
+                    }
+                    if (xBtn) {
+                        xBtn.onclick = async () => {
+                            xBtn.disabled = true;
+                            await executeJarvisStagedAction(stagedAction.confirmation_token, 'cancel');
+                            addChatBubble("Shopo Robo", "🚫 कार्रवाई रद्द कर दी गई।", false);
+                        };
+                    }
+                }, 50);
+            }
+
+            thinkingBubble.innerHTML = `<b>Shopo Robo:</b> ${formattedHtml}`;
+            const chatBox = document.getElementById('chatHistory');
+            if (chatBox) {
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }
+            try {
+                speakVoice(spoken);
+            } catch (vErr) {
+                console.warn("Speech error:", vErr);
+            }
+        }
+
+        async function executeJarvisStagedAction(token, decision) {
+            const authToken = localStorage.getItem('shopo_auth_token');
+            try {
+                const resp = await fetch('/api/ai/tools/confirm', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify({ confirmation_token: token, decision: decision })
+                });
+                const res = await resp.json();
+                return res.success;
+            } catch (e) {
+                console.error("Error executing staged action in JARVIS:", e);
+                return false;
+            }
+        }
+
+        function submitTextCommand() {
+            const input = document.getElementById('voiceCommandInput');
+            const val = input.value.trim();
+            if (val) {
+                input.value = "";
+                handleVoiceInput(val);
+            }
+        }
+
+        function addChatBubble(sender, text, isUser) {
+            const box = document.getElementById('chatHistory');
+            const div = document.createElement('div');
+            div.className = `chat-bubble ${isUser ? 'user' : 'assistant'}`;
+            div.innerHTML = `<b>${sender}:</b> ${text}`;
+            box.appendChild(div);
+            box.scrollTop = box.scrollHeight;
+            return div;
+        }
+
+        // ── INVENTORY RENDERING & ACTIONS ─────────────────────────────────────
+        function renderInventory() {
+            const grid = document.getElementById('itemsGrid');
+            grid.innerHTML = "";
+
+            const searchVal = document.getElementById('inventorySearch').value.toLowerCase();
+            const filtered = storeState.inventory.filter(item => {
+                const matchCat = storeState.activeCategory === 'All' || item.category === storeState.activeCategory;
+                const matchSearch = item.name.toLowerCase().includes(searchVal) || (item.barcode && item.barcode.includes(searchVal));
+                return matchCat && matchSearch;
+            });
+
+            filtered.forEach(item => {
+                const profitUnit = item.sellPrice - item.buyPrice;
+                const marginPct = item.sellPrice > 0 ? Math.round((profitUnit / item.sellPrice) * 100) : 0;
+                const isLoss = profitUnit < 0;
+
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                card.innerHTML = `
+                    <div class="card-top">
+                        <div>
+                            <div class="card-name">${item.name}</div>
+                            <div class="card-cat">📂 ${item.category}</div>
+                        </div>
+                        <span class="status-badge ${item.status}">${item.status.toUpperCase()}</span>
+                    </div>
+
+                    <div class="card-details-row">
+                        <span>📦 Available: <b>${item.stock} ${item.unit}</b></span>
+                        <span>⏳ Exp: <b>${item.expiry}</b></span>
+                    </div>
+
+                    <div class="card-details-row">
+                        <span>Buy: <b>₹${item.buyPrice}</b></span>
+                        <span>Sell: <b style="color: #4ADE80;">₹${item.sellPrice}</b></span>
+                    </div>
+
+                    <div class="profit-gain-banner ${isLoss ? 'loss-banner' : ''}">
+                        <span class="profit-text">
+                            ${isLoss ? '⚠️ Loss:' : '💰 Profit:'} <b>${isLoss ? '-' : '+'}₹${Math.abs(profitUnit)}/${item.unit}</b> (${marginPct}% margin)
+                        </span>
+                        <span style="font-size: 11px; color: var(--text-muted);">Gain: ₹${Math.round(profitUnit * item.stock)}</span>
+                    </div>
+
+                    <div class="card-actions">
+                        <button class="btn-card-action" onclick="adjustStock(${item.id}, -5)">- 5 ${item.unit}</button>
+                        <button class="btn-card-action" style="background: var(--primary); color: #091008;" onclick="adjustStock(${item.id}, 10)">+ 10 ${item.unit}</button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+
+            updateHudStats();
+        }
+
+        function adjustStock(id, delta) {
+            const item = storeState.inventory.find(i => i.id === id);
+            if (item) {
+                item.stock = Math.max(0, item.stock + delta);
+                if (item.stock <= 10) item.status = "low";
+                else if (item.buyPrice > item.sellPrice) item.status = "loss";
+                else item.status = "optimal";
+                renderInventory();
+            }
+        }
+
+        function filterCategory(cat, el) {
+            storeState.activeCategory = cat;
+            document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
+            if (el) el.classList.add('active');
+            renderInventory();
+        }
+
+        function filterInventory() {
+            renderInventory();
+        }
+
+        function promptAddItem() {
+            const name = prompt("Enter product name (सामान का नाम):", "Chakki Fresh Atta");
+            if (!name) return;
+            const stock = parseFloat(prompt("Enter quantity (मात्रा):", "50")) || 50;
+            const buy = parseFloat(prompt("Buy price (खरीद मूल्य ₹):", "32")) || 32;
+            const sell = parseFloat(prompt("Sell price (बिक्री मूल्य ₹):", "40")) || 40;
+
+            const newItem = {
+                id: Date.now(),
+                name: name,
+                category: "Groceries",
+                stock: stock,
+                unit: "kg",
+                buyPrice: buy,
+                sellPrice: sell,
+                expiry: "2027-04",
+                status: (buy > sell) ? "loss" : "optimal",
+                barcode: ""
+            };
+            storeState.inventory.push(newItem);
+            renderInventory();
+            speakVoice(`Added ${name} to stock catalog.`);
+        }
+
+        function updateHudStats() {
+            let totalVal = 0;
+            let lowCount = 0;
+            storeState.inventory.forEach(i => {
+                totalVal += i.stock * i.buyPrice;
+                if (i.status === 'low') lowCount++;
+            });
+            document.getElementById('hudStockVal').innerText = `₹ ${totalVal.toLocaleString()}`;
+            document.getElementById('hudAlertsVal').innerText = `${lowCount} Low Stock`;
+        }
+
+        // ── WEBCAM & BARCODE SIMULATION ───────────────────────────────────────
+        function startCamera() {
+            const video = document.getElementById('webcamVideo');
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+                    .then(stream => { video.srcObject = stream; })
+                    .catch(err => {
+                        console.log("Webcam error:", err);
+                        document.getElementById('scannerStatus').innerText = "📷 Camera view simulated. Click simulation buttons below!";
+                    });
+            }
+        }
+
+        function simulateBarcode(code) {
+            const item = storeState.inventory.find(i => i.barcode === code);
+            const statusBox = document.getElementById('scannerStatus');
+            if (item) {
+                item.stock += 10;
+                renderInventory();
+                statusBox.innerHTML = `✅ <b>Scanned:</b> ${item.name} | Barcode: ${code} (+10 Stock Added)`;
+                speakVoice(`Barcode scanned: ${item.name}. Stock updated.`);
+            } else {
+                statusBox.innerHTML = `✅ <b>Scanned Barcode:</b> ${code} (New Item Prompt)`;
+            }
+        }
+
+        // ── MANDI COMMODITY TRENDS RENDERING ──────────────────────────────────
+        function renderMandiTrends() {
+            const box = document.getElementById('mandiList');
+            box.innerHTML = "";
+            storeState.mandiTrends.forEach(m => {
+                const row = document.createElement('div');
+                row.className = 'mandi-row';
+                row.innerHTML = `
+                    <div class="mandi-info">
+                        <h3>${m.name}</h3>
+                        <p><i class="fa-solid fa-location-dot" style="color: var(--primary);"></i> ${m.mandi} | ⚡ Advice: ${m.advice}</p>
+                    </div>
+                    <div class="mandi-pricing">
+                        <div class="mandi-rate">₹ ${m.price.toFixed(2)} / ${m.unit}</div>
+                        <div class="mandi-change ${m.trend}">${m.change} ${m.trend === 'up' ? '▲' : '▼'}</div>
+                    </div>
+                `;
+                box.appendChild(row);
+            });
+        }
+
+        // ── EBITDA & FINANCIAL AUDIT ──────────────────────────────────────────
+        function recalcEbitda() {
+            const sales = parseFloat(document.getElementById('calcSales').value) || 0;
+            const cogs = parseFloat(document.getElementById('calcCogs').value) || 0;
+            const rent = parseFloat(document.getElementById('calcRent').value) || 0;
+            const elec = parseFloat(document.getElementById('calcElec').value) || 0;
+            const staff = parseFloat(document.getElementById('calcStaff').value) || 0;
+            const spoilage = parseFloat(document.getElementById('calcSpoilage').value) || 0;
+
+            const gross = Math.max(0, sales - cogs);
+            const opex = rent + elec + staff + spoilage;
+            const ebitda = gross - opex;
+            const net = ebitda - 3500; // Tax and depreciation reserve
+
+            document.getElementById('resGross').innerText = `₹ ${gross.toLocaleString()}`;
+            document.getElementById('resOpex').innerText = `₹ ${opex.toLocaleString()}`;
+            document.getElementById('resEbitda').innerText = `₹ ${ebitda.toLocaleString()}`;
+            document.getElementById('resNet').innerText = `₹ ${net.toLocaleString()}`;
+        }
+
+        function speakFinancialReport() {
+            const text = "इस महीने की कुल बिक्री ₹1,56,000 रही। सभी खर्चे घटाकर EBITDA ₹20,700 है और शुद्ध मुनाफा ₹17,200 रहा।";
+            speakVoice(text);
+        }
+
+        // ── TABS NAVIGATION ───────────────────────────────────────────────────
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+
+            const btnIndex = ['inventoryTab', 'scannerTab', 'mandiTab', 'calcTab'].indexOf(tabId);
+            if (btnIndex >= 0) {
+                document.querySelectorAll('.tab-btn')[btnIndex].classList.add('active');
+            }
+
+            if (tabId === 'scannerTab') startCamera();
+        }
+
+        function changeLanguage(val) {
+            storeState.lang = val;
+            speakVoice("Language updated.");
+        }
+
+        function dismissWelcome() {
+            document.getElementById('welcomeOverlay').classList.add('hidden');
+            speakVoice("Welcome! I am your Shopo Robo. Namaste! Aapki dukaan ka AI saathi.");
+        }
+
+        // ── INITIALIZATION ────────────────────────────────────────────────────
+        window.addEventListener('DOMContentLoaded', () => {
+            initThreeHologram();
+            renderInventory();
+            renderMandiTrends();
+            recalcEbitda();
+            setupSpeechRecognition();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,49 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Local environment variables and secrets
+.env
+.env.local
+.env.*.local
+server/.env
+server/.env.local
+*.env.local
+
+# Databases & SQLite WAL/journal files
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+server/*.db
+server/*.db-*
+server/shopo_robo_backup_*.db
+
+# Temporary test artifacts, scratches, and preview images
+scratch/
+brain/
+.gemini/
+scratch_*
+mobile_*
+*.log
+
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+
+# Scratch & Brain directories
+scratch/
+brain/
+.gemini/
+
+# Operating System files
+.DS_Store
+Thumbs.db
+
+# IDE configurations
+.vscode/
+.idea/

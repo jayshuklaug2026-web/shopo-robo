@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopo Robo - AI Powered Inventory Store</title>
+    
+    <!-- Google Fonts: Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome 6 CDN for Crisp Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom Stylesheet -->
+    <link rel="stylesheet" href="css/styles.css">
+
+    <!-- PWA Web App Manifest & App Icon for Permanent Chrome Installation -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/svg+xml" href="icons/icon.svg">
+    <link rel="apple-touch-icon" href="icons/icon.svg">
+    <meta name="theme-color" content="#84CC16">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Shopo Robo">
+
+    <!-- Supabase JS CDN (with offline fallback) -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Chart.js CDN (with canvas fallback) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+    <!-- ==============================================================================
+         TOP HEADER BAR
+         ============================================================================== -->
+    <header class="app-header">
+        <div class="brand-section">
+            <div class="brand-logo-icon">
+                <i class="fa-solid fa-robot"></i>
+            </div>
+            <div>
+                <h1 class="brand-name">Shopo <span class="highlight">Robo</span></h1>
+                <span class="brand-sub">Inventory Store</span>
+            </div>
+        </div>
+
+        <div class="header-center">
+            <div class="tagline-pill">
+                <i class="fa-solid fa-wave-square wave-icon"></i>
+                <span>Your Shop. Our AI. Smarter Together.</span>
+            </div>
+            <button class="header-mic-btn" id="topMicBtn" title="Speak to Jarvis">
+                <i class="fa-solid fa-microphone"></i>
+            </button>
+        </div>
+
+        <div class="header-right">
+            <!-- India All Language Voice Pack Dropdown -->
+            <div class="lang-selector-wrapper">
+                <i class="fa-solid fa-language text-lime" style="font-size: 16px;"></i>
+                <select id="langSelectDropdown" onchange="JarvisEngine.setLanguage(this.value)" class="lang-select-input">
+                    <option value="hi-IN" selected>🇮🇳 हिन्दी (Hindi)</option>
+                    <option value="en-IN">🇮🇳 English (India)</option>
+                    <option value="ta-IN">🇮🇳 தமிழ் (Tamil)</option>
+                    <option value="te-IN">🇮🇳 తెలుగు (Telugu)</option>
+                    <option value="bn-IN">🇮🇳 বাংলা (Bengali)</option>
+                    <option value="mr-IN">🇮🇳 मराठी (Marathi)</option>
+                    <option value="gu-IN">🇮🇳 ગુજરાતી (Gujarati)</option>
+                    <option value="kn-IN">🇮🇳 ಕನ್ನಡ (Kannada)</option>
+                    <option value="ml-IN">🇮🇳 മലയാളം (Malayalam)</option>
+                    <option value="pa-IN">🇮🇳 ਪੰਜਾਬੀ (Punjabi)</option>
+                </select>
+            </div>
+
+            <!-- GPS Live Device Weather Badge -->
+            <div class="weather-badge" id="weatherGpsBadge" onclick="WeatherGPS.requestGPSLocation()" title="Click to refresh GPS location">
+                <i class="fa-solid fa-location-crosshairs text-lime-600"></i>
+                <span>Locating GPS...</span>
+            </div>
+
+            <!-- Install Chrome App Button (PWA) -->
+            <button id="pwaInstallBtn" class="btn-primary-lime" style="display: none; padding: 6px 12px; font-size: 13px;" onclick="installPWA()" title="Install Shopo Robo permanently on Chrome">
+                <i class="fa-solid fa-download"></i> Install App
+            </button>
+
+            <div id="authHeaderContainer">
+                <!-- Dynamically rendered: Gmail Login Button or User Profile -->
+                <button class="btn-primary-lime" id="headerLoginBtn" onclick="openLoginModal()" style="padding: 6px 14px; font-size: 13px;">
+                    <i class="fa-brands fa-google"></i> Login with Gmail
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- ==============================================================================
+         THREE-COLUMN APPLICATION LAYOUT
+         ============================================================================== -->
+    <div class="app-layout">
+
+        <!-- 1. LEFT NAVIGATION SIDEBAR -->
+        <aside class="left-sidebar">
+            <ul class="sidebar-nav-list">
+                <li>
+                    <a href="#dashboard" class="nav-link active" data-view="dashboard">
+                        <i class="fa-solid fa-house"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#inventory" class="nav-link" data-view="inventory">
+                        <i class="fa-solid fa-boxes-stacked"></i>
+                        <span>Inventory</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#sales" class="nav-link" data-view="sales">
+                        <i class="fa-solid fa-chart-line"></i>
+                        <span>Sales & Profit</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#khata" class="nav-link" data-view="khata">
+                        <i class="fa-solid fa-book-bookmark"></i>
+                        <span>Khata (Ledger)</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#market" class="nav-link" data-view="market">
+                        <i class="fa-solid fa-arrow-trend-up"></i>
+                        <span>Market Trends</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#assistant" class="nav-link" data-view="assistant">
+                        <i class="fa-solid fa-microphone-lines"></i>
+                        <span>AI Assistant</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#setup" class="nav-link" data-view="setup">
+                        <i class="fa-solid fa-store"></i>
+                        <span>Store Setup</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#reports" class="nav-link" data-view="reports">
+                        <i class="fa-solid fa-file-invoice"></i>
+                        <span>Reports</span>
+                    </a>
+                </li>
+            </ul>
+
+            <div class="sidebar-promo-card">
+                <div class="promo-icon">
+                    <i class="fa-solid fa-robot"></i>
+                </div>
+                <h4>Shopo Robo</h4>
+                <p>AI Powered Inventory Management</p>
+                <div class="promo-tags">Speak • Manage • Grow</div>
+            </div>
+        </aside>
+
+        <!-- 2. CENTER MAIN WORKSPACE -->
+        <main class="main-workspace">
+
+            <!-- ==========================================
+                 VIEW: DASHBOARD (PRIMARY MOCKUP VIEW)
+                 ========================================== -->
+            <section id="view-dashboard" class="app-view active-view">
+                
+                <!-- Welcome Banner -->
+                <div class="dashboard-banner">
+                    <div>
+                        <h2 class="banner-title" id="dashboardWelcomeTitle">Welcome Back, Shop Owner!</h2>
+                        <p class="banner-subtitle" id="dashboardWelcomeSubtitle">Your AI Assistant is always here to manage your store.</p>
+                    </div>
+                    <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+                        <div class="ai-status-panel">
+                            <i class="fa-solid fa-microchip text-lime"></i>
+                            <p id="aiHealthStatusText">AI Status: Nominal. Inventory flow optimized.</p>
+                        </div>
+                        <button class="btn-primary-lime" onclick="JarvisEngine.toggleListening()">
+                            <i class="fa-solid fa-microphone"></i> Bol Kar Data Chadhayein
+                        </button>
+                    </div>
+                </div>
+
+                <!-- ZERO INVENTORY ONBOARDING CARD (Shown when stock is 0 initially) -->
+                <div class="grid-card mb-4" id="zeroInventoryOnboardingCard" style="background: linear-gradient(135deg, #F7FEE7, #ECFCCB); border: 2px dashed var(--lime-500); display: none;">
+                    <div style="display: flex; align-items: flex-start; gap: 18px;">
+                        <div class="brand-logo-icon" style="width: 52px; height: 52px; font-size: 26px;"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+                        <div style="flex: 1;">
+                            <div style="display: flex; align-items: center; justify-content: space-between;">
+                                <h3 class="font-bold text-slate-900" style="font-size: 18px;">👋 Namaste! Aapka Store naya hai aur Inventory abhi 0 hai.</h3>
+                                <span class="status-badge badge-sufficient"><i class="fa-solid fa-microphone"></i> 100% Voice Powered</span>
+                            </div>
+                            <p class="text-sm text-slate-700 mt-2" style="font-size: 13px; line-height: 1.5;">
+                                <strong>Type karne ka koi kaam nahi hai!</strong> Bas mic dabayein aur Jarvis AI ko bole: <em>"Mera Kirana store hai, 100 kg cheeni, 50 kg chawal, 20L tel daal do"</em>. AI apne aap category banayega, stock chadhayega aur aapka <strong>Khata</strong> kholega!
+                            </p>
+                            <div class="mt-3">
+                                <span class="text-xs font-bold text-slate-600">BOLIYE YA CLICK KAREIN:</span>
+                                <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px;">
+                                    <button class="voice-chip-btn" data-command="Mera Kirana store hai, 100 kg cheeni, 50 kg chawal, 20 liter sarson tel, 30 packet biscuit daal do">
+                                        <i class="fa-solid fa-microphone"></i> "Mera Kirana store: 100kg cheeni, 50kg chawal, 20L tel, 30 biscuit..."
+                                    </button>
+                                    <button class="voice-chip-btn" data-command="Mera mobile accessories shop hai, 50 charger, 30 earphone, 80 tempered glass add karo">
+                                        <i class="fa-solid fa-microphone"></i> "Mera mobile store: 50 charger, 30 earphone, 80 glass..."
+                                    </button>
+                                    <button class="voice-chip-btn" data-command="Medical store setup karo: paracetamol 100 strip, cough syrup 30 bottle, dettol 40 add karo">
+                                        <i class="fa-solid fa-microphone"></i> "Medical store: paracetamol 100 strip, cough syrup 30 bottle..."
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Top 4 Stat Cards -->
+                <div class="stats-cards-grid">
+                    <!-- Stat 1: Total Stock Value -->
+                    <div class="stat-card">
+                        <div class="stat-icon-circle bg-lime-circle">
+                            <i class="fa-solid fa-indian-rupee-sign"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-label">Total Stock Value</span>
+                            <span class="stat-value" id="statStockVal">₹ 1,24,850</span>
+                            <span class="stat-growth growth-up">
+                                <i class="fa-solid fa-arrow-trend-up"></i> 12% from last month
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Stat 2: Total Items -->
+                    <div class="stat-card">
+                        <div class="stat-icon-circle bg-lime-circle">
+                            <i class="fa-solid fa-box-archive"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-label">Total Items</span>
+                            <span class="stat-value" id="statItemsCount">48</span>
+                            <span class="stat-growth growth-up">
+                                <i class="fa-solid fa-arrow-trend-up"></i> 5 new items
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Stat 3: Today's Sales -->
+                    <div class="stat-card">
+                        <div class="stat-icon-circle bg-lime-circle">
+                            <i class="fa-solid fa-cart-shopping"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-label">Today's Sales</span>
+                            <span class="stat-value" id="statTodaySales">₹ 8,420</span>
+                            <span class="stat-growth growth-up">
+                                <i class="fa-solid fa-arrow-trend-up"></i> 18% from yesterday
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Stat 4: Monthly Profit -->
+                    <div class="stat-card">
+                        <div class="stat-icon-circle bg-lime-circle">
+                            <i class="fa-solid fa-arrow-trend-up"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-label">Monthly Profit</span>
+                            <span class="stat-value" id="statMonthProfit">₹ 21,560</span>
+                            <span class="stat-growth growth-up">
+                                <i class="fa-solid fa-arrow-trend-up"></i> 24% from last month
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Cards Row 1 -->
+                <div class="dashboard-grid-row">
+                    <!-- Card 1: Current Stock Levels -->
+                    <div class="grid-card">
+                        <div class="card-header-flex">
+                            <h3 class="card-title">Current Stock Levels</h3>
+                            <a class="card-action-link" onclick="switchView('inventory')">
+                                View All <i class="fa-solid fa-arrow-right"></i>
+                            </a>
+                        </div>
+                        <div style="overflow-x: auto;">
+                            <table class="stock-table">
+                                <thead>
+                                    <tr>
+                                        <th>Item</th>
+                                        <th>Stock</th>
+                                        <th>Status</th>
+                                        <th style="text-align: right;">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="currentStockTableBody">
+                                    <!-- Rendered dynamically by app.js matching the image -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Card 2: This Month Profit & Loss -->
+                    <div class="grid-card">
+                        <div class="card-header-flex">
+                            <h3 class="card-title">This Month Profit & Loss</h3>
+                            <a class="card-action-link" onclick="switchView('sales')">
+                                View Report <i class="fa-solid fa-arrow-right"></i>
+                            </a>
+                        </div>
+                        <div class="pnl-container">
+                            <div class="pnl-chart-box">
+                                <canvas id="pnlChartCanvas" width="220" height="180"></canvas>
+                            </div>
+                            <div class="pnl-metrics-box">
+                                <div class="pnl-stat-item">
+                                    <span class="pnl-label">Total Sales</span>
+                                    <div class="pnl-value" id="pnlSalesVal">₹ 1,56,000</div>
+                                    <span class="pnl-growth"><i class="fa-solid fa-arrow-trend-up"></i> 18%</span>
+                                </div>
+                                <div class="pnl-stat-item">
+                                    <span class="pnl-label">Total Expenses</span>
+                                    <div class="pnl-value" id="pnlExpensesVal">₹ 1,34,440</div>
+                                    <span class="pnl-growth text-slate-500"><i class="fa-solid fa-arrow-trend-up"></i> 12%</span>
+                                </div>
+                                <div class="pnl-stat-item">
+                                    <span class="pnl-label">Net Profit</span>
+                                    <div class="pnl-value text-lime-dark" id="pnlProfitVal">₹ 21,560</div>
+                                    <span class="pnl-growth"><i class="fa-solid fa-arrow-trend-up"></i> 24%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Cards Row 2 -->
+                <div class="dashboard-grid-row">
+                    <!-- Card 3: Top Items (Best Selling vs Loss Making) -->
+                    <div class="grid-card">
+                        <div class="card-header-flex">
+                            <h3 class="card-title">Top Items</h3>
+                            <div class="pill-tabs-group">
+                                <button class="pill-tab active" id="tabBestSelling">Best Selling</button>
+                                <button class="pill-tab" id="tabLossMaking">Loss Making</button>
+                            </div>
+                        </div>
+                        <div class="top-items-list" id="topItemsList">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Card 4: Market Price Trends -->
+                    <div class="grid-card">
+                        <div class="card-header-flex">
+                            <h3 class="card-title">Market Price Trends</h3>
+                            <a class="card-action-link" onclick="switchView('market')">
+                                View Details <i class="fa-solid fa-arrow-right"></i>
+                            </a>
+                        </div>
+                        <div class="market-trends-list" id="marketTrendsList">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bottom Row: AI Alerts & Promo -->
+                <div class="alerts-and-promo-row">
+                    <!-- AI Alerts Card -->
+                    <div class="ai-alerts-card">
+                        <div class="card-header-flex" style="margin-bottom: 0;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <i class="fa-solid fa-bell text-lime" style="font-size: 16px;"></i>
+                                <h3 class="card-title">AI Alerts</h3>
+                            </div>
+                        </div>
+                        <div class="ai-alerts-list" id="aiAlertsList">
+                            <!-- Rendered dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Promo / Fast Action Card -->
+                    <div class="promo-callout-card">
+                        <div class="promo-callout-top">
+                            <div class="promo-callout-badge">
+                                <i class="fa-solid fa-robot"></i>
+                            </div>
+                            <div>
+                                <h4>Let Shopo Robo handle it all!</h4>
+                                <ul>
+                                    <li>• Stock updates & instant alerts</li>
+                                    <li>• Sales & profit live reports</li>
+                                    <li>• Market price trends tracker</li>
+                                    <li>• Automatic shop type setup</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <button class="promo-callout-btn" onclick="JarvisEngine.toggleListening()">
+                            <i class="fa-solid fa-microphone"></i> Just speak, I'll take care.
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 VIEW: INVENTORY MANAGEMENT
+                 ========================================== -->
+            <section id="view-inventory" class="app-view">
+                <div class="view-header-bar">
+                    <div>
+                        <h2 class="banner-title">Store Inventory Management</h2>
+                        <p class="banner-subtitle">Real-time stock ledger with buy/sell margins & restock levels.</p>
+                    </div>
+                    <div style="display: flex; gap: 12px; align-items: center;">
+                        <div class="search-input-wrapper">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <input type="text" id="inventorySearchInput" class="search-input-field" placeholder="Search item name or category...">
+                        </div>
+                        <button class="btn-primary-lime" onclick="openAddItemModal()">
+                            <i class="fa-solid fa-plus"></i> Add New Item
+                        </button>
+                    </div>
+                </div>
+
+                <div class="grid-card">
+                    <table class="stock-table">
+                        <thead>
+                            <tr>
+                                <th>Product Name</th>
+                                <th>Category</th>
+                                <th>Current Stock</th>
+                                <th>Buy Price</th>
+                                <th>Sell Price</th>
+                                <th>Margin</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="fullInventoryTableBody">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 VIEW: SALES & PROFIT ANALYTICS
+                 ========================================== -->
+            <section id="view-sales" class="app-view">
+                <div class="view-header-bar">
+                    <div>
+                        <h2 class="banner-title">Sales & Profit Intelligence</h2>
+                        <p class="banner-subtitle">Detailed breakdown of profit, expenses, and loss-making items.</p>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid-row">
+                    <div class="grid-card">
+                        <h3 class="card-title mb-3">Weekly Revenue vs Expenses Trend</h3>
+                        <div style="height: 240px; margin-top: 14px;">
+                            <canvas id="detailedSalesChartCanvas"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="grid-card">
+                        <h3 class="card-title mb-3">Loss-Making Items Diagnosis</h3>
+                        <p class="text-sm text-secondary mb-3">Items sold below wholesale purchase cost or squeeze margins:</p>
+                        <div class="top-items-list" id="lossItemsDiagnosis">
+                            <div class="top-item-row loss-row">
+                                <div class="top-item-left">
+                                    <span class="rank-badge rank-badge-loss">1</span>
+                                    <div>
+                                        <span class="top-item-name">Maggi Instant Noodles</span>
+                                        <div class="text-xs text-muted-loss">Buy: ₹14.50 | Sell: ₹14.00 (-3.4% margin)</div>
+                                    </div>
+                                </div>
+                                <div class="top-item-right">
+                                    <button class="pill-tab" style="background: #FEE2E2; color: #DC2626;" onclick="promptJarvisForItem('Maggi')">Fix Pricing</button>
+                                </div>
+                            </div>
+                            <div class="top-item-row loss-row">
+                                <div class="top-item-left">
+                                    <span class="rank-badge rank-badge-loss">2</span>
+                                    <div>
+                                        <span class="top-item-name">Fresh Red Onions</span>
+                                        <div class="text-xs text-muted-loss">Mandi spiked to ₹42/kg | Selling at ₹38/kg</div>
+                                    </div>
+                                </div>
+                                <div class="top-item-right">
+                                    <button class="pill-tab" style="background: #FEE2E2; color: #DC2626;" onclick="promptJarvisForItem('Onion')">Fix Pricing</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 VIEW: KHATA (SHOPKEEPER DIGITAL LEDGER)
+                 ========================================== -->
+            <section id="view-khata" class="app-view">
+                <div class="view-header-bar">
+                    <div>
+                        <h2 class="banner-title">📖 Dukandar Ka Digital Khata (Ledger)</h2>
+                        <p class="banner-subtitle">Voice-enabled Udhar & Jama ledger. No typing needed — just speak customer debit/credit!</p>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn-primary-lime" onclick="JarvisEngine.toggleListening()">
+                            <i class="fa-solid fa-microphone"></i> Bol Kar Khata Likhein
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Khata Stat Cards -->
+                <div class="stats-cards-grid" style="grid-template-columns: repeat(3, 1fr);">
+                    <div class="stat-card">
+                        <div class="stat-icon-circle bg-red-soft text-red" style="font-size: 20px;">
+                            <i class="fa-solid fa-hand-holding-dollar"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-label">Total Market Udhar (Market Mein Baaki)</span>
+                            <span class="stat-value text-red" id="khataTotalUdhar">₹ 0</span>
+                            <span class="stat-growth text-red">Customers to pay you</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon-circle bg-lime-circle">
+                            <i class="fa-solid fa-money-bill-trend-up"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-label">Total Jama (Vasooli / Received)</span>
+                            <span class="stat-value text-lime-dark" id="khataTotalJama">₹ 0</span>
+                            <span class="stat-growth growth-up">Total collected</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon-circle bg-blue-soft text-blue" style="font-size: 20px;">
+                            <i class="fa-solid fa-users"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-label">Khata Customers</span>
+                            <span class="stat-value" id="khataTotalCustomers">0</span>
+                            <span class="stat-growth text-slate-500">Active accounts</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Voice Khata Quick Bar -->
+                <div class="grid-card mb-4" style="background: #F8FAFC; border-color: var(--border-color);">
+                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <i class="fa-solid fa-microphone text-lime" style="font-size: 18px;"></i>
+                            <span class="text-sm font-semibold text-slate-800">Khata Voice Shortcuts:</span>
+                        </div>
+                        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                            <button class="voice-chip-btn" data-command="Ramesh ka 500 rupaye udhar likho">
+                                <i class="fa-solid fa-microphone"></i> "Ramesh ka 500 rupaye udhar likho"
+                            </button>
+                            <button class="voice-chip-btn" data-command="Ramesh ne 200 rupaye jama kiye">
+                                <i class="fa-solid fa-microphone"></i> "Ramesh ne 200 rupaye jama kiye"
+                            </button>
+                            <button class="voice-chip-btn" data-command="Khata dikhao">
+                                <i class="fa-solid fa-microphone"></i> "Khata dikhao"
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Khata Ledger Table -->
+                <div class="grid-card">
+                    <div class="card-header-flex">
+                        <h3 class="card-title">Transaction Ledger Entries</h3>
+                    </div>
+                    <table class="stock-table">
+                        <thead>
+                            <tr>
+                                <th>Customer Name</th>
+                                <th>Date & Time</th>
+                                <th>Transaction Type</th>
+                                <th>Amount</th>
+                                <th>Details / Note</th>
+                            </tr>
+                        </thead>
+                        <tbody id="khataTableBody">
+                            <!-- Rendered dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+
+            <!-- ==========================================
+                 VIEW: MARKET TRENDS
+                 ========================================== -->
+            <section id="view-market" class="app-view">
+                <div class="view-header-bar">
+                    <div>
+                        <h2 class="banner-title">Wholesale Market Price Trends</h2>
+                        <p class="banner-subtitle">Daily commodity rate changes from regional wholesale mandis.</p>
+                    </div>
+                </div>
+                <div class="market-cards-grid" id="marketTrendsCardsGrid">
+                    <!-- Populated dynamically -->
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 VIEW: AI ASSISTANT (JARVIS COMMAND CENTER)
+                 ========================================== -->
+            <section id="view-assistant" class="app-view">
+                <div class="view-header-bar">
+                    <div>
+                        <h2 class="banner-title">Jarvis AI Command Center</h2>
+                        <p class="banner-subtitle">Hands-free voice intelligence for shopkeeper operations, stock replenishment & profit analytics.</p>
+                    </div>
+                    <button class="btn-primary-lime" onclick="JarvisEngine.toggleListening()">
+                        <i class="fa-solid fa-microphone"></i> Start Voice Command
+                    </button>
+                </div>
+
+                <div class="dashboard-grid-row">
+                    <div class="grid-card">
+                        <h3 class="card-title mb-3">🎙️ Voice Command Cheatsheet</h3>
+                        <p class="text-sm text-secondary mb-3">Speak naturally in English or Hinglish, or click to test:</p>
+                        <div class="voice-shortcuts-list">
+                            <button class="voice-chip-btn" data-command="Sugar is 100kg available in shop">
+                                <i class="fa-solid fa-circle-play"></i>
+                                <span>"Sugar is 100kg available in shop" <small class="text-lime-dark">(Stock fill)</small></span>
+                            </button>
+                            <button class="voice-chip-btn" data-command="Rice stock is going to end">
+                                <i class="fa-solid fa-circle-play"></i>
+                                <span>"Rice stock is going to end" <small class="text-lime-dark">(Low stock alert)</small></span>
+                            </button>
+                            <button class="voice-chip-btn" data-command="What's the profit this month?">
+                                <i class="fa-solid fa-circle-play"></i>
+                                <span>"What's the profit this month?" <small class="text-lime-dark">(P&L audit)</small></span>
+                            </button>
+                            <button class="voice-chip-btn" data-command="Which item is in loss?">
+                                <i class="fa-solid fa-circle-play"></i>
+                                <span>"Which item is in loss?" <small class="text-lime-dark">(Loss hunter)</small></span>
+                            </button>
+                            <button class="voice-chip-btn" data-command="What are the market price changes?">
+                                <i class="fa-solid fa-circle-play"></i>
+                                <span>"What are the market price changes?" <small class="text-lime-dark">(Mandi trends)</small></span>
+                            </button>
+                            <button class="voice-chip-btn" data-command="Create a new shop type for Medical Store">
+                                <i class="fa-solid fa-circle-play"></i>
+                                <span>"Create a new shop type for Medical Store" <small class="text-lime-dark">(AI Generator)</small></span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="grid-card">
+                        <h3 class="card-title mb-3">⚡ Intelligent Automated Capabilities</h3>
+                        <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 10px;">
+                            <div class="ai-suggestion-box">
+                                <i class="fa-solid fa-boxes-packing text-lime-dark"></i>
+                                <div>
+                                    <strong>Automated Stock Management</strong>
+                                    <p class="text-xs text-slate-600 mt-1">Understands quantities, units (kg, L, pcs), and automatically calculates remaining buffer.</p>
+                                </div>
+                            </div>
+                            <div class="ai-suggestion-box">
+                                <i class="fa-solid fa-calculator text-lime-dark"></i>
+                                <div>
+                                    <strong>Profit & Margin Guard</strong>
+                                    <p class="text-xs text-slate-600 mt-1">Instantly alerts shopkeeper when an item is being sold at negative margins (loss-making).</p>
+                                </div>
+                            </div>
+                            <div class="ai-suggestion-box">
+                                <i class="fa-solid fa-chart-line text-lime-dark"></i>
+                                <div>
+                                    <strong>Live Wholesale Price Benchmark</strong>
+                                    <p class="text-xs text-slate-600 mt-1">Tracks mandi increases & decreases and advises retail price adjustments.</p>
+                                </div>
+                            </div>
+                            <div class="ai-suggestion-box">
+                                <i class="fa-solid fa-wand-magic-sparkles text-lime-dark"></i>
+                                <div>
+                                    <strong>Adaptive Shop Type Generator</strong>
+                                    <p class="text-xs text-slate-600 mt-1">Automatically setups Kirana, Pharmacy, Mobile, Clothing or Bakery stores on the fly.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 VIEW: STORE SETUP (AI SHOP TYPE GENERATOR)
+                 ========================================== -->
+            <section id="view-setup" class="app-view">
+                <div class="view-header-bar">
+                    <div>
+                        <h2 class="banner-title">Store Setup & AI Shop Type Generator</h2>
+                        <p class="banner-subtitle">Jarvis automatically reconfigures your categories, stock items, and units based on your shop type.</p>
+                    </div>
+                    <div>
+                        <span class="status-badge badge-sufficient">Current: <span id="setupCurrentShopType">Grocery & Kirana Store</span></span>
+                    </div>
+                </div>
+
+                <div class="grid-card mb-4" style="background: linear-gradient(135deg, #F7FEE7, #ECFCCB); border-color: var(--lime-300);">
+                    <div style="display: flex; align-items: center; gap: 16px;">
+                        <div class="brand-logo-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+                        <div style="flex: 1;">
+                            <h3 class="font-bold text-slate-900">Universal AI Store Generator</h3>
+                            <p class="text-sm text-slate-600 mt-1">Tell Jarvis what kind of business you run (or choose a preset below). Jarvis will automatically generate customized products, standard trade units, wholesale costs, and margins for you!</p>
+                            <div style="display: flex; gap: 10px; margin-top: 14px; max-width: 600px;">
+                                <input type="text" id="customShopInput" class="form-input" placeholder="e.g. Hardware store, Footwear shop, Stationery, Pet supplies, Fruits & Veggies..." style="background: white;">
+                                <button type="button" class="btn-primary-lime" style="white-space: nowrap;" onclick="handleCustomShopGeneration()">
+                                    <i class="fa-solid fa-wand-magic-sparkles"></i> Generate Store
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="shoptype-cards-grid">
+                    <!-- Template 1: Kirana / Grocery -->
+                    <div class="shoptype-card">
+                        <div>
+                            <div class="shoptype-icon-box"><i class="fa-solid fa-basket-shopping"></i></div>
+                            <h4 class="shoptype-title">Grocery & Kirana Store</h4>
+                            <p class="shoptype-desc">Staples, Rice, Sugar, Grains, Edible Oils, Spices, Dairy, and Daily Provisions.</p>
+                        </div>
+                        <button class="btn-apply-shoptype" data-type="kirana">Apply Grocery Setup</button>
+                    </div>
+
+                    <!-- Template 2: Pharmacy / Medical -->
+                    <div class="shoptype-card">
+                        <div>
+                            <div class="shoptype-icon-box"><i class="fa-solid fa-prescription-bottle-medical"></i></div>
+                            <h4 class="shoptype-title">Pharmacy & Medical Store</h4>
+                            <p class="shoptype-desc">Tablets, Syrups, First Aid, Surgical supplies, Baby Care, and Strip/Bottle units.</p>
+                        </div>
+                        <button class="btn-apply-shoptype" data-type="medical">Apply Medical Setup</button>
+                    </div>
+
+                    <!-- Template 3: Mobile & Electronics -->
+                    <div class="shoptype-card">
+                        <div>
+                            <div class="shoptype-icon-box"><i class="fa-solid fa-mobile-screen-button"></i></div>
+                            <h4 class="shoptype-title">Mobile & Electronics</h4>
+                            <p class="shoptype-desc">Smartphones, Cables, Earbuds, Tempered Glass, Power Banks, Chargers, and Pcs units.</p>
+                        </div>
+                        <button class="btn-apply-shoptype" data-type="electronics">Apply Electronics Setup</button>
+                    </div>
+
+                    <!-- Template 4: Clothing & Boutique -->
+                    <div class="shoptype-card">
+                        <div>
+                            <div class="shoptype-icon-box"><i class="fa-solid fa-shirt"></i></div>
+                            <h4 class="shoptype-title">Fashion & Garments Boutique</h4>
+                            <p class="shoptype-desc">T-shirts, Jeans, Ethnic Wear, Formal Shirts, Dresses, and Seasonal apparel.</p>
+                        </div>
+                        <button class="btn-apply-shoptype" data-type="clothing">Apply Fashion Setup</button>
+                    </div>
+
+                    <!-- Template 5: Bakery & Confectionery -->
+                    <div class="shoptype-card">
+                        <div>
+                            <div class="shoptype-icon-box"><i class="fa-solid fa-cake-candles"></i></div>
+                            <h4 class="shoptype-title">Bakery & Cafe</h4>
+                            <p class="shoptype-desc">Fresh Breads, Pastries, Cookies, Patties, Cakes, and Daily baked goods.</p>
+                        </div>
+                        <button class="btn-apply-shoptype" data-type="bakery">Apply Bakery Setup</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 VIEW: REPORTS (MONTH-END PDF AUDIT)
+                 ========================================== -->
+            <section id="view-reports" class="app-view">
+                <div class="view-header-bar">
+                    <div>
+                        <h2 class="banner-title">Store Reports & Month-End PDF Audit</h2>
+                        <p class="banner-subtitle">Official commercial balance sheets, tax ledger, and store audit.</p>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn-primary-lime" onclick="downloadPreAuditPDF()">
+                            <i class="fa-solid fa-file-pdf"></i> Download Month-End PDF Report
+                        </button>
+                    </div>
+                </div>
+
+                <!-- REQUIRED MONTH-END NOTICE BANNER -->
+                <div class="grid-card mb-4" style="background: linear-gradient(135deg, #EFF6FF, #DBEAFE); border: 2px solid #3B82F6;">
+                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                        <div style="display: flex; align-items: center; gap: 16px;">
+                            <div class="prod-icon-box bg-blue-soft" style="width: 48px; height: 48px; font-size: 24px;">
+                                <i class="fa-solid fa-calendar-check text-blue"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-slate-900" style="font-size: 18px;">📅 Your reports will be available at month end.</h3>
+                                <p class="text-sm text-slate-600 mt-1">Aapki official store audit report mahine ke aakhiri din generate hogi. Niche diye gaye button se aap abhi pre-audit ledger print ya download kar sakte hain.</p>
+                            </div>
+                        </div>
+                        <div style="text-align: right;">
+                            <span class="status-badge" style="background: #BFDBFE; color: #1E40AF; font-size: 12px;">Next Cycle: Month-End</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid-card">
+                    <h3 class="card-title mb-3">Live Month-to-Date Financial Ledger</h3>
+                    <div class="stats-cards-grid" style="margin-top: 14px;">
+                        <div class="stat-card">
+                            <div class="stat-info">
+                                <span class="stat-label">Month-to-Date Revenue</span>
+                                <span class="stat-value" id="reportRevenueVal">₹ 1,56,000</span>
+                                <span class="stat-growth growth-up"><i class="fa-solid fa-check"></i> Verified</span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-info">
+                                <span class="stat-label">Wholesale Cost (COGS)</span>
+                                <span class="stat-value" id="reportCogsVal">₹ 1,21,200</span>
+                                <span class="stat-growth text-slate-500">Inventory Cost</span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-info">
+                                <span class="stat-label">Net Operating Profit</span>
+                                <span class="stat-value text-lime-dark" id="reportProfitVal">₹ 34,800</span>
+                                <span class="stat-growth growth-up">22.3% Margin</span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-info">
+                                <span class="stat-label">Khata Recovery Rate</span>
+                                <span class="stat-value">80.2%</span>
+                                <span class="stat-growth growth-up">Healthy Flow</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- 3. RIGHT SIDEBAR - AI ASSISTANT (JARVIS) -->
+        <aside class="right-jarvis-panel">
+            
+            <!-- Panel Header -->
+            <div class="jarvis-panel-header">
+                <div class="jarvis-header-title">
+                    <i class="fa-solid fa-robot"></i>
+                    <span>AI Assistant (Jarvis)</span>
+                </div>
+                <div style="display: flex; align-items: center;">
+                    <div class="jarvis-status-pill">
+                        <span class="pulse-dot"></span>
+                        <span>Online</span>
+                    </div>
+                    <button class="jarvis-sound-btn" id="toggleVoiceAudio" title="Toggle Speech Output">
+                        <i class="fa-solid fa-volume-high"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Panel Scrollable Body -->
+            <div class="jarvis-content-body">
+                
+                <!-- Jarvis 3D Robot Avatar -->
+                <div class="jarvis-avatar-container">
+                    <div class="jarvis-robot-model" id="jarvisAvatar">
+                        <i class="fa-solid fa-robot"></i>
+                    </div>
+                    <div class="jarvis-speech-bubble" id="jarvisSpeechBubble">
+                        Hello Shop Owner! I'm your AI assistant Jarvis. How can I help you today?
+                    </div>
+                </div>
+
+                <!-- Big Interactive Microphone & Canvas Waveform -->
+                <div class="jarvis-mic-interactive">
+                    <div class="mic-wave-wrapper">
+                        <canvas id="waveformCanvasLeft" class="waveform-canvas" width="60" height="36"></canvas>
+                        <button class="jarvis-big-mic-btn" id="jarvisMicBtn" title="Click to Speak">
+                            <i class="fa-solid fa-microphone"></i>
+                        </button>
+                        <canvas id="waveformCanvasRight" class="waveform-canvas" width="60" height="36"></canvas>
+                    </div>
+                    <span class="jarvis-status-text" id="jarvisStatusText">Ready</span>
+                </div>
+
+                <!-- Quick Voice Action Chips (Exact match with user screenshot) -->
+                <div class="voice-shortcuts-list">
+                    <button class="voice-chip-btn" data-command="Show me current stock">
+                        <i class="fa-solid fa-microphone"></i>
+                        <span>"Show me current stock"</span>
+                    </button>
+                    <button class="voice-chip-btn" data-command="What's the profit this month?">
+                        <i class="fa-solid fa-microphone"></i>
+                        <span>"What's the profit this month?"</span>
+                    </button>
+                    <button class="voice-chip-btn" data-command="Which item is in loss?">
+                        <i class="fa-solid fa-microphone"></i>
+                        <span>"Which item is in loss?"</span>
+                    </button>
+                    <button class="voice-chip-btn" data-command="What are the market price changes?">
+                        <i class="fa-solid fa-microphone"></i>
+                        <span>"What are the market price changes?"</span>
+                    </button>
+                    <button class="voice-chip-btn" data-command="Create a new shop type">
+                        <i class="fa-solid fa-microphone"></i>
+                        <span>"Create a new shop type"</span>
+                    </button>
+                </div>
+
+                <!-- Live Conversation History Log -->
+                <div class="jarvis-chat-history" id="jarvisChatHistory">
+                    <!-- Populated as speech or text commands occur -->
+                </div>
+
+            </div>
+
+            <!-- Panel Bottom Input Area -->
+            <div class="jarvis-input-area">
+                <form class="chat-input-form" id="jarvisChatForm">
+                    <input type="text" id="jarvisTextInput" class="chat-input-field" placeholder="Type or speak your command..." autocomplete="off">
+                    <button type="submit" class="chat-send-btn" title="Send Command">
+                        <i class="fa-solid fa-paper-plane"></i>
+                    </button>
+                </form>
+                <div class="jarvis-footer-branding">
+                    <i class="fa-solid fa-bolt" style="color: var(--lime-500);"></i> Powered by Jarvis AI
+                </div>
+            </div>
+
+        </aside>
+
+    </div>
+
+    <!-- ==============================================================================
+         MODALS
+         ============================================================================== -->
+    <!-- Stock In / Out Modal -->
+    <div class="modal-overlay" id="stockModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h4 class="modal-title" id="stockModalTitle">Adjust Stock</h4>
+                <button class="modal-close-btn" onclick="closeStockModal()">&times;</button>
+            </div>
+            <div>
+                <p class="text-sm text-secondary mb-3" id="stockModalItemName">Item</p>
+                <div class="form-group">
+                    <label class="form-label">Quantity (<span id="stockModalUnit">kg</span>)</label>
+                    <input type="number" id="stockModalQty" class="form-input" min="1" placeholder="Enter quantity">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeStockModal()">Cancel</button>
+                <button class="btn-primary-lime" onclick="confirmStockModal()">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add New Item Modal -->
+    <div class="modal-overlay" id="addItemModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h4 class="modal-title">Add New Inventory Item</h4>
+                <button class="modal-close-btn" onclick="closeAddItemModal()">&times;</button>
+            </div>
+            <form onsubmit="handleAddNewItem(event)">
+                <div class="form-group">
+                    <label class="form-label">Item Name</label>
+                    <input type="text" id="newItemName" class="form-input" placeholder="e.g. Basmati Rice, Shampoo, etc." required>
+                </div>
+                <div class="dashboard-grid-row" style="margin-bottom: 0;">
+                    <div class="form-group">
+                        <label class="form-label">Category</label>
+                        <input type="text" id="newItemCategory" class="form-input" placeholder="e.g. Staples, Dairy, Snacks">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Unit Type</label>
+                        <input type="text" id="newItemUnit" class="form-input" placeholder="kg, L, pcs, boxes" required>
+                    </div>
+                </div>
+                <div class="dashboard-grid-row" style="margin-bottom: 0;">
+                    <div class="form-group">
+                        <label class="form-label">Initial Stock</label>
+                        <input type="number" id="newItemStock" class="form-input" placeholder="100" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Min Alert Threshold</label>
+                        <input type="number" id="newItemMinThreshold" class="form-input" placeholder="10">
+                    </div>
+                </div>
+                <div class="dashboard-grid-row" style="margin-bottom: 0;">
+                    <div class="form-group">
+                        <label class="form-label">Buy Price (₹)</label>
+                        <input type="number" step="0.5" id="newItemBuyPrice" class="form-input" placeholder="Cost price">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Sell Price (₹)</label>
+                        <input type="number" step="0.5" id="newItemSellPrice" class="form-input" placeholder="Selling price">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" onclick="closeAddItemModal()">Cancel</button>
+                    <button type="submit" class="btn-primary-lime">Save to Inventory</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Google / Gmail Login Modal -->
+    <div class="modal-overlay" id="loginModal">
+        <div class="modal-box" style="max-width: 440px; text-align: center;">
+            <div style="margin-bottom: 18px;">
+                <div class="brand-logo-icon" style="margin: 0 auto 12px auto; width: 56px; height: 56px; font-size: 28px;">
+                    <i class="fa-solid fa-robot"></i>
+                </div>
+                <h3 class="font-bold text-slate-900" style="font-size: 22px;">Dukandar Gmail Login</h3>
+                <p class="text-sm text-slate-600 mt-1">Apne Gmail se login karein. Naye account ka inventory <strong>0</strong> se shuru hoga, fir bol kar data chadhayein!</p>
+            </div>
+
+            <!-- Fast One-Click Google Demo Sign-in options -->
+            <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
+                <button class="google-login-btn" onclick="performGmailLogin('sharma.kirana@gmail.com', 'Sharma Ji (Kirana)')">
+                    <i class="fa-brands fa-google text-red" style="font-size: 16px;"></i>
+                    <span>Continue as <strong>sharma.kirana@gmail.com</strong></span>
+                </button>
+                <button class="google-login-btn" onclick="performGmailLogin('gupta.mobile@gmail.com', 'Gupta Electronics')">
+                    <i class="fa-brands fa-google text-red" style="font-size: 16px;"></i>
+                    <span>Continue as <strong>gupta.mobile@gmail.com</strong></span>
+                </button>
+                <button class="google-login-btn" onclick="performGmailLogin('verma.medical@gmail.com', 'Verma Pharmacy')">
+                    <i class="fa-brands fa-google text-red" style="font-size: 16px;"></i>
+                    <span>Continue as <strong>verma.medical@gmail.com</strong></span>
+                </button>
+            </div>
+
+            <div style="display: flex; align-items: center; margin: 14px 0;">
+                <hr style="flex: 1; border: none; border-top: 1px solid var(--border-color);">
+                <span style="padding: 0 10px; font-size: 11px; color: var(--text-muted); font-weight: 700;">OR USE YOUR OWN GMAIL</span>
+                <hr style="flex: 1; border: none; border-top: 1px solid var(--border-color);">
+            </div>
+
+            <form onsubmit="handleCustomGmailSubmit(event)">
+                <div class="form-group" style="text-align: left;">
+                    <label class="form-label">Aapki Gmail ID</label>
+                    <input type="email" id="customUserEmailInput" class="form-input" placeholder="apna.naam@gmail.com" required>
+                </div>
+                <div class="form-group" style="text-align: left;">
+                    <label class="form-label">Dukandar Ka Naam</label>
+                    <input type="text" id="customUserNameInput" class="form-input" placeholder="e.g. Rajesh Sharma">
+                </div>
+                <button type="submit" class="btn-primary-lime" style="width: 100%; justify-content: center; padding: 10px; margin-top: 10px;">
+                    <i class="fa-solid fa-arrow-right-to-bracket"></i> Login & Khata Kholein
+                </button>
+            </form>
+            <button class="btn-secondary mt-3" style="width: 100%;" onclick="closeLoginModal()">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Application Scripts -->
+    <script src="js/weather-gps.js"></script>
+    <script src="js/supabase-config.js"></script>
+    <script src="js/store-data.js"></script>
+    <script src="js/charts.js"></script>
+    <script src="js/jarvis-ai.js"></script>
+    <script src="js/app.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Shopo Robo — Welcome</title>
+    <link rel="icon" href="/icons/icon.svg" type="image/svg+xml">
+    <link rel="manifest" href="/manifest.json">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="auth.css">
+</head>
+<body>
+    <!-- ============================================= -->
+    <!-- PROGRESS BAR (visible during registration)    -->
+    <!-- ============================================= -->
+    <div class="progress-bar-container" id="progressBar" style="display:none;">
+        <div class="progress-track">
+            <div class="progress-step completed" data-step="1">
+                <div class="step-circle">1</div>
+                <span class="step-label">Details</span>
+            </div>
+            <div class="progress-line" data-line="1"></div>
+            <div class="progress-step" data-step="2">
+                <div class="step-circle">2</div>
+                <span class="step-label">Verify</span>
+            </div>
+            <div class="progress-line" data-line="2"></div>
+            <div class="progress-step" data-step="3">
+                <div class="step-circle">3</div>
+                <span class="step-label">Password</span>
+            </div>
+            <div class="progress-line" data-line="3"></div>
+            <div class="progress-step" data-step="4">
+                <div class="step-circle">4</div>
+                <span class="step-label">Shop</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================= -->
+    <!-- TOAST NOTIFICATION                            -->
+    <!-- ============================================= -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- ============================================= -->
+    <!-- SCREEN 1: WELCOME                             -->
+    <!-- ============================================= -->
+    <div class="auth-screen active" id="screen-welcome">
+        <div class="auth-card welcome-card">
+            <div class="brand-mascot">
+                <div class="mascot-circle">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div class="mascot-glow"></div>
+            </div>
+            <h1 class="brand-title">Shopo Robo</h1>
+            <p class="brand-tagline">AI-Powered Inventory Assistant<br>for Smart Shopkeepers</p>
+            <p class="brand-hindi">आपकी दुकान का AI सहायक 🤖</p>
+
+            <div class="prototype-warning-banner" style="background:#FEF3C7; border:1px solid #F59E0B; color:#92400E; padding:10px 14px; border-radius:10px; margin:16px 0; font-size:0.82rem; line-height:1.4; text-align:center;">
+                <strong>⚠️ Public Prototype Demonstration</strong><br>
+                For testing only. Instance data may reset periodically. Use Mock OTP <code>123456</code>. Do not enter real personal or financial records.
+            </div>
+
+            <div class="welcome-actions">
+                <button class="btn btn-primary btn-lg" onclick="navigateTo('register')">
+                    <i class="fas fa-user-plus"></i> Create Account
+                </button>
+                <button class="btn btn-secondary btn-lg" onclick="navigateTo('login')">
+                    <i class="fas fa-sign-in-alt"></i> Already have an account? Login
+                </button>
+            </div>
+
+            <div class="welcome-footer">
+                <p>Simple. Smart. Made for Indian Shopkeepers.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================= -->
+    <!-- SCREEN 2: CREATE ACCOUNT (Registration)       -->
+    <!-- ============================================= -->
+    <div class="auth-screen" id="screen-register">
+        <div class="auth-card">
+            <button class="btn-back" onclick="navigateTo('welcome')">
+                <i class="fas fa-arrow-left"></i> Back
+            </button>
+            <div class="card-header">
+                <div class="header-icon"><i class="fas fa-user-plus"></i></div>
+                <h2>Create Your Account</h2>
+                <p>Start managing your shop with AI</p>
+            </div>
+
+            <form id="registerForm" onsubmit="handleRegister(event)">
+                <div class="form-group">
+                    <label for="regName">
+                        <i class="fas fa-user"></i> Full Name
+                    </label>
+                    <input type="text" id="regName" placeholder="e.g. Ramesh Kumar"
+                           required autocomplete="name" maxlength="100">
+                    <span class="field-hint">Your name as it appears on your shop</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="regEmail">
+                        <i class="fas fa-envelope"></i> Email Address
+                    </label>
+                    <input type="email" id="regEmail" placeholder="e.g. ramesh@gmail.com"
+                           required autocomplete="email">
+                    <span class="field-hint">For account recovery and updates</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="regMobile">
+                        <i class="fas fa-mobile-alt"></i> Mobile Number
+                    </label>
+                    <div class="mobile-input-group">
+                        <span class="country-code">+91</span>
+                        <input type="tel" id="regMobile" placeholder="9876543210"
+                               required pattern="[6-9][0-9]{9}" maxlength="10"
+                               autocomplete="tel">
+                    </div>
+                    <span class="field-hint">10-digit Indian mobile number (starting with 6-9)</span>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-lg btn-block" id="btnRegister">
+                    Continue <i class="fas fa-arrow-right"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ============================================= -->
+    <!-- SCREEN 3: OTP VERIFICATION                    -->
+    <!-- ============================================= -->
+    <div class="auth-screen" id="screen-otp">
+        <div class="auth-card">
+            <button class="btn-back" onclick="navigateTo('register')">
+                <i class="fas fa-arrow-left"></i> Back
+            </button>
+            <div class="card-header">
+                <div class="header-icon"><i class="fas fa-shield-alt"></i></div>
+                <h2>Verify Your Mobile</h2>
+                <p>Enter the 6-digit OTP sent to <strong id="otpMobileDisplay"></strong></p>
+            </div>
+
+            <!-- Mock mode banner -->
+            <div class="mock-banner" id="mockBanner" style="display:none;" title="Click to fill mock OTP">
+                <i class="fas fa-flask"></i>
+                <span>
+                    <strong>Development Mode</strong> — No real SMS sent.<br>
+                    Use OTP: <code id="mockOtpCode">123456</code> <span style="font-size:0.75rem; text-decoration:underline; cursor:pointer;">(click to auto-fill)</span>
+                </span>
+            </div>
+
+            <form id="otpForm" onsubmit="handleOtpVerify(event)">
+                <div class="otp-input-group">
+                    <input type="text" class="otp-box" maxlength="1" data-index="0" inputmode="numeric" pattern="[0-9]" autocomplete="one-time-code">
+                    <input type="text" class="otp-box" maxlength="1" data-index="1" inputmode="numeric" pattern="[0-9]">
+                    <input type="text" class="otp-box" maxlength="1" data-index="2" inputmode="numeric" pattern="[0-9]">
+                    <input type="text" class="otp-box" maxlength="1" data-index="3" inputmode="numeric" pattern="[0-9]">
+                    <input type="text" class="otp-box" maxlength="1" data-index="4" inputmode="numeric" pattern="[0-9]">
+                    <input type="text" class="otp-box" maxlength="1" data-index="5" inputmode="numeric" pattern="[0-9]">
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-lg btn-block" id="btnVerifyOtp">
+                    Verify OTP <i class="fas fa-check"></i>
+                </button>
+
+                <div class="otp-footer">
+                    <p class="otp-timer" id="otpTimer">Resend OTP in <span id="otpCountdown">30</span>s</p>
+                    <button type="button" class="btn-link" id="btnResendOtp" onclick="handleResendOtp()" style="display:none;">
+                        <i class="fas fa-redo"></i> Resend OTP
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ============================================= -->
+    <!-- SCREEN 4: CREATE PASSWORD                     -->
+    <!-- ============================================= -->
+    <div class="auth-screen" id="screen-password">
+        <div class="auth-card">
+            <button class="btn-back" onclick="navigateTo('otp')">
+                <i class="fas fa-arrow-left"></i> Back
+            </button>
+            <div class="card-header">
+                <div class="header-icon"><i class="fas fa-lock"></i></div>
+                <h2>Create Your Password</h2>
+                <p>Choose a strong password for your account</p>
+            </div>
+
+            <form id="passwordForm" onsubmit="handleSetPassword(event)">
+                <div class="form-group">
+                    <label for="newPassword">
+                        <i class="fas fa-lock"></i> Password
+                    </label>
+                    <div class="password-input-group">
+                        <input type="password" id="newPassword" placeholder="Create a password"
+                               required minlength="8" autocomplete="new-password">
+                        <button type="button" class="btn-toggle-pw" onclick="togglePassword('newPassword', this)">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    <!-- Password strength indicator -->
+                    <div class="pw-strength" id="pwStrength">
+                        <div class="pw-strength-bar">
+                            <div class="pw-strength-fill" id="pwStrengthFill"></div>
+                        </div>
+                        <span class="pw-strength-label" id="pwStrengthLabel"></span>
+                    </div>
+                    <ul class="pw-rules" id="pwRules">
+                        <li id="rule-length"><i class="fas fa-circle"></i> At least 8 characters</li>
+                        <li id="rule-upper"><i class="fas fa-circle"></i> One uppercase letter</li>
+                        <li id="rule-digit"><i class="fas fa-circle"></i> One number</li>
+                    </ul>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmPassword">
+                        <i class="fas fa-lock"></i> Confirm Password
+                    </label>
+                    <div class="password-input-group">
+                        <input type="password" id="confirmPassword" placeholder="Re-enter your password"
+                               required minlength="8" autocomplete="new-password">
+                        <button type="button" class="btn-toggle-pw" onclick="togglePassword('confirmPassword', this)">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    <span class="field-error" id="confirmError" style="display:none;">Passwords do not match</span>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-lg btn-block" id="btnSetPassword">
+                    Create Account <i class="fas fa-check-circle"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ============================================= -->
+    <!-- SCREEN 5: LOGIN                               -->
+    <!-- ============================================= -->
+    <div class="auth-screen" id="screen-login">
+        <div class="auth-card">
+            <button class="btn-back" onclick="navigateTo('welcome')">
+                <i class="fas fa-arrow-left"></i> Back
+            </button>
+            <div class="card-header">
+                <div class="header-icon"><i class="fas fa-sign-in-alt"></i></div>
+                <h2>Welcome Back!</h2>
+                <p>Login to your Shopo Robo account</p>
+            </div>
+
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label for="loginId">
+                        <i class="fas fa-user"></i> Email or Mobile Number
+                    </label>
+                    <input type="text" id="loginId" placeholder="e.g. ramesh@gmail.com or 9876543210"
+                           required autocomplete="username">
+                </div>
+
+                <div class="form-group">
+                    <label for="loginPassword">
+                        <i class="fas fa-lock"></i> Password
+                    </label>
+                    <div class="password-input-group">
+                        <input type="password" id="loginPassword" placeholder="Enter your password"
+                               required autocomplete="current-password">
+                        <button type="button" class="btn-toggle-pw" onclick="togglePassword('loginPassword', this)">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-lg btn-block" id="btnLogin">
+                    Login <i class="fas fa-arrow-right"></i>
+                </button>
+
+                <div class="login-footer">
+                    <button type="button" class="btn-link" onclick="navigateTo('forgot')">
+                        Forgot your password?
+                    </button>
+                    <p class="divider-text">Don't have an account?</p>
+                    <button type="button" class="btn btn-secondary btn-block" onclick="navigateTo('register')">
+                        <i class="fas fa-user-plus"></i> Create Account
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ============================================= -->
+    <!-- SCREEN 6: FORGOT PASSWORD                     -->
+    <!-- ============================================= -->
+    <div class="auth-screen" id="screen-forgot">
+        <div class="auth-card">
+            <button class="btn-back" onclick="navigateTo('login')">
+                <i class="fas fa-arrow-left"></i> Back
+            </button>
+            <div class="card-header">
+                <div class="header-icon"><i class="fas fa-key"></i></div>
+                <h2>Reset Password</h2>
+                <p>We'll send an OTP to your registered mobile number</p>
+            </div>
+
+            <!-- Sub-step 1: Enter mobile -->
+            <div id="forgotStep1">
+                <form onsubmit="handleForgotSendOtp(event)">
+                    <div class="form-group">
+                        <label for="forgotMobile">
+                            <i class="fas fa-mobile-alt"></i> Registered Mobile Number
+                        </label>
+                        <div class="mobile-input-group">
+                            <span class="country-code">+91</span>
+                            <input type="tel" id="forgotMobile" placeholder="9876543210"
+                                   required pattern="[6-9][0-9]{9}" maxlength="10">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-lg btn-block" id="btnForgotSendOtp">
+                        Send OTP <i class="fas fa-paper-plane"></i>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Sub-step 2: Verify OTP -->
+            <div id="forgotStep2" style="display:none;">
+                <div class="mock-banner" id="forgotMockBanner" style="display:none;" title="Click to fill mock OTP">
+                    <i class="fas fa-flask"></i>
+                    <span>
+                        <strong>Development Mode</strong> — No real SMS sent.<br>
+                        Use OTP: <code id="forgotMockOtpCode">123456</code> <span style="font-size:0.75rem; text-decoration:underline; cursor:pointer;">(click to auto-fill)</span>
+                    </span>
+                </div>
+                <form onsubmit="handleForgotVerifyOtp(event)">
+                    <p class="forgot-otp-info">OTP sent to <strong id="forgotOtpMobileDisplay"></strong></p>
+                    <div class="otp-input-group forgot-otp-group">
+                        <input type="text" class="otp-box forgot-otp-box" maxlength="1" data-index="0" inputmode="numeric">
+                        <input type="text" class="otp-box forgot-otp-box" maxlength="1" data-index="1" inputmode="numeric">
+                        <input type="text" class="otp-box forgot-otp-box" maxlength="1" data-index="2" inputmode="numeric">
+                        <input type="text" class="otp-box forgot-otp-box" maxlength="1" data-index="3" inputmode="numeric">
+                        <input type="text" class="otp-box forgot-otp-box" maxlength="1" data-index="4" inputmode="numeric">
+                        <input type="text" class="otp-box forgot-otp-box" maxlength="1" data-index="5" inputmode="numeric">
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-lg btn-block" id="btnForgotVerifyOtp">
+                        Verify <i class="fas fa-check"></i>
+                    </button>
+                    <div class="otp-footer">
+                        <p class="otp-timer" id="forgotOtpTimer">Resend OTP in <span id="forgotOtpCountdown">30</span>s</p>
+                        <button type="button" class="btn-link" id="btnForgotResend" onclick="handleForgotResendOtp()" style="display:none;">
+                            <i class="fas fa-redo"></i> Resend OTP
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Sub-step 3: New password -->
+            <div id="forgotStep3" style="display:none;">
+                <form onsubmit="handleForgotResetPassword(event)">
+                    <div class="form-group">
+                        <label for="forgotNewPassword">
+                            <i class="fas fa-lock"></i> New Password
+                        </label>
+                        <div class="password-input-group">
+                            <input type="password" id="forgotNewPassword" placeholder="Create new password"
+                                   required minlength="8">
+                            <button type="button" class="btn-toggle-pw" onclick="togglePassword('forgotNewPassword', this)">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="forgotConfirmPassword">
+                            <i class="fas fa-lock"></i> Confirm New Password
+                        </label>
+                        <div class="password-input-group">
+                            <input type="password" id="forgotConfirmPassword" placeholder="Re-enter new password"
+                                   required minlength="8">
+                            <button type="button" class="btn-toggle-pw" onclick="togglePassword('forgotConfirmPassword', this)">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-lg btn-block" id="btnForgotReset">
+                        Reset Password <i class="fas fa-check-circle"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================= -->
+    <!-- SCREEN 7: REGISTRATION SUCCESS                -->
+    <!-- ============================================= -->
+    <div class="auth-screen" id="screen-success">
+        <div class="auth-card success-card">
+            <div class="success-animation">
+                <div class="success-circle">
+                    <i class="fas fa-check"></i>
+                </div>
+                <div class="confetti-container" id="confettiContainer"></div>
+            </div>
+            <h2>Account Created! 🎉</h2>
+            <p class="success-message">Welcome to Shopo Robo, <strong id="successUserName"></strong>!</p>
+            <p class="success-sub">Your account is ready. Let's set up your shop now.</p>
+
+            <button class="btn btn-primary btn-lg" onclick="navigateTo('shop-setup')">
+                <i class="fas fa-store"></i> Set Up My Shop
+            </button>
+        </div>
+    </div>
+
+    <!-- ============================================= -->
+    <!-- SCREEN 8: SHOP SETUP                          -->
+    <!-- ============================================= -->
+    <div class="auth-screen" id="screen-shop-setup">
+        <div class="auth-card">
+            <div class="card-header">
+                <div class="header-icon"><i class="fas fa-store"></i></div>
+                <h2>Set Up Your Shop</h2>
+                <p>Tell us about your business</p>
+            </div>
+
+            <form id="shopSetupForm" onsubmit="handleShopSetup(event)">
+                <div class="form-group">
+                    <label for="shopName">
+                        <i class="fas fa-store-alt"></i> Shop Name
+                    </label>
+                    <input type="text" id="shopName" placeholder="e.g. Sharma General Store"
+                           required maxlength="100">
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        <i class="fas fa-th-large"></i> Shop Type
+                    </label>
+                    <div class="shop-type-grid">
+                        <label class="shop-type-option">
+                            <input type="radio" name="shopType" value="Grocery & Kirana Store" checked>
+                            <div class="shop-type-card">
+                                <i class="fas fa-shopping-basket"></i>
+                                <span>Grocery &amp; Kirana</span>
+                            </div>
+                        </label>
+                        <label class="shop-type-option">
+                            <input type="radio" name="shopType" value="Pharmacy & Medical Store">
+                            <div class="shop-type-card">
+                                <i class="fas fa-pills"></i>
+                                <span>Pharmacy</span>
+                            </div>
+                        </label>
+                        <label class="shop-type-option">
+                            <input type="radio" name="shopType" value="Electronics & Mobile Store">
+                            <div class="shop-type-card">
+                                <i class="fas fa-laptop"></i>
+                                <span>Electronics</span>
+                            </div>
+                        </label>
+                        <label class="shop-type-option">
+                            <input type="radio" name="shopType" value="Fashion & Clothing Store">
+                            <div class="shop-type-card">
+                                <i class="fas fa-tshirt"></i>
+                                <span>Fashion</span>
+                            </div>
+                        </label>
+                        <label class="shop-type-option">
+                            <input type="radio" name="shopType" value="Bakery & Sweets Shop">
+                            <div class="shop-type-card">
+                                <i class="fas fa-birthday-cake"></i>
+                                <span>Bakery</span>
+                            </div>
+                        </label>
+                        <label class="shop-type-option">
+                            <input type="radio" name="shopType" value="Hardware & Paint Store">
+                            <div class="shop-type-card">
+                                <i class="fas fa-tools"></i>
+                                <span>Hardware</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="shopAddress">
+                        <i class="fas fa-map-marker-alt"></i> Shop Address <span class="optional">(Optional)</span>
+                    </label>
+                    <textarea id="shopAddress" placeholder="e.g. Shop No. 5, Main Market, Hapur, UP"
+                              rows="2" maxlength="250"></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-lg btn-block" id="btnShopSetup">
+                    <i class="fas fa-rocket"></i> Start Using Shopo Robo
+                </button>
+
+                <button type="button" class="btn-link skip-link" onclick="skipShopSetup()">
+                    Skip for now — I'll set this up later
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ============================================= -->
+    <!-- LOADING OVERLAY                               -->
+    <!-- ============================================= -->
+    <div class="loading-overlay" id="loadingOverlay" style="display:none;">
+        <div class="loading-spinner">
+            <div class="spinner-ring"></div>
+            <p>Please wait...</p>
+        </div>
+    </div>
+
+    <script src="auth.js"></script>
+</body>
+</html>
