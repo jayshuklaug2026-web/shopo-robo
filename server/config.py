@@ -84,13 +84,16 @@ class Config:
         # Universal AI Engine
         self.AI_PROVIDER = os.environ.get("SHOPO_AI_PROVIDER", "auto").lower()
         self.GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
-        self.GEMINI_MODEL = os.environ.get("SHOPO_GEMINI_MODEL", "gemini-2.5-flash")
+        self.GEMINI_MODEL = os.environ.get("SHOPO_GEMINI_MODEL", "gemini-3.5-flash-lite")
 
         self.OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
         self.OPENAI_MODEL = os.environ.get("SHOPO_OPENAI_MODEL", "gpt-4o-mini")
 
         self.ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY")
         self.ANTHROPIC_MODEL = os.environ.get("SHOPO_ANTHROPIC_MODEL", "claude-3-5-sonnet-20241022")
+
+        self.OLLAMA_HOST = os.environ.get("SHOPO_OLLAMA_HOST", "http://localhost:11434")
+        self.OLLAMA_MODEL = os.environ.get("SHOPO_OLLAMA_MODEL", "llama3.2")
 
         # Web Search Engine
         self.WEB_SEARCH_PROVIDER = os.environ.get("SHOPO_WEB_SEARCH_PROVIDER", "auto").lower()

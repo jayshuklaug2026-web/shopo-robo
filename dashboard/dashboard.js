@@ -1007,7 +1007,7 @@ async function processAICommand(query) {
                 if (box) box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
             }
 
-            // Intent badge text
+            // Action status badges and intent badge text
             const intentMap = {
                 'mandi_market_query': '🌾 APMC Mandi Benchmark',
                 'live_weather_query': '🌤️ Live Weather Observation',
@@ -1019,8 +1019,24 @@ async function processAICommand(query) {
                 'web_search_query': '🔍 Web Search Citations',
                 'general_knowledge': '🌐 Universal Intelligence'
             };
+
             if (intentBadge) {
-                intentBadge.textContent = intentMap[data.intent] || 'Universal Intelligence';
+                if (data.action_status) {
+                    renderActionStatusBadge(intentBadge, data.action_status);
+                } else {
+                    intentBadge.textContent = intentMap[data.intent] || 'Universal Intelligence';
+                    intentBadge.style.background = 'var(--lime-100)';
+                    intentBadge.style.color = 'var(--lime-800)';
+                    intentBadge.style.border = 'none';
+                }
+            }
+
+            // If action was executed directly via chat reply (status === 'saved')
+            if (data.action_status === 'saved') {
+                fetchInventory();
+                fetchInventorySummary();
+                fetchSales();
+                fetchFinancials();
             }
 
             // Consequential Action Staged Check
@@ -1029,13 +1045,19 @@ async function processAICommand(query) {
                 if (actionCard) {
                     const textEl = document.getElementById('aiActionConfirmText');
                     if (textEl) textEl.textContent = data.action_staged.summary;
+
+                    const detailsEl = document.getElementById('aiActionProposedDetails');
+                    if (detailsEl) {
+                        detailsEl.innerHTML = renderProposedChangesHtml(data.action_staged.proposed_changes);
+                    }
+
                     actionCard.style.display = 'block';
 
                     const confirmBtn = document.getElementById('btnConfirmAIAction');
                     const cancelBtn = document.getElementById('btnCancelAIAction');
 
-                    if (confirmBtn) confirmBtn.onclick = () => executeStagedAction('confirm');
-                    if (cancelBtn) cancelBtn.onclick = () => executeStagedAction('cancel');
+                    if (confirmBtn) confirmBtn.onclick = () => executeStagedAction('confirm', intentBadge);
+                    if (cancelBtn) cancelBtn.onclick = () => executeStagedAction('cancel', intentBadge);
                 }
             } else {
                 if (actionCard) actionCard.style.display = 'none';
@@ -1061,10 +1083,58 @@ async function processAICommand(query) {
     }
 }
 
-async function executeStagedAction(decision) {
+function renderActionStatusBadge(badgeEl, status) {
+    if (!badgeEl) return;
+    if (status === 'needs_clarification') {
+        badgeEl.textContent = '❓ Needs clarification';
+        badgeEl.style.background = '#FEF3C7';
+        badgeEl.style.color = '#92400E';
+        badgeEl.style.border = '1px solid #F59E0B';
+    } else if (status === 'awaiting_confirmation') {
+        badgeEl.textContent = '⚠️ Awaiting confirmation';
+        badgeEl.style.background = '#FEF3C7';
+        badgeEl.style.color = '#B45309';
+        badgeEl.style.border = '1px solid #F59E0B';
+    } else if (status === 'saved') {
+        badgeEl.textContent = '✅ Saved';
+        badgeEl.style.background = '#DCFCE7';
+        badgeEl.style.color = '#15803D';
+        badgeEl.style.border = '1px solid #22C55E';
+    } else if (status === 'failed') {
+        badgeEl.textContent = '❌ Failed';
+        badgeEl.style.background = '#FEE2E2';
+        badgeEl.style.color = '#B91C1C';
+        badgeEl.style.border = '1px solid #EF4444';
+    } else if (status === 'cancelled') {
+        badgeEl.textContent = '🛑 Cancelled';
+        badgeEl.style.background = '#F1F5F9';
+        badgeEl.style.color = '#475569';
+        badgeEl.style.border = '1px solid #94A3B8';
+    }
+}
+
+function renderProposedChangesHtml(changes) {
+    if (!changes || typeof changes !== 'object') return '';
+    const rows = [];
+    if (changes.product) rows.push(`<div><span style="color:var(--text-muted); font-size:0.75rem;">Product:</span><br><strong>${escapeHtml(changes.product)}</strong></div>`);
+    if (changes.quantity_added !== undefined) rows.push(`<div><span style="color:var(--text-muted); font-size:0.75rem;">Quantity:</span><br><strong>+${changes.quantity_added} ${escapeHtml(changes.unit || '')}</strong></div>`);
+    if (changes.total_purchase_cost) rows.push(`<div><span style="color:var(--text-muted); font-size:0.75rem;">Total Purchase Cost:</span><br><strong>₹${changes.total_purchase_cost}</strong></div>`);
+    if (changes.unit_purchase_cost) rows.push(`<div><span style="color:var(--text-muted); font-size:0.75rem;">Unit Cost:</span><br><strong>₹${changes.unit_purchase_cost}/${escapeHtml(changes.unit || 'unit')}</strong></div>`);
+    if (changes.intended_profit_per_unit) rows.push(`<div><span style="color:var(--text-muted); font-size:0.75rem;">Intended Profit:</span><br><strong>₹${changes.intended_profit_per_unit}/${escapeHtml(changes.unit || 'unit')}</strong></div>`);
+    if (changes.suggested_selling_price) rows.push(`<div><span style="color:var(--text-muted); font-size:0.75rem;">Selling Price:</span><br><strong>₹${changes.suggested_selling_price}/${escapeHtml(changes.unit || 'unit')}</strong></div>`);
+    if (changes.expiry_date) rows.push(`<div><span style="color:var(--text-muted); font-size:0.75rem;">Expiry Date:</span><br><strong>${escapeHtml(changes.expiry_date)}</strong></div>`);
+    if (changes.arrival_date) rows.push(`<div><span style="color:var(--text-muted); font-size:0.75rem;">Arrival Date:</span><br><strong>${escapeHtml(changes.arrival_date)}</strong></div>`);
+    if (changes.target_quantity !== undefined) rows.push(`<div><span style="color:var(--text-muted); font-size:0.75rem;">Target Stock:</span><br><strong>${changes.target_quantity} ${escapeHtml(changes.unit || '')}</strong></div>`);
+
+    if (rows.length === 0) return '';
+    return `<div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap:8px; background:rgba(255,255,255,0.85); padding:10px; border-radius:6px; border:1px solid #CBD5E1; margin-top:8px;">${rows.join('')}</div>`;
+}
+
+async function executeStagedAction(decision, badgeEl) {
     if (!currentStagedActionToken) return;
     const token = localStorage.getItem('shopo_auth_token');
     const actionCard = document.getElementById('aiActionConfirmCard');
+    const assistantActionCard = document.getElementById('assistantViewActionConfirmCard');
     const body = document.getElementById('aiResponseBody');
 
     try {
@@ -1082,17 +1152,27 @@ async function executeStagedAction(decision) {
         const res = await resp.json();
 
         if (actionCard) actionCard.style.display = 'none';
+        if (assistantActionCard) assistantActionCard.style.display = 'none';
 
         if (res.success) {
-            body.innerHTML += `<br><br><div style="padding:10px; background:#DCFCE7; border:1px solid #22C55E; border-radius:6px; color:#14532D; font-weight:700;">${escapeHtml(res.message || 'Action executed successfully!')}</div>`;
+            if (badgeEl) renderActionStatusBadge(badgeEl, decision === 'cancel' ? 'cancelled' : 'saved');
+            if (body) {
+                const bg = decision === 'cancel' ? '#F1F5F9' : '#DCFCE7';
+                const border = decision === 'cancel' ? '#94A3B8' : '#22C55E';
+                const col = decision === 'cancel' ? '#334155' : '#14532D';
+                body.innerHTML += `<br><br><div style="padding:10px; background:${bg}; border:1px solid ${border}; border-radius:6px; color:${col}; font-weight:700;">${escapeHtml(res.message || 'Action executed successfully!')}</div>`;
+            }
+            // Auto-refresh inventory & financials without full page reload
             fetchInventory();
             fetchInventorySummary();
             fetchSales();
             fetchFinancials();
         } else {
+            if (badgeEl) renderActionStatusBadge(badgeEl, 'failed');
             alert(res.message || 'Action failed.');
         }
     } catch (err) {
+        if (badgeEl) renderActionStatusBadge(badgeEl, 'failed');
         console.error('Error confirming action:', err);
     } finally {
         currentStagedActionToken = null;
@@ -1120,6 +1200,7 @@ async function processAssistantViewCommand(query) {
     const box = document.getElementById('assistantViewResponseBox');
     const body = document.getElementById('assistantViewResponseBody');
     const intentBadge = document.getElementById('assistantViewIntentBadge');
+    const actionCard = document.getElementById('assistantViewActionConfirmCard');
 
     if (box) {
         box.classList.add('show');
@@ -1128,6 +1209,7 @@ async function processAssistantViewCommand(query) {
     if (body) {
         body.innerHTML = `<span style="color:var(--text-muted);"><i class="fas fa-spinner fa-spin"></i> शोपो रोबो सोच रहा है (Processing universal query)...</span>`;
     }
+    if (actionCard) actionCard.style.display = 'none';
 
     const token = localStorage.getItem('shopo_auth_token');
     const headers = { 'Content-Type': 'application/json' };
@@ -1151,19 +1233,58 @@ async function processAssistantViewCommand(query) {
                 body.innerHTML = formatMarkdown(reply);
                 if (box) box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
             }
+
+            const intentMap = {
+                'mandi_market_query': '🌾 APMC Mandi Benchmark',
+                'live_weather_query': '🌤️ Live Weather Observation',
+                'industrial_materials_query': '🏗️ Industrial Benchmark',
+                'government_schemes_query': '🏛️ Official Govt Information',
+                'business_inventory_query': '📦 Verified Store Records',
+                'business_financials_query': '💰 Verified Store Financials',
+                'consequential_action_staged': '⚠️ Action Confirmation Needed',
+                'web_search_query': '🔍 Web Search Citations',
+                'general_knowledge': '🌐 Universal Intelligence'
+            };
+
             if (intentBadge) {
-                const intentMap = {
-                    'mandi_market_query': '🌾 APMC Mandi Benchmark',
-                    'live_weather_query': '🌤️ Live Weather Observation',
-                    'industrial_materials_query': '🏗️ Industrial Benchmark',
-                    'government_schemes_query': '🏛️ Official Govt Information',
-                    'business_inventory_query': '📦 Verified Store Records',
-                    'business_financials_query': '💰 Verified Store Financials',
-                    'consequential_action_staged': '⚠️ Action Confirmation Needed',
-                    'web_search_query': '🔍 Web Search Citations',
-                    'general_knowledge': '🌐 Universal Intelligence'
-                };
-                intentBadge.textContent = intentMap[data.intent] || 'Universal Intelligence';
+                if (data.action_status) {
+                    renderActionStatusBadge(intentBadge, data.action_status);
+                } else {
+                    intentBadge.textContent = intentMap[data.intent] || 'Universal Intelligence';
+                    intentBadge.style.background = 'var(--lime-100)';
+                    intentBadge.style.color = 'var(--lime-800)';
+                    intentBadge.style.border = 'none';
+                }
+            }
+
+            if (data.action_status === 'saved') {
+                fetchInventory();
+                fetchInventorySummary();
+                fetchSales();
+                fetchFinancials();
+            }
+
+            if (data.action_staged && data.action_staged.confirmation_token) {
+                currentStagedActionToken = data.action_staged.confirmation_token;
+                if (actionCard) {
+                    const textEl = document.getElementById('assistantViewActionConfirmText');
+                    if (textEl) textEl.textContent = data.action_staged.summary;
+
+                    const detailsEl = document.getElementById('assistantViewActionProposedDetails');
+                    if (detailsEl) {
+                        detailsEl.innerHTML = renderProposedChangesHtml(data.action_staged.proposed_changes);
+                    }
+
+                    actionCard.style.display = 'block';
+
+                    const confirmBtn = document.getElementById('btnConfirmAssistantAction');
+                    const cancelBtn = document.getElementById('btnCancelAssistantAction');
+
+                    if (confirmBtn) confirmBtn.onclick = () => executeStagedAction('confirm', intentBadge);
+                    if (cancelBtn) cancelBtn.onclick = () => executeStagedAction('cancel', intentBadge);
+                }
+            } else {
+                if (actionCard) actionCard.style.display = 'none';
             }
         } else {
             if (body) body.innerHTML = `<span style="color:#DC2626;">❌ ${escapeHtml(res.message || 'Error communicating with AI engine.')}</span>`;
@@ -1173,6 +1294,7 @@ async function processAssistantViewCommand(query) {
         if (body) body.innerHTML = `<span style="color:#DC2626;">❌ Server connection error. Please ensure backend is running.</span>`;
     }
 }
+
 
 function showSimulatedResponse(text) {
     const box = document.getElementById('aiResponseBox');

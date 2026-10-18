@@ -21,11 +21,13 @@ from typing import Dict, Any, List, Optional
 import os
 import re
 import json
+import time
 import urllib.request
 import urllib.error
 from datetime import datetime, timezone
 
 from config import config
+import agent_tools
 import market_intelligence as market_engine
 import web_search as search_engine
 import business_tools as store_tools
@@ -33,6 +35,9 @@ import taxonomy as tax_engine
 import news_service
 import database as db
 import bi_financials
+import inventory_actions
+import action_registry
+
 
 
 # ────────────────────────────────────────────────────────────
@@ -79,17 +84,18 @@ class BaseAIProvider:
 
 
 class GeminiProvider(BaseAIProvider):
-    """Google Gemini API Provider adapter with timeout, diagnostics, and error handling."""
+    """Google Gemini API Provider adapter with tool calling, timeout, retry, diagnostics, and error handling."""
 
-    def __init__(self, api_key: str, model_name: str = "gemini-1.5-flash"):
+    def __init__(self, api_key: str, model_name: str = "gemini-3.5-flash"):
         self.api_key = api_key
-        self.model_name = model_name
+        self.model_name = model_name or "gemini-3.5-flash"
+        self.is_live_external_model = True
 
-    def generate(self, prompt: str, system_prompt: str, history: List[Dict[str, str]] = None) -> Dict[str, Any]:
+    def generate(self, prompt: str, system_prompt: str = "", history: List[Dict[str, str]] = None, max_retries: int = 2) -> Dict[str, Any]:
         if not self.api_key or not self.api_key.strip():
             return {"success": False, "error": "Gemini API key is not configured.", "provider": "Google Gemini"}
 
-        url = f"https://generativelanguage.googleapis.com/v1beta/models/{self.model_name}:generateContent"
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/{self.model_name}:generateContent?key={self.api_key}"
 
         contents = []
         if history:
@@ -114,49 +120,208 @@ class GeminiProvider(BaseAIProvider):
         req = urllib.request.Request(
             url,
             data=data,
-            headers={
-                "Content-Type": "application/json",
-                "x-goog-api-key": self.api_key
-            }
+            headers={"Content-Type": "application/json"}
         )
+
+        for attempt in range(max_retries + 1):
+            try:
+                with urllib.request.urlopen(req, timeout=20) as resp:
+                    res = json.loads(resp.read().decode("utf-8"))
+                    candidates = res.get("candidates", [])
+                    if not candidates or "content" not in candidates[0]:
+                        return {"success": False, "error": "Gemini returned empty candidate response.", "provider": "Google Gemini"}
+                    parts = candidates[0]["content"].get("parts", [])
+                    text = parts[0].get("text", "") if parts else ""
+                    return {
+                        "success": True,
+                        "text": text,
+                        "provider": "Google Gemini",
+                        "model": self.model_name,
+                        "is_live_external_model": True
+                    }
+            except urllib.error.HTTPError as e:
+                code = e.code
+                if code in (429, 503) and attempt < max_retries:
+                    time.sleep(2.0 * (attempt + 1))
+                    continue
+                err_desc = "Gemini API error"
+                if code in (400, 403):
+                    err_desc = "Gemini API key invalid or rejected by Google (403/400)"
+                elif code == 404:
+                    err_desc = f"Gemini model '{self.model_name}' not found (404)"
+                elif code == 429:
+                    err_desc = "Gemini API rate limit or quota exceeded (429)"
+                elif code in (500, 503):
+                    err_desc = "Google Gemini server temporarily unavailable (500/503)"
+                return {"success": False, "error": err_desc, "http_status": code, "provider": "Google Gemini"}
+            except urllib.error.URLError as e:
+                if attempt < max_retries:
+                    time.sleep(1.5)
+                    continue
+                return {"success": False, "error": f"Network connection to Gemini failed: {e.reason}", "provider": "Google Gemini"}
+            except Exception as e:
+                return {"success": False, "error": f"Gemini request failed: {str(e)}", "provider": "Google Gemini"}
+
+        return {"success": False, "error": "Gemini request exceeded maximum retries.", "provider": "Google Gemini"}
+
+    def generate_with_tools(self, prompt: str, tools: List[Dict[str, Any]], system_prompt: str = "", history: List[Dict[str, str]] = None, max_retries: int = 2) -> Dict[str, Any]:
+        """Call Gemini with native tool/function calling declarations."""
+        if not self.api_key or not self.api_key.strip():
+            return {"success": False, "error": "Gemini API key is not configured.", "provider": "Google Gemini"}
+
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/{self.model_name}:generateContent?key={self.api_key}"
+
+        contents = []
+        if history:
+            for msg in history[-8:]:
+                role = "user" if msg.get("role") in ["user", "human"] else "model"
+                text_content = msg.get("content", "")
+                if text_content:
+                    contents.append({"role": role, "parts": [{"text": text_content}]})
+
+        contents.append({"role": "user", "parts": [{"text": prompt}]})
+
+        if tools and isinstance(tools, list) and isinstance(tools[0], dict) and "function_declarations" in tools[0]:
+            gemini_tools = tools
+        else:
+            gemini_tools = [
+                {
+                    "function_declarations": [
+                        {
+                            "name": t["name"],
+                            "description": t["description"],
+                            "parameters": t["parameters"]
+                        }
+                        for t in tools
+                    ]
+                }
+            ]
+
+        payload = {
+            "contents": contents,
+            "tools": gemini_tools,
+            "tool_config": {"function_calling_config": {"mode": "AUTO"}},
+            "generationConfig": {"temperature": 0.2, "maxOutputTokens": 1024}
+        }
+        if system_prompt and system_prompt.strip():
+            payload["system_instruction"] = {
+                "parts": [{"text": system_prompt}]
+            }
+
+        data = json.dumps(payload).encode("utf-8")
+        req = urllib.request.Request(
+            url,
+            data=data,
+            headers={"Content-Type": "application/json"}
+        )
+
+        for attempt in range(max_retries + 1):
+            try:
+                with urllib.request.urlopen(req, timeout=20) as resp:
+                    res = json.loads(resp.read().decode("utf-8"))
+                    candidates = res.get("candidates", [])
+                    if not candidates or "content" not in candidates[0]:
+                        return {"success": False, "error": "Empty response from Gemini.", "provider": "Google Gemini"}
+
+                    parts = candidates[0]["content"].get("parts", [])
+                    if not parts:
+                        return {"success": False, "error": "No content parts returned.", "provider": "Google Gemini"}
+
+                    part = parts[0]
+                    if "functionCall" in part:
+                        fc = part["functionCall"]
+                        return {
+                            "success": True,
+                            "type": "function_call",
+                            "function_name": fc.get("name"),
+                            "args": fc.get("args", {}),
+                            "model_part": part,
+                            "provider": "Google Gemini",
+                            "model": self.model_name
+                        }
+                    else:
+                        text = part.get("text", "")
+                        return {
+                            "success": True,
+                            "type": "text",
+                            "text": text,
+                            "provider": "Google Gemini",
+                            "model": self.model_name
+                        }
+
+            except urllib.error.HTTPError as e:
+                code = e.code
+                if code in (429, 503) and attempt < max_retries:
+                    time.sleep(2.0 * (attempt + 1))
+                    continue
+                err_desc = f"Gemini API error ({code})"
+                if code == 429:
+                    err_desc = "Gemini rate limit exceeded. Please wait a moment."
+                elif code == 404:
+                    err_desc = f"Model '{self.model_name}' not available."
+                return {"success": False, "error": err_desc, "http_status": code, "provider": "Google Gemini"}
+            except urllib.error.URLError as e:
+                if attempt < max_retries:
+                    time.sleep(1.5)
+                    continue
+                return {"success": False, "error": f"Network error: {e.reason}", "provider": "Google Gemini"}
+            except Exception as e:
+                return {"success": False, "error": str(e), "provider": "Google Gemini"}
+
+        return {"success": False, "error": "Gemini request timed out after retries.", "provider": "Google Gemini"}
+
+    def synthesize_tool_response(self, prompt: str, tool_name: str, tool_result: Dict[str, Any], fn_args: Dict[str, Any] = None, system_prompt: str = "") -> Dict[str, Any]:
+        """Multi-turn follow-up: Send executed tool result back to Gemini to synthesize natural language response."""
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/{self.model_name}:generateContent?key={self.api_key}"
+
+        call_args = fn_args or {}
+        payload = {
+            "contents": [
+                {
+                    "role": "user",
+                    "parts": [{"text": prompt}]
+                },
+                {
+                    "role": "model",
+                    "parts": [{"functionCall": {"name": tool_name, "args": call_args}}]
+                },
+                {
+                    "role": "user",
+                    "parts": [{
+                        "functionResponse": {
+                            "name": tool_name,
+                            "response": {"name": tool_name, "content": tool_result}
+                        }
+                    }]
+                }
+            ],
+            "generationConfig": {"temperature": 0.4, "maxOutputTokens": 1024}
+        }
+        if system_prompt:
+            payload["system_instruction"] = {"parts": [{"text": system_prompt}]}
+
+        data = json.dumps(payload).encode("utf-8")
+        req = urllib.request.Request(url, data=data, headers={"Content-Type": "application/json"})
         try:
-            with urllib.request.urlopen(req, timeout=8) as resp:
+            with urllib.request.urlopen(req, timeout=15) as resp:
                 res = json.loads(resp.read().decode("utf-8"))
                 candidates = res.get("candidates", [])
-                if not candidates or "content" not in candidates[0]:
-                    return {"success": False, "error": "Gemini returned empty candidate response.", "provider": "Google Gemini"}
-                text = candidates[0]["content"]["parts"][0]["text"]
-                return {
-                    "success": True,
-                    "text": text,
-                    "provider": "Google Gemini",
-                    "model": self.model_name,
-                    "is_live_external_model": True
-                }
-        except urllib.error.HTTPError as e:
-            code = e.code
-            err_desc = "Gemini API error"
-            if code in (400, 403):
-                err_desc = "Gemini API key invalid or rejected by Google (403/400)"
-            elif code == 404:
-                err_desc = f"Gemini model '{self.model_name}' not found (404)"
-            elif code == 429:
-                err_desc = "Gemini API rate limit or quota exceeded (429)"
-            elif code in (500, 503):
-                err_desc = "Google Gemini server temporarily unavailable (500/503)"
-            return {"success": False, "error": err_desc, "http_status": code, "provider": "Google Gemini"}
-        except urllib.error.URLError as e:
-            return {"success": False, "error": f"Network connection to Gemini failed: {e.reason}", "provider": "Google Gemini"}
-        except Exception as e:
-            return {"success": False, "error": f"Gemini request failed: {str(e)}", "provider": "Google Gemini"}
+                if candidates and "content" in candidates[0]:
+                    parts = candidates[0]["content"].get("parts", [])
+                    if parts and "text" in parts[0]:
+                        return {"success": True, "text": parts[0]["text"]}
+        except Exception:
+            pass
+        return {"success": False}
 
 
 class OpenAIProvider(BaseAIProvider):
-    """OpenAI API Provider adapter with timeout, diagnostics, and error handling."""
+    """OpenAI API Provider adapter with function calling, timeout, and error handling."""
 
     def __init__(self, api_key: str, model_name: str = "gpt-4o-mini"):
         self.api_key = api_key
         self.model_name = model_name
+        self.is_live_external_model = True
 
     def generate(self, prompt: str, system_prompt: str, history: List[Dict[str, str]] = None) -> Dict[str, Any]:
         if not self.api_key or not self.api_key.strip():
@@ -181,7 +346,7 @@ class OpenAIProvider(BaseAIProvider):
             "Authorization": f"Bearer {self.api_key}"
         })
         try:
-            with urllib.request.urlopen(req, timeout=12) as resp:
+            with urllib.request.urlopen(req, timeout=20) as resp:
                 res = json.loads(resp.read().decode("utf-8"))
                 text = res["choices"][0]["message"]["content"]
                 return {
@@ -205,6 +370,123 @@ class OpenAIProvider(BaseAIProvider):
             return {"success": False, "error": f"Network connection to OpenAI failed: {e.reason}", "provider": "OpenAI"}
         except Exception as e:
             return {"success": False, "error": f"OpenAI request failed: {str(e)}", "provider": "OpenAI"}
+
+    def generate_with_tools(self, prompt: str, tools: List[Dict[str, Any]], system_prompt: str = "", history: List[Dict[str, str]] = None, max_retries: int = 2) -> Dict[str, Any]:
+        if not self.api_key or not self.api_key.strip():
+            return {"success": False, "error": "OpenAI API key is not configured.", "provider": "OpenAI"}
+
+        url = "https://api.openai.com/v1/chat/completions"
+        messages = [{"role": "system", "content": system_prompt}]
+        if history:
+            for msg in history[-8:]:
+                messages.append({"role": msg.get("role", "user"), "content": msg.get("content", "")})
+        messages.append({"role": "user", "content": prompt})
+
+        openai_tools = agent_tools.get_openai_tools_spec()
+
+        payload = {
+            "model": self.model_name,
+            "messages": messages,
+            "tools": openai_tools,
+            "tool_choice": "auto",
+            "temperature": 0.2,
+            "max_tokens": 1024
+        }
+        data = json.dumps(payload).encode("utf-8")
+        req = urllib.request.Request(url, data=data, headers={
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {self.api_key}"
+        })
+        for attempt in range(max_retries + 1):
+            try:
+                with urllib.request.urlopen(req, timeout=20) as resp:
+                    res = json.loads(resp.read().decode("utf-8"))
+                    msg = res["choices"][0]["message"]
+                    if msg.get("tool_calls"):
+                        tc = msg["tool_calls"][0]
+                        fn_name = tc["function"]["name"]
+                        fn_args = json.loads(tc["function"].get("arguments", "{}"))
+                        return {
+                            "success": True,
+                            "type": "function_call",
+                            "function_name": fn_name,
+                            "args": fn_args,
+                            "provider": "OpenAI",
+                            "model": self.model_name
+                        }
+                    else:
+                        return {
+                            "success": True,
+                            "type": "text",
+                            "text": msg.get("content", ""),
+                            "provider": "OpenAI",
+                            "model": self.model_name
+                        }
+            except urllib.error.HTTPError as e:
+                if e.code in (429, 503) and attempt < max_retries:
+                    time.sleep(2.0 * (attempt + 1))
+                    continue
+                return {"success": False, "error": f"OpenAI error {e.code}", "provider": "OpenAI"}
+            except Exception as e:
+                return {"success": False, "error": str(e), "provider": "OpenAI"}
+        return {"success": False, "error": "OpenAI timeout", "provider": "OpenAI"}
+
+
+class OllamaProvider(BaseAIProvider):
+    """Local Ollama API Provider adapter for offline/self-hosted LLM execution."""
+
+    def __init__(self, host: str = "http://localhost:11434", model_name: str = "llama3.2"):
+        self.host = host.rstrip("/")
+        self.model_name = model_name
+        self.is_live_external_model = True
+
+    def generate(self, prompt: str, system_prompt: str = "", history: List[Dict[str, str]] = None) -> Dict[str, Any]:
+        url = f"{self.host}/api/chat"
+        messages = [{"role": "system", "content": system_prompt}]
+        if history:
+            for msg in history[-8:]:
+                messages.append({"role": msg.get("role", "user"), "content": msg.get("content", "")})
+        messages.append({"role": "user", "content": prompt})
+
+        payload = {"model": self.model_name, "messages": messages, "stream": False}
+        data = json.dumps(payload).encode("utf-8")
+        req = urllib.request.Request(url, data=data, headers={"Content-Type": "application/json"})
+        try:
+            with urllib.request.urlopen(req, timeout=30) as resp:
+                res = json.loads(resp.read().decode("utf-8"))
+                text = res.get("message", {}).get("content", "")
+                return {"success": True, "text": text, "provider": "Ollama Local", "model": self.model_name, "is_live_external_model": True}
+        except Exception as e:
+            return {"success": False, "error": f"Ollama connection failed: {str(e)}", "provider": "Ollama Local"}
+
+    def generate_with_tools(self, prompt: str, tools: List[Dict[str, Any]], system_prompt: str = "", history: List[Dict[str, str]] = None, max_retries: int = 1) -> Dict[str, Any]:
+        url = f"{self.host}/api/chat"
+        messages = [{"role": "system", "content": system_prompt}]
+        if history:
+            for msg in history[-8:]:
+                messages.append({"role": msg.get("role", "user"), "content": msg.get("content", "")})
+        messages.append({"role": "user", "content": prompt})
+
+        payload = {"model": self.model_name, "messages": messages, "tools": agent_tools.get_openai_tools_spec(), "stream": False}
+        data = json.dumps(payload).encode("utf-8")
+        req = urllib.request.Request(url, data=data, headers={"Content-Type": "application/json"})
+        try:
+            with urllib.request.urlopen(req, timeout=30) as resp:
+                res = json.loads(resp.read().decode("utf-8"))
+                msg = res.get("message", {})
+                if msg.get("tool_calls"):
+                    tc = msg["tool_calls"][0]
+                    fn_name = tc.get("function", {}).get("name")
+                    fn_args = tc.get("function", {}).get("arguments", {})
+                    if isinstance(fn_args, str):
+                        try:
+                            fn_args = json.loads(fn_args)
+                        except Exception:
+                            fn_args = {}
+                    return {"success": True, "type": "function_call", "function_name": fn_name, "args": fn_args, "provider": "Ollama Local", "model": self.model_name}
+                return {"success": True, "type": "text", "text": msg.get("content", ""), "provider": "Ollama Local", "model": self.model_name}
+        except Exception as e:
+            return {"success": False, "error": f"Ollama failed: {str(e)}", "provider": "Ollama Local"}
 
 
 class AnthropicProvider(BaseAIProvider):
@@ -550,6 +832,33 @@ class SmartLocalEngine(BaseAIProvider):
             }
 
         # J. Default Multilingual Fallback
+        import agent_engine
+        if agent_engine.is_store_command(clean):
+            if is_hindi:
+                msg = (
+                    "❓ **दुकान का कार्य विवरण (Store Action Required):**\n\n"
+                    "कृपया उत्पाद का नाम, मात्रा और भाव स्पष्ट रूप से बताएं।\n"
+                    "उदाहरण:\n"
+                    "• *'100 kg maida aaya hai, total cost 4000, selling price 42'*\n"
+                    "• *'Aaj 20 kg maida bik gaya'*\n"
+                    "• *'Sugar ka stock 50 kg se 30 kg kar do'*"
+                )
+            else:
+                msg = (
+                    "❓ **Store Operation Details Needed:**\n\n"
+                    "Please specify the product name, quantity, and rate.\n"
+                    "Examples:\n"
+                    "• *'Add 100 kg maida, purchase cost 4000, sell 42'*\n"
+                    "• *'Record sale 20 kg maida'*\n"
+                    "• *'Set sugar stock to 30 kg'*"
+                )
+            return {
+                "success": True,
+                "text": msg,
+                "provider": "Shopo Robo Smart Local Engine",
+                "model": "Local Store Assistant",
+                "is_live_external_model": False
+            }
 
         if is_hindi:
             msg = (
@@ -601,6 +910,9 @@ class UniversalAIOrchestrator:
         elif pref in ["anthropic", "auto"] and config.ANTHROPIC_API_KEY:
             self.provider = AnthropicProvider(config.ANTHROPIC_API_KEY, config.ANTHROPIC_MODEL)
             self.provider_name = "anthropic"
+        elif pref == "ollama" or (pref == "auto" and os.environ.get("SHOPO_OLLAMA_ENABLED") == "true"):
+            self.provider = OllamaProvider(config.OLLAMA_HOST, config.OLLAMA_MODEL)
+            self.provider_name = "ollama"
         else:
             self.provider = SmartLocalEngine()
             self.provider_name = "local"
@@ -725,34 +1037,20 @@ class UniversalAIOrchestrator:
         }
 
         # ────────────────────────────────────────────────────
-        # 1. Intent: Consequential Business Action Staging (Module 5 & 7)
+        # 1. Intent: Agentic AI Business Engine & Consequential Action Guard
         # ────────────────────────────────────────────────────
-        if user_id and any(w in lower for w in ["sell", "sold", "becha", "bikri", "record sale"]) and any(c.isdigit() for c in lower):
-            # Parse possible sale: e.g. "Sell 5 kg Sugar at 42"
-            try:
-                staged = self._parse_and_stage_sale(raw_msg, user_id)
-                if staged:
-                    response["intent"] = "consequential_action_staged"
-                    response["action_staged"] = staged
-                    response["reply_text"] = f"⚠️ **पुष्टि आवश्यक (Confirmation Required):**\n\n{staged['summary']}\n\nक्या आप इसे रिकॉर्ड करना चाहते हैं? कृपया नीचे दिए गए 'Confirm' बटन पर क्लिक करें।"
-                    response["spoken_text"] = f"कृपया पुष्टि करें: {staged['summary']}"
-                    return response
-            except Exception as e:
-                response["reply_text"] = f"❌ Error staging sale: {e}"
-                return response
+        import agent_engine
+        agent_res = agent_engine.agent_engine.process_query(
+            message=raw_msg,
+            user_id=user_id,
+            user_profile=user_profile,
+            history=clean_history,
+            provider=self.provider
+        )
+        if agent_res is not None:
+            return agent_res
 
-        if user_id and any(w in lower for w in ["add product", "naya saman", "add item"]) and any(w in lower for w in ["price", "rs", "₹", "rate", "cost", "buy"]):
-            try:
-                staged = self._parse_and_stage_product(raw_msg, user_id)
-                if staged:
-                    response["intent"] = "consequential_action_staged"
-                    response["action_staged"] = staged
-                    response["reply_text"] = f"⚠️ **पुष्टि आवश्यक (Confirmation Required):**\n\n{staged['summary']}\n\nक्या आप इस सामान को इन्वेंटरी में जोड़ना चाहते हैं? कृपया 'Confirm' बटन दबाएं।"
-                    response["spoken_text"] = f"कृपया पुष्टि करें: {staged['summary']}"
-                    return response
-            except Exception as e:
-                response["reply_text"] = f"❌ Error staging product: {e}"
-                return response
+
 
         # ────────────────────────────────────────────────────
         # 2. Intent: Private Business Tools (Module 5)

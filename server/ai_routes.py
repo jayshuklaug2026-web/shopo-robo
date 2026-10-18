@@ -31,11 +31,13 @@ ai_bp = Blueprint("ai_bp", __name__)
 
 
 def _extract_authenticated_user() -> tuple[str | None, dict | None]:
-    """Helper to optionally extract authenticated user from Bearer token."""
+    """Helper to optionally extract authenticated user from Bearer token or session cookie."""
     auth_header = request.headers.get("Authorization", "")
     token = None
     if auth_header.startswith("Bearer "):
         token = auth_header[7:].strip()
+    if not token:
+        token = request.cookies.get("shopo_session") or request.cookies.get("session_token")
     if not token:
         return None, None
     user = validate_session(token)

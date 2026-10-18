@@ -260,6 +260,7 @@ def stage_record_sale(user_id: str, product_name: str, quantity: float, selling_
 
     # Match product in user's inventory if not directly supplied
     clean_target = re.sub(r'^(?:pack|pcs|packet|kg|litre|unit|units|bottle|box|strip|plate)\s+', '', product_name.strip(), flags=re.IGNORECASE)
+    unit = "units"
     if not product_id:
         candidates = get_inventory_items(user_id=user_id, q=clean_target)
         if not candidates:
@@ -270,13 +271,22 @@ def stage_record_sale(user_id: str, product_name: str, quantity: float, selling_
             product_id = best["id"]
             product_name = best["product_name"]
             cost_price = float(best.get("purchase_price", 0.0))
+            unit = best.get("unit", "units")
+            current_stock = float(best.get("quantity", 0.0))
+            if quantity > current_stock:
+                return {
+                    "status": "error",
+                    "has_warning": True,
+                    "message": f"Insufficient stock: requested {quantity:g} exceeds available stock of {current_stock:g} {unit}."
+                }
 
     total_amount = round(quantity * selling_price, 2)
-    summary = f"Record sale of {quantity} units of '{product_name}' at ₹{selling_price:.2f}/unit (Total: ₹{total_amount:.2f}, Payment: {payment_mode})."
+    summary = f"Record sale of {quantity:g} {unit} of '{product_name}' at ₹{selling_price:.2f}/{unit} (Total: ₹{total_amount:.2f}, Payment: {payment_mode})."
 
     args = {
         "product_name": product_name,
         "quantity": quantity,
+        "unit": unit,
         "selling_price": selling_price,
         "cost_price": cost_price,
         "product_id": product_id,
@@ -382,6 +392,230 @@ def stage_record_expense(user_id: str, category: str, amount: float, description
     }
 
 
+def stage_add_stock(
+    user_id: str,
+    product_name: str,
+    quantity: float,
+    unit: str = "kg",
+    total_cost: float = 0.0,
+    purchase_price: float = 0.0,
+    profit_per_unit: float = 0.0,
+    selling_price: float = 0.0,
+    expiry_date: Optional[str] = None,
+    arrival_date: Optional[str] = None,
+    store_id: Optional[str] = None,
+    category: str = "Grocery"
+) -> Dict[str, Any]:
+    """
+    Stage an inventory stock addition for explicit shopkeeper confirmation.
+    Calculates unit purchase cost and suggested selling price if not provided.
+    """
+    if not product_name or not product_name.strip():
+        raise ValueError("Product name cannot be empty.")
+    if quantity <= 0:
+        raise ValueError("Quantity added must be greater than zero.")
+
+    # Calculate unit purchase cost if total_cost is provided and purchase_price <= 0
+    if total_cost > 0 and purchase_price <= 0 and quantity > 0:
+        purchase_price = round(total_cost / quantity, 2)
+    elif purchase_price > 0 and total_cost <= 0:
+        total_cost = round(purchase_price * quantity, 2)
+
+    # Calculate selling price if profit_per_unit is provided and selling_price <= 0
+    if profit_per_unit > 0 and selling_price <= 0 and purchase_price > 0:
+        selling_price = round(purchase_price + profit_per_unit, 2)
+    elif selling_price > 0 and purchase_price > 0 and profit_per_unit <= 0:
+        profit_per_unit = round(selling_price - purchase_price, 2)
+
+    # Check for existing product for this user
+    clean_target = re.sub(r'^(?:pack|pcs|packet|kg|litre|unit|units|bottle|box|strip|plate)\s+', '', product_name.strip(), flags=re.IGNORECASE)
+    candidates = get_inventory_items(user_id=user_id, q=clean_target)
+    product_id = None
+    existing_product = None
+    if not candidates:
+        all_items = get_inventory_items(user_id=user_id)
+        candidates = [it for it in all_items if clean_target.lower() in it["product_name"].lower() or it["product_name"].lower() in clean_target.lower()]
+    if candidates:
+        existing_product = candidates[0]
+        product_id = existing_product["id"]
+        product_name = existing_product["product_name"]
+        if not unit:
+            unit = existing_product.get("unit", "kg")
+        category = existing_product.get("category", category)
+        if selling_price <= 0 and float(existing_product.get("selling_price", 0)) > 0:
+            selling_price = float(existing_product["selling_price"])
+            profit_per_unit = round(selling_price - purchase_price, 2)
+
+    # Default standard retailer margin (10%) when receiving stock without explicit retail price
+    if selling_price <= 0 and purchase_price > 0:
+        selling_price = round(purchase_price * 1.10, 2)
+        profit_per_unit = round(selling_price - purchase_price, 2)
+
+    expiry_str = expiry_date if expiry_date else "Not specified"
+    summary = f"{product_name} — add {quantity:g} {unit}; total purchase cost ₹{total_cost:g}; cost ₹{purchase_price:g}/{unit}; intended profit ₹{profit_per_unit:g}/{unit}; suggested selling price ₹{selling_price:g}/{unit}; expiry {expiry_str}. Confirm?"
+
+    args = {
+        "product_name": product_name,
+        "product_id": product_id,
+        "quantity": quantity,
+        "unit": unit,
+        "total_cost": total_cost,
+        "purchase_price": purchase_price,
+        "profit_per_unit": profit_per_unit,
+        "selling_price": selling_price,
+        "expiry_date": expiry_date,
+        "arrival_date": arrival_date,
+        "store_id": store_id,
+        "category": category
+    }
+
+    conf = create_action_confirmation(
+        user_id=user_id,
+        tool_name="add_stock",
+        arguments=args,
+        summary_text=summary
+    )
+
+    return {
+        "action_required": "confirmation",
+        "action_status": "awaiting_confirmation",
+        "confirmation_token": conf["confirmation_id"],
+        "tool_name": "add_stock",
+        "summary": summary,
+        "proposed_changes": {
+            "product": product_name,
+            "quantity_added": quantity,
+            "unit": unit,
+            "total_purchase_cost": total_cost,
+            "unit_purchase_cost": purchase_price,
+            "intended_profit_per_unit": profit_per_unit,
+            "suggested_selling_price": selling_price,
+            "expiry_date": expiry_date,
+            "arrival_date": arrival_date,
+            "is_existing_item": product_id is not None
+        },
+        "expires_at": conf["expires_at"],
+        "message": f"Consequential action requires confirmation: {summary}"
+    }
+
+
+def stage_adjust_stock(
+    user_id: str,
+    product_name: str,
+    target_quantity: float,
+    current_quantity: Optional[float] = None,
+    unit: str = "kg",
+    reason: str = "Stock adjustment"
+) -> Dict[str, Any]:
+    """
+    Stage stock adjustment (setting exact stock level) for shopkeeper confirmation.
+    """
+    if not product_name or not product_name.strip():
+        raise ValueError("Product name cannot be empty.")
+    if target_quantity < 0:
+        raise ValueError("Stock quantity cannot be negative.")
+
+    clean_target = re.sub(r'^(?:pack|pcs|packet|kg|litre|unit|units|bottle|box|strip|plate)\s+', '', product_name.strip(), flags=re.IGNORECASE)
+    candidates = get_inventory_items(user_id=user_id, q=clean_target)
+    product_id = None
+    if not candidates:
+        all_items = get_inventory_items(user_id=user_id)
+        candidates = [it for it in all_items if clean_target.lower() in it["product_name"].lower() or it["product_name"].lower() in clean_target.lower()]
+    if candidates:
+        best = candidates[0]
+        product_id = best["id"]
+        product_name = best["product_name"]
+        current_quantity = float(best.get("quantity", 0))
+        unit = best.get("unit", unit)
+
+    if current_quantity is not None:
+        summary = f"Adjust stock for '{product_name}' from {current_quantity:g} {unit} to {target_quantity:g} {unit} (Reason: {reason}). Confirm?"
+    else:
+        summary = f"Set stock for '{product_name}' to {target_quantity:g} {unit} (Reason: {reason}). Confirm?"
+
+    args = {
+        "product_name": product_name,
+        "product_id": product_id,
+        "target_quantity": target_quantity,
+        "current_quantity": current_quantity,
+        "unit": unit,
+        "reason": reason
+    }
+
+    conf = create_action_confirmation(
+        user_id=user_id,
+        tool_name="adjust_stock",
+        arguments=args,
+        summary_text=summary
+    )
+
+    return {
+        "action_required": "confirmation",
+        "action_status": "awaiting_confirmation",
+        "confirmation_token": conf["confirmation_id"],
+        "tool_name": "adjust_stock",
+        "summary": summary,
+        "proposed_changes": args,
+        "expires_at": conf["expires_at"],
+        "message": f"Consequential action requires confirmation: {summary}"
+    }
+
+
+def stage_update_product_details(
+    user_id: str,
+    product_name: str,
+    updates: Dict[str, Any]
+) -> Dict[str, Any]:
+    """
+    Stage product details update for shopkeeper confirmation.
+    """
+    if not product_name or not product_name.strip():
+        raise ValueError("Product name cannot be empty.")
+    if not updates:
+        raise ValueError("No updates provided.")
+
+    clean_target = re.sub(r'^(?:pack|pcs|packet|kg|litre|unit|units|bottle|box|strip|plate)\s+', '', product_name.strip(), flags=re.IGNORECASE)
+    candidates = get_inventory_items(user_id=user_id, q=clean_target)
+    product_id = None
+    if not candidates:
+        all_items = get_inventory_items(user_id=user_id)
+        candidates = [it for it in all_items if clean_target.lower() in it["product_name"].lower() or it["product_name"].lower() in clean_target.lower()]
+    if candidates:
+        best = candidates[0]
+        product_id = best["id"]
+        product_name = best["product_name"]
+
+    summary_parts = []
+    for k, v in updates.items():
+        summary_parts.append(f"{k}: {v}")
+    summary = f"Update '{product_name}' details ({', '.join(summary_parts)}). Confirm?"
+
+    args = {
+        "product_name": product_name,
+        "product_id": product_id,
+        "updates": updates
+    }
+
+    conf = create_action_confirmation(
+        user_id=user_id,
+        tool_name="update_product_details",
+        arguments=args,
+        summary_text=summary
+    )
+
+    return {
+        "action_required": "confirmation",
+        "action_status": "awaiting_confirmation",
+        "confirmation_token": conf["confirmation_id"],
+        "tool_name": "update_product_details",
+        "summary": summary,
+        "proposed_changes": args,
+        "expires_at": conf["expires_at"],
+        "message": f"Consequential action requires confirmation: {summary}"
+    }
+
+
+
 # ────────────────────────────────────────────────────────────
 # Execution of Confirmed Action (Idempotent Guard)
 # ────────────────────────────────────────────────────────────
@@ -475,8 +709,128 @@ def execute_confirmed_action(confirmation_token: str, user_id: str) -> Dict[str,
                 "message": f"✅ Business expense of ₹{args['amount']:.2f} under '{args['category']}' successfully recorded!"
             }
 
+        elif tool_name == "add_stock":
+            prod_id = args.get("product_id")
+            prod_name = (args.get("product_name") or "").strip()
+            qty = float(args.get("quantity", 0))
+            unit = args.get("unit", "kg")
+            buy = float(args.get("purchase_price", 0))
+            sell = float(args.get("selling_price", 0))
+            expiry = args.get("expiry_date")
+            store_id = args.get("store_id")
+            category = args.get("category", "Grocery")
+
+            existing_item = None
+            if prod_id:
+                existing_item = get_inventory_item_by_id(user_id, prod_id)
+            if not existing_item:
+                items = get_inventory_items(user_id=user_id, q=prod_name)
+                for it in items:
+                    if it["product_name"].lower() == prod_name.lower():
+                        existing_item = it
+                        prod_id = it["id"]
+                        break
+
+            if existing_item:
+                new_qty = float(existing_item["quantity"]) + qty
+                update_payload = {
+                    "quantity": new_qty,
+                    "reason": f"Stock addition (+{qty:g} {unit})"
+                }
+                if sell > 0:
+                    update_payload["selling_price"] = sell
+                if buy > 0:
+                    update_payload["purchase_price"] = buy
+                if expiry:
+                    update_payload["expiry_date"] = expiry
+                if unit:
+                    update_payload["unit"] = unit
+                res = update_inventory_item(user_id, prod_id, update_payload)
+            else:
+                res = create_inventory_item(user_id, {
+                    "product_name": prod_name,
+                    "category": category,
+                    "quantity": qty,
+                    "unit": unit,
+                    "purchase_price": buy,
+                    "selling_price": sell,
+                    "expiry_date": expiry,
+                    "store_id": store_id
+                })
+
+            resolve_action_confirmation(confirmation_token, "confirmed")
+            return {
+                "success": True,
+                "action_executed": "add_stock",
+                "result": res,
+                "message": f"✅ {prod_name} stock successfully added: +{qty:g} {unit} at ₹{sell:g}/{unit} (Expiry: {expiry or 'N/A'}). Inventory & Product DNA updated!"
+            }
+
+        elif tool_name == "adjust_stock":
+            prod_id = args.get("product_id")
+            prod_name = (args.get("product_name") or "").strip()
+            target_qty = float(args.get("target_quantity", 0))
+            unit = args.get("unit", "kg")
+            reason = args.get("reason", "Stock adjustment")
+
+            existing_item = None
+            if prod_id:
+                existing_item = get_inventory_item_by_id(user_id, prod_id)
+            if not existing_item:
+                items = get_inventory_items(user_id=user_id, q=prod_name)
+                for it in items:
+                    if it["product_name"].lower() == prod_name.lower():
+                        existing_item = it
+                        prod_id = it["id"]
+                        break
+
+            if not existing_item:
+                return {"success": False, "message": f"Product '{prod_name}' not found in inventory."}
+
+            res = update_inventory_item(user_id, prod_id, {
+                "quantity": target_qty,
+                "unit": unit,
+                "reason": reason
+            })
+            resolve_action_confirmation(confirmation_token, "confirmed")
+            return {
+                "success": True,
+                "action_executed": "adjust_stock",
+                "result": res,
+                "message": f"✅ Stock for '{prod_name}' successfully adjusted to {target_qty:g} {unit}!"
+            }
+
+        elif tool_name == "update_product_details":
+            prod_id = args.get("product_id")
+            prod_name = (args.get("product_name") or "").strip()
+            updates = args.get("updates", {})
+
+            existing_item = None
+            if prod_id:
+                existing_item = get_inventory_item_by_id(user_id, prod_id)
+            if not existing_item:
+                items = get_inventory_items(user_id=user_id, q=prod_name)
+                for it in items:
+                    if it["product_name"].lower() == prod_name.lower():
+                        existing_item = it
+                        prod_id = it["id"]
+                        break
+
+            if not existing_item:
+                return {"success": False, "message": f"Product '{prod_name}' not found in inventory."}
+
+            res = update_inventory_item(user_id, prod_id, updates)
+            resolve_action_confirmation(confirmation_token, "confirmed")
+            return {
+                "success": True,
+                "action_executed": "update_product_details",
+                "result": res,
+                "message": f"✅ Details for '{prod_name}' successfully updated!"
+            }
+
         else:
             return {"success": False, "message": f"Unknown tool action: {tool_name}"}
+
 
     except Exception as e:
         return {"success": False, "error": str(e), "message": f"Failed to execute action: {e}"}

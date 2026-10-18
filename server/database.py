@@ -1457,6 +1457,38 @@ def get_action_confirmation(confirmation_id: str) -> dict | None:
         }
 
 
+def get_latest_pending_action_confirmation(user_id: str) -> dict | None:
+    """Retrieve the most recent pending action confirmation for a user."""
+    with get_db() as conn:
+        cur = conn.execute(
+            """
+            SELECT * FROM action_confirmations
+            WHERE user_id = ? AND status = 'pending'
+            ORDER BY created_at DESC LIMIT 1
+            """,
+            (user_id,)
+        )
+        row = cur.fetchone()
+        if not row:
+            return None
+        args = {}
+        try:
+            args = json.loads(row["arguments_json"] or "{}")
+        except Exception:
+            pass
+        return {
+            "id": row["id"],
+            "user_id": row["user_id"],
+            "tool_name": row["tool_name"],
+            "arguments": args,
+            "summary_text": row["summary_text"],
+            "status": row["status"],
+            "expires_at": row["expires_at"],
+            "created_at": row["created_at"]
+        }
+
+
+
 def resolve_action_confirmation(confirmation_id: str, status: str) -> bool:
     """Resolve an action confirmation (e.g. 'confirmed', 'rejected', 'expired')."""
     with get_db() as conn:

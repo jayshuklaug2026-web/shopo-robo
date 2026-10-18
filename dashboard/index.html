@@ -421,6 +421,7 @@
                                 <div id="aiActionConfirmCard" style="display:none; margin-top:12px; padding:12px; background:rgba(234, 179, 8, 0.1); border:1px solid #EAB308; border-radius:8px;">
                                     <div style="font-weight:700; color:#854D0E; margin-bottom:6px;" id="aiActionConfirmTitle">⚠️ Action Confirmation Required</div>
                                     <div style="font-size:0.875rem; color:#713F12; margin-bottom:10px;" id="aiActionConfirmText"></div>
+                                    <div id="aiActionProposedDetails" style="margin-bottom:12px;"></div>
                                     <div style="display:flex; gap:10px;">
                                         <button type="button" class="btn btn-primary" id="btnConfirmAIAction" style="background:#22C55E; color:#fff; border:none; padding:6px 14px; border-radius:6px; font-weight:700; cursor:pointer;">
                                             <i class="fas fa-check"></i> Confirm & Execute
@@ -431,6 +432,7 @@
                                     </div>
                                 </div>
                             </div>
+
                         </div>
                     </section>
 
@@ -919,7 +921,22 @@
                             <div class="ai-response-body" id="assistantViewResponseBody">
                                 Response will appear here...
                             </div>
+                            <!-- Consequential Action Confirmation Card for Assistant View -->
+                            <div id="assistantViewActionConfirmCard" style="display:none; margin-top:12px; padding:12px; background:rgba(234, 179, 8, 0.1); border:1px solid #EAB308; border-radius:8px;">
+                                <div style="font-weight:700; color:#854D0E; margin-bottom:6px;" id="assistantViewActionConfirmTitle">⚠️ Action Confirmation Required</div>
+                                <div style="font-size:0.875rem; color:#713F12; margin-bottom:10px;" id="assistantViewActionConfirmText"></div>
+                                <div id="assistantViewActionProposedDetails" style="margin-bottom:12px;"></div>
+                                <div style="display:flex; gap:10px;">
+                                    <button type="button" class="btn btn-primary" id="btnConfirmAssistantAction" style="background:#22C55E; color:#fff; border:none; padding:6px 14px; border-radius:6px; font-weight:700; cursor:pointer;">
+                                        <i class="fas fa-check"></i> Confirm & Execute
+                                    </button>
+                                    <button type="button" class="btn btn-outline" id="btnCancelAssistantAction" style="background:#EF4444; color:#fff; border:none; padding:6px 14px; border-radius:6px; font-weight:700; cursor:pointer;">
+                                        <i class="fas fa-times"></i> Cancel
+                                    </button>
+                                </div>
+                            </div>
                         </div>
+
                     </div>
                 </div>
 
