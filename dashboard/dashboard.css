@@ -80,6 +80,7 @@
 html {
     font-size: 16px;
     scroll-behavior: smooth;
+    overflow-x: hidden;
 }
 
 body {
@@ -342,6 +343,9 @@ body {
 .app-main {
     flex: 1;
     margin-left: 260px;
+    width: calc(100% - 260px);
+    max-width: calc(100% - 260px);
+    min-width: 0;
     display: flex;
     flex-direction: column;
     min-height: 100vh;
@@ -360,12 +364,16 @@ body {
     position: sticky;
     top: 0;
     z-index: 90;
+    min-width: 0;
+    max-width: 100%;
 }
 
 .header-left {
     display: flex;
     align-items: center;
     gap: 16px;
+    min-width: 0;
+    flex-shrink: 0;
 }
 
 .mobile-menu-btn {
@@ -406,6 +414,8 @@ body {
     display: flex;
     align-items: center;
     gap: 12px;
+    min-width: 0;
+    flex-shrink: 1;
 }
 
 .lang-selector {
@@ -415,6 +425,12 @@ body {
     padding: 3px;
     border-radius: var(--radius-full);
     border: 1px solid var(--border-color);
+    overflow-x: auto;
+    max-width: 100%;
+    scrollbar-width: none;
+}
+.lang-selector::-webkit-scrollbar {
+    display: none;
 }
 
 .lang-btn {
@@ -642,15 +658,15 @@ body {
 }
 
 /* ══════════════════════════════════════════════════
-   AI ASSISTANT CARD (Hero Unit)
+   AI ASSISTANT CARD (Hero Unit - Compact & Professional)
    ══════════════════════════════════════════════════ */
 .ai-assistant-card {
     background: linear-gradient(135deg, #FFFFFF 0%, #F7FEE7 100%);
     border: 1.5px solid rgba(132, 204, 22, 0.45);
     border-radius: var(--radius-xl);
-    padding: 28px;
-    box-shadow: 0 4px 20px -2px rgba(132, 204, 22, 0.12), 0 2px 8px -2px rgba(15, 23, 42, 0.04);
-    margin-bottom: 28px;
+    padding: 20px 24px;
+    box-shadow: 0 4px 18px -2px rgba(132, 204, 22, 0.12), 0 2px 8px -2px rgba(15, 23, 42, 0.04);
+    margin-bottom: 22px;
     position: relative;
     overflow: hidden;
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
@@ -794,33 +810,34 @@ body {
 }
 
 /* ── Voice Assistant Center & Microphone States ── */
-.ai-voice-center {
+.ai-voice-center,
+.ai-voice-centerpiece {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 18px 0;
+    padding: 12px 0 16px 0;
     text-align: center;
 }
 
 .mic-btn-container {
     position: relative;
-    width: 96px;
-    height: 96px;
+    width: 86px;
+    height: 86px;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 14px;
+    margin-bottom: 10px;
 }
 
 .mic-btn {
-    width: 78px;
-    height: 78px;
+    width: 72px;
+    height: 72px;
     border-radius: var(--radius-full);
     background: linear-gradient(135deg, var(--lime-500) 0%, var(--lime-600) 100%);
     border: 3px solid #FFFFFF;
     color: #FFFFFF;
-    font-size: 2rem;
+    font-size: 1.85rem;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -2147,6 +2164,8 @@ body {
 
     .app-main {
         margin-left: 0;
+        width: 100%;
+        max-width: 100%;
     }
 
     .mobile-menu-btn {
@@ -2668,9 +2687,9 @@ body {
     background: linear-gradient(135deg, #1E293B 0%, #0F172A 100%);
     color: #F8FAFC;
     border-radius: var(--radius-xl);
-    padding: 22px 26px;
-    margin-bottom: 24px;
-    box-shadow: 0 12px 30px -4px rgba(15, 23, 42, 0.25);
+    padding: 16px 22px;
+    margin-bottom: 18px;
+    box-shadow: 0 10px 25px -4px rgba(15, 23, 42, 0.22);
     border: 1px solid rgba(255, 255, 255, 0.08);
     position: relative;
     overflow: hidden;
