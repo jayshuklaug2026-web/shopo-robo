@@ -57,23 +57,23 @@
                 <!-- Core SaaS Navigation (Prompt Section 2 & 9) -->
                 <button class="nav-item active" data-view="home" onclick="switchNav('home')">
                     <i class="fas fa-th-large"></i>
-                    <span data-i18n="nav_home">Dashboard / मुख्य पृष्ठ</span>
+                    <span data-i18n="nav_home">Dashboard</span>
                 </button>
                 <button class="nav-item" data-view="inventory" onclick="switchNav('inventory')">
                     <i class="fas fa-boxes"></i>
-                    <span data-i18n="nav_inventory">Inventory / स्टॉक</span>
+                    <span data-i18n="nav_inventory">Inventory</span>
                 </button>
                 <button class="nav-item" data-view="sales" onclick="switchNav('sales')">
                     <i class="fas fa-shopping-cart"></i>
-                    <span data-i18n="nav_sales">Sales / बिक्री</span>
+                    <span data-i18n="nav_sales">Sales</span>
                 </button>
                 <button class="nav-item" data-action="purchases" onclick="openAddProductModal()">
                     <i class="fas fa-shopping-bag"></i>
-                    <span>Purchases / खरीद (स्टॉक)</span>
+                    <span data-i18n="nav_purchases">Purchases (Stock)</span>
                 </button>
                 <button class="nav-item" data-view="reports" onclick="switchNav('reports')">
                     <i class="fas fa-chart-line"></i>
-                    <span data-i18n="nav_reports">Reports / रिपोर्ट्स</span>
+                    <span data-i18n="nav_reports">Reports</span>
                 </button>
                 <button class="nav-item" data-view="assistant" onclick="switchNav('assistant')">
                     <img src="/icons/favicon-32x32.png" alt="" style="width:20px; height:20px; object-fit:contain; border-radius:4px; flex-shrink:0;">
@@ -81,75 +81,75 @@
                 </button>
                 <button class="nav-item" data-action="barcode" onclick="openBarcodeModal()">
                     <i class="fas fa-qrcode"></i>
-                    <span>Barcode / QR स्कैन</span>
+                    <span data-i18n="nav_barcode">Barcode & QR Scanner</span>
                 </button>
                 <button class="nav-item" data-view="settings" onclick="switchNav('settings')">
                     <i class="fas fa-cog"></i>
-                    <span data-i18n="nav_settings">Settings / सेटिंग्स</span>
+                    <span data-i18n="nav_settings">Settings</span>
                 </button>
 
                 <!-- Clean Collapsible Group for Extended Specialized Capabilities -->
                 <div class="sidebar-section-divider"></div>
                 <div class="sidebar-section-header" onclick="toggleMoreTools()" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; padding:8px 14px; font-size:0.75rem; font-weight:700; color:var(--color-text-secondary); text-transform:uppercase; letter-spacing:0.5px;">
-                    <span>Specialized Tools / अन्य टूल्स</span>
+                    <span data-i18n="nav_tools_header">Specialized Tools</span>
                     <i class="fas fa-chevron-down" id="moreToolsArrow" style="font-size:0.7rem; transition:transform 0.2s ease;"></i>
                 </div>
                 <div id="moreToolsSubNav" style="display:flex; flex-direction:column; gap:4px;">
                     <button class="nav-item" data-view="multi_store" onclick="switchNav('multi_store')">
                         <i class="fas fa-store-alt"></i>
-                        <span data-i18n="nav_multi_store">Multi-Store Hub / शाखाएं</span>
+                        <span data-i18n="nav_multi_store">Multi-Store Hub</span>
                     </button>
                     <button class="nav-item" data-view="shelf_scanner" onclick="switchNav('shelf_scanner')">
                         <i class="fas fa-camera"></i>
-                        <span data-i18n="nav_shelf_scanner">Shelf Scanner / शेल्फ स्कैनर</span>
+                        <span data-i18n="nav_shelf_scanner">Shelf Scanner</span>
                     </button>
                     <button class="nav-item" data-view="time_machine" onclick="switchNav('time_machine')">
                         <i class="fas fa-history"></i>
-                        <span data-i18n="nav_time_machine">Time Machine / टाइम मशीन</span>
+                        <span data-i18n="nav_time_machine">Time Machine Forecast</span>
                     </button>
                     <button class="nav-item" data-view="accountant" onclick="switchNav('accountant')">
                         <i class="fas fa-file-invoice-dollar"></i>
-                        <span data-i18n="nav_accountant">AI Accountant / मुनीम</span>
+                        <span data-i18n="nav_accountant">AI Accountant & Tax</span>
                     </button>
                     <button class="nav-item" data-view="simulator" onclick="switchNav('simulator')">
                         <i class="fas fa-calculator"></i>
-                        <span data-i18n="nav_simulator">Simulator / सिमुलेटर</span>
+                        <span data-i18n="nav_simulator">Business Simulator</span>
                     </button>
                     <button class="nav-item" data-view="news" onclick="switchNav('news')">
                         <i class="fas fa-newspaper"></i>
-                        <span data-i18n="nav_news">News & Markets / समाचार</span>
+                        <span data-i18n="nav_news">News & Markets</span>
                     </button>
                     <button class="nav-item" data-view="competitor" onclick="switchNav('competitor')">
                         <i class="fas fa-crosshairs"></i>
-                        <span data-i18n="nav_competitor">Competitor Intel / प्रतिस्पर्धी</span>
+                        <span data-i18n="nav_competitor">Competitor Radar</span>
                     </button>
                     <button class="nav-item" data-view="demand" onclick="switchNav('demand')">
                         <i class="fas fa-ear-listen"></i>
-                        <span data-i18n="nav_demand">Customer Demand / मांग</span>
+                        <span data-i18n="nav_demand">Customer Demand</span>
                     </button>
                     <button class="nav-item" data-view="negotiation" onclick="switchNav('negotiation')">
                         <i class="fas fa-handshake"></i>
-                        <span data-i18n="nav_negotiation">Negotiation Coach / मोलभाव</span>
+                        <span data-i18n="nav_negotiation">Negotiation Coach</span>
                     </button>
                     <button class="nav-item" data-view="translator" onclick="switchNav('translator')">
                         <i class="fas fa-language"></i>
-                        <span data-i18n="nav_translator">Translator / अनुवादक</span>
+                        <span data-i18n="nav_translator">Voice Translator</span>
                     </button>
                     <button class="nav-item" data-view="autopilot" onclick="switchNav('autopilot')">
                         <i class="fas fa-robot"></i>
-                        <span data-i18n="nav_autopilot">AI Autopilot / ऑटोपायलट</span>
+                        <span data-i18n="nav_autopilot">AI Autopilot</span>
                     </button>
                     <button class="nav-item" data-view="notifications" onclick="switchNav('notifications')">
                         <i class="fas fa-bell"></i>
-                        <span data-i18n="nav_notifications">Notifications / सूचनाएं</span>
+                        <span data-i18n="nav_notifications">Notifications</span>
                     </button>
                     <button class="nav-item" data-view="memory" onclick="switchNav('memory')">
                         <i class="fas fa-brain"></i>
-                        <span data-i18n="nav_memory">Business Memory / व्यापार स्मृति</span>
+                        <span data-i18n="nav_memory">Business Memory</span>
                     </button>
                     <button class="nav-item" data-view="radar" onclick="switchNav('radar')">
                         <i class="fas fa-satellite-dish"></i>
-                        <span data-i18n="nav_radar">Opportunity Radar / अवसर रडार</span>
+                        <span data-i18n="nav_radar">Opportunity Radar</span>
                     </button>
                 </div>
             </nav>
@@ -193,15 +193,9 @@
                     </div>
 
                     <!-- Language selector -->
-                    <div class="lang-selector">
-                        <button class="lang-btn active" data-lang="hi" onclick="setLanguage('hi')">हिन्दी</button>
-                        <button class="lang-btn" data-lang="hinglish" onclick="setLanguage('hinglish')">Hinglish</button>
-                        <button class="lang-btn" data-lang="en" onclick="setLanguage('en')">English</button>
-                        <button class="lang-btn" id="btnOpenLangModal" onclick="openLanguageModal()" title="All Languages / सभी भाषाएं" style="border: 1px dashed var(--lime-600);"><i class="fas fa-globe"></i> 16+ Lang</button>
-                    </div>
 
-                    <!-- Notification Bell Button -->
-                    <button class="header-icon-btn" id="headerNotifBell" onclick="switchNav('notifications')" title="Notifications / सूचनाएं" style="position:relative;">
+<!-- Notification Bell Button -->
+                    <button class="header-icon-btn" id="headerNotifBell" onclick="switchNav('notifications')" title="Notifications" style="position:relative;">
                         <i class="fas fa-bell"></i>
                         <span id="headerNotifBadge" style="display:none; position:absolute; top:-4px; right:-4px; background:#ef4444; color:#fff; font-size:0.65rem; font-weight:700; padding:2px 6px; border-radius:10px;">0</span>
                     </button>
@@ -224,6 +218,9 @@
                             <i class="fas fa-chevron-down" style="font-size:0.7rem; color:var(--text-muted);"></i>
                         </button>
                         <div class="dropdown-menu" id="userDropdown">
+                            <button class="dropdown-item" onclick="openLanguageSettings()">
+                                <i class="fas fa-language"></i> <span data-i18n="nav_settings_lang">Language Settings</span>
+                            </button>
                             <button class="dropdown-item" onclick="openSettingsModal()">
                                 <i class="fas fa-store"></i> Shop Profile
                             </button>
@@ -232,7 +229,7 @@
                             </button>
                             <div style="height:1px; background:var(--border-light); margin:4px 0;"></div>
                             <button class="dropdown-item danger" onclick="handleLogout()">
-                                <i class="fas fa-sign-out-alt"></i> Logout / बाहर निकलें
+                                <i class="fas fa-sign-out-alt"></i> <span data-i18n="btn_logout">Logout</span>
                             </button>
                         </div>
                     </div>
@@ -259,9 +256,9 @@
                             <i class="fas fa-magic"></i>
                         </div>
                         <div class="wizard-content">
-                            <h3 class="wizard-title" data-i18n="wizard_title">दुकान का सेटअप पूरा करें! (Setup Your Shop)</h3>
+                            <h3 class="wizard-title" data-i18n="wizard_title">Setup Your Shop</h3>
                             <p class="wizard-desc" data-i18n="wizard_desc">
-                                अपनी दुकान का नाम और प्रकार चुनें ताकि शोपो रोबो आपका सही इन्वेंटरी डेटा तैयार कर सके।
+                                Choose your shop name and type so Shopo Robo can prepare your inventory.
                             </p>
                             <button class="btn-dash btn-dash-primary" onclick="openSetupModal()">
                                 <i class="fas fa-store-alt"></i> 1-Minute Quick Setup
@@ -311,7 +308,7 @@
                                                 <option value="Guwahati">📍 Guwahati</option>
                                             </select>
                                             <button type="button" class="wc-geo-btn" id="wcGeoBtn" onclick="detectUserLocation()" title="Detect my current location">
-                                                <i class="fas fa-crosshairs"></i> Detect
+                                                <i class="fas fa-crosshairs"></i> <span id="wcGeoBtnText" data-i18n="btn_detect_location">Detect Location</span>
                                             </button>
                                             <button type="button" class="wc-retry-btn" id="wcRetryBtn" onclick="retryLiveWeather()" title="Refresh Weather">
                                                 <i class="fas fa-sync-alt" id="wcRefreshIcon"></i>
@@ -331,16 +328,20 @@
                                         </div>
                                         <div class="wc-stats-row">
                                             <div class="wc-stat-item">
-                                                <span class="wc-stat-label">Humidity / नमी</span>
+                                                <span class="wc-stat-label" data-i18n="weather_humidity">Humidity</span>
                                                 <span class="wc-stat-value" id="wcHumidity">--%</span>
                                             </div>
                                             <div class="wc-stat-item">
-                                                <span class="wc-stat-label">Wind / हवा</span>
+                                                <span class="wc-stat-label" data-i18n="weather_wind">Wind</span>
                                                 <span class="wc-stat-value" id="wcWind">-- km/h</span>
                                             </div>
                                             <div class="wc-stat-item">
-                                                <span class="wc-stat-label">Rain / बारिश</span>
+                                                <span class="wc-stat-label" data-i18n="weather_rain">Rain</span>
                                                 <span class="wc-stat-value" id="wcRain">-- mm</span>
+                                            </div>
+                                            <div class="wc-stat-item">
+                                                <span class="wc-stat-label" data-i18n="weather_updated">Updated</span>
+                                                <span class="wc-stat-value" id="wcUpdatedTime">--:--</span>
                                             </div>
                                         </div>
                                         <div class="wc-advisory-pill" id="wcAdvisoryPill">
@@ -371,7 +372,7 @@
                                                     <span data-i18n="ai_assistant_title">Your AI Accountant</span>
                                                 </h2>
                                                 <div class="ai-status-text" id="aiStatusText" data-i18n="ai_status_ready">
-                                                    Online &bull; Ready to help your shop (तैयार हूँ)
+                                                    Online &bull; Ready to help your shop
                                                 </div>
                                             </div>
                                         </div>
@@ -392,7 +393,7 @@
                                             <span></span><span></span><span></span><span></span><span></span>
                                         </div>
                                         <div class="mic-helper-text" id="micHelperText" data-i18n="mic_helper">
-                                            माइक दबाकर बोलें (Tap Mic to Speak in Hindi, Hinglish, English)
+                                            Tap mic or type a command below
                                         </div>
                                         <div class="mic-sub-text" id="micSubText" data-i18n="mic_sub">
                                             Natural voice for stock, sales, prices, weather & schemes
@@ -404,10 +405,9 @@
                                         <input type="text"
                                                class="ai-text-input"
                                                id="cmdInput"
-                                               placeholder="किसी भी उद्योग, मंडी, मौसम या दुकान के बारे में पूछें..."
-                                               autocomplete="off"
-                                               onkeydown="if(event.key==='Enter'){event.preventDefault();handleCommandSubmit(event);}">
-                                        <button type="button" class="ai-send-btn" id="aiSendBtn" aria-label="Send Command" onclick="handleCommandSubmit(event)">
+                                               placeholder="Type or speak command... e.g. 'Show today's profit'"
+                                               autocomplete="off">
+                                        <button type="submit" class="ai-send-btn" id="aiSendBtn" aria-label="Send Command">
                                             <i class="fas fa-paper-plane"></i>
                                         </button>
                                     </form>
@@ -416,22 +416,22 @@
                                     <div class="ai-chips-wrap">
                                         <span class="ai-chip-label" data-i18n="preset_label">Try asking:</span>
                                         <button type="button" class="ai-preset-chip" onclick="applyPresetCommand('Mera stock aur low items dikhao')">
-                                            📦 दुकान का स्टॉक
+                                            📦 Shop Stock
                                         </button>
                                         <button type="button" class="ai-preset-chip" onclick="applyPresetCommand('Aaj ka munafa aur bikri dikhao')">
-                                            💰 आज का मुनाफ़ा
+                                            💰 Today's Profit
                                         </button>
                                         <button type="button" class="ai-preset-chip" onclick="applyPresetCommand('Mandi me gehun aur sarson ka bhav kya hai?')">
-                                            🌾 मंडी भाव
+                                            🌾 Mandi Rates
                                         </button>
                                         <button type="button" class="ai-preset-chip" onclick="applyPresetCommand('Delhi aur Jaipur ka live mausam aur godown storage advisory')">
-                                            🌤️ मौसम सलाह
+                                            🌤️ Weather Advice
                                         </button>
                                         <button type="button" class="ai-preset-chip" onclick="applyPresetCommand('TMT Steel sariya aur Cement ka benchmark rate kya hai?')">
-                                            🏗️ सरिया व सीमेंट रेट
+                                            🏗️ Steel & Cement Rates
                                         </button>
                                         <button type="button" class="ai-preset-chip" onclick="applyPresetCommand('Gold and silver rates today')">
-                                            🪙 सोना-चांदी भाव
+                                            🪙 Gold & Silver Rates
                                         </button>
                                     </div>
 
@@ -451,16 +451,16 @@
                                         <div id="aiActionConfirmCard" style="display:none; margin-top:14px; padding:16px; background:#FEFCE8; border:1.5px solid #EAB308; border-radius:12px; box-shadow:0 4px 12px rgba(234, 179, 8, 0.15);">
                                             <div style="font-weight:800; font-size:1rem; color:#854D0E; margin-bottom:6px; display:flex; align-items:center; gap:8px;" id="aiActionConfirmTitle">
                                                 <i class="fas fa-shield-alt" style="color:#D97706;"></i>
-                                                <span>Action Confirmation Required / पुष्टि आवश्यक</span>
+                                                <span>Action Confirmation Required</span>
                                             </div>
                                             <div style="font-size:0.92rem; color:#713F12; margin-bottom:12px; line-height:1.5;" id="aiActionConfirmText"></div>
                                             <div id="aiActionProposedDetails" style="margin-bottom:14px;"></div>
                                             <div style="display:flex; gap:12px; flex-wrap:wrap;">
                                                 <button type="button" class="btn btn-primary" id="btnConfirmAIAction" style="background:#16803C; color:#fff; border:none; padding:10px 20px; border-radius:8px; font-weight:700; font-size:0.9rem; cursor:pointer; display:inline-flex; align-items:center; gap:8px;">
-                                                    <i class="fas fa-check"></i> Confirm & Execute / सुरक्षित सहेजें
+                                                    <i class="fas fa-check"></i> <span data-i18n="btn_confirm_action">Confirm & Execute</span>
                                                 </button>
                                                 <button type="button" class="btn btn-outline" id="btnCancelAIAction" style="background:#DC2626; color:#fff; border:none; padding:10px 18px; border-radius:8px; font-weight:700; font-size:0.9rem; cursor:pointer; display:inline-flex; align-items:center; gap:8px;">
-                                                    <i class="fas fa-times"></i> Cancel / रद्द करें
+                                                    <i class="fas fa-times"></i> <span data-i18n="btn_cancel_action">Cancel</span>
                                                 </button>
                                             </div>
                                         </div>
@@ -477,7 +477,7 @@
                     <div class="section-title-row" style="margin-top:8px; margin-bottom:14px;">
                         <h3 class="section-title">
                             <i class="fas fa-chart-pie" style="color:var(--color-primary-green);"></i>
-                            <span data-i18n="overview_title">Business Overview / आज का हिसाब</span>
+                            <span data-i18n="overview_title">Business Overview</span>
                         </h3>
                         <span class="demo-data-pill" id="overviewDataBadge" style="background:#DCFCE7; color:var(--color-primary-green); font-size:0.75rem; font-weight:700; padding:3px 10px; border-radius:12px;">Real Data</span>
                     </div>
@@ -488,7 +488,7 @@
                         <!-- Card 1: Today's Sales -->
                         <div class="metric-card">
                             <div class="metric-card-top">
-                                <span class="metric-label" data-i18n="metric_sales">Today's Sales / आज की बिक्री</span>
+                                <span class="metric-label" data-i18n="metric_sales">Today's Sales</span>
                                 <div class="metric-icon-circle metric-icon-green" aria-hidden="true">
                                     <i class="fas fa-rupee-sign"></i>
                                 </div>
@@ -503,7 +503,7 @@
                         <!-- Card 2: Total Profit -->
                         <div class="metric-card">
                             <div class="metric-card-top">
-                                <span class="metric-label" data-i18n="metric_profit">Total Profit / कुल मुनाफ़ा</span>
+                                <span class="metric-label" data-i18n="metric_profit">Total Profit</span>
                                 <div class="metric-icon-circle metric-icon-lime" aria-hidden="true">
                                     <i class="fas fa-chart-line"></i>
                                 </div>
@@ -518,7 +518,7 @@
                         <!-- Card 3: Stock Value -->
                         <div class="metric-card">
                             <div class="metric-card-top">
-                                <span class="metric-label">Stock Value / स्टॉक मूल्य</span>
+                                <span class="metric-label" data-i18n="metric_stock_val">Stock Value</span>
                                 <div class="metric-icon-circle metric-icon-blue" aria-hidden="true">
                                     <i class="fas fa-warehouse"></i>
                                 </div>
@@ -533,7 +533,7 @@
                         <!-- Card 4: Total Items -->
                         <div class="metric-card">
                             <div class="metric-card-top">
-                                <span class="metric-label" data-i18n="metric_products">Total Items / कुल सामान</span>
+                                <span class="metric-label" data-i18n="metric_products">Total Items</span>
                                 <div class="metric-icon-circle metric-icon-amber" aria-hidden="true">
                                     <i class="fas fa-boxes"></i>
                                 </div>
@@ -564,7 +564,7 @@
                                 <div class="section-title-row">
                                     <h3 class="section-title">
                                         <i class="fas fa-bolt" style="color:var(--color-primary-green);"></i>
-                                        <span data-i18n="actions_title">Quick Actions / त्वरित कार्य</span>
+                                        <span data-i18n="actions_title">Quick Actions</span>
                                     </h3>
                                 </div>
                                 <div class="quick-actions-grid-4">
@@ -574,7 +574,7 @@
                                         </div>
                                         <div class="qa-text-wrap">
                                             <span class="qa-title">Add Stock</span>
-                                            <span class="qa-sub">सामान जोड़ें</span>
+                                            <span class="qa-sub">Add Product</span>
                                         </div>
                                         <i class="fas fa-chevron-right qa-arrow"></i>
                                     </button>
@@ -585,7 +585,7 @@
                                         </div>
                                         <div class="qa-text-wrap">
                                             <span class="qa-title">New Sale</span>
-                                            <span class="qa-sub">नई बिक्री</span>
+                                            <span class="qa-sub">Record Sale</span>
                                         </div>
                                         <i class="fas fa-chevron-right qa-arrow"></i>
                                     </button>
@@ -596,7 +596,7 @@
                                         </div>
                                         <div class="qa-text-wrap">
                                             <span class="qa-title">Scan Barcode</span>
-                                            <span class="qa-sub">बारकोड स्कैन</span>
+                                            <span class="qa-sub">Scan Barcode</span>
                                         </div>
                                         <i class="fas fa-chevron-right qa-arrow"></i>
                                     </button>
@@ -607,7 +607,7 @@
                                         </div>
                                         <div class="qa-text-wrap">
                                             <span class="qa-title">AI Assistant</span>
-                                            <span class="qa-sub">AI से बात करें</span>
+                                            <span class="qa-sub">Ask AI</span>
                                         </div>
                                         <i class="fas fa-chevron-right qa-arrow"></i>
                                     </button>
@@ -624,7 +624,7 @@
                                             <i class="fas fa-chart-line"></i>
                                         </div>
                                         <div>
-                                            <div class="chart-title">Sales & Revenue Overview / बिक्री का ग्राफ</div>
+                                            <div class="chart-title" data-i18n="chart_sales_title">Sales & Revenue Overview</div>
                                             <div class="chart-subtitle">Verified performance calculated from logged transactions</div>
                                         </div>
                                     </div>
@@ -671,7 +671,7 @@
                                     <div class="activity-card-header">
                                         <h4 style="font-weight:700; font-size:0.95rem; display:flex; align-items:center; gap:8px;">
                                             <i class="fas fa-receipt" style="color:var(--color-primary-green);"></i>
-                                            <span data-i18n="recent_sales_title">Recent Sales / हाल की बिक्री</span>
+                                            <span data-i18n="recent_sales_title">Recent Sales</span>
                                         </h4>
                                         <span class="demo-data-pill" id="recentSalesBadge" style="background:#DCFCE7; color:var(--color-primary-green); font-size:0.72rem; font-weight:700; padding:2px 8px; border-radius:10px;">Live Ledger</span>
                                     </div>
@@ -688,7 +688,7 @@
                                     <div class="activity-card-header">
                                         <h4 style="font-weight:700; font-size:0.95rem; display:flex; align-items:center; gap:8px;">
                                             <i class="fas fa-bell" style="color:var(--color-warning);"></i>
-                                            <span data-i18n="alerts_title">Alerts / चेतावनियाँ</span>
+                                            <span data-i18n="alerts_title">Alerts & Notifications</span>
                                         </h4>
                                         <span class="demo-data-pill" id="alertsBadge" style="background:#FEF3C7; color:#92400E; font-size:0.72rem; font-weight:700; padding:2px 8px; border-radius:10px;">Live Alerts</span>
                                     </div>
@@ -707,7 +707,7 @@
                     <div class="section-title-row">
                         <div>
                             <h2 class="section-title">
-                                <i class="fas fa-boxes" style="color:var(--lime-600);"></i> Inventory Management / स्टॉक सूची
+                                <i class="fas fa-boxes" style="color:var(--lime-600);"></i> Inventory Management
                             </h2>
                             <p style="font-size:0.85rem; color:var(--text-secondary); margin-top:2px;">
                                 Persistent Dukaan stock database with real-time tracking, alerts, and search.
@@ -737,22 +737,22 @@
                             <div class="filter-select-group">
                                 <label for="inventoryCategoryFilter"><i class="fas fa-filter"></i> Category:</label>
                                 <select id="inventoryCategoryFilter" onchange="handleCategoryFilterChange(this.value)">
-                                    <option value="">All Categories (सभी श्रेणियां)</option>
-                                    <option value="Grocery, FMCG, and Supermarkets">Grocery & FMCG / किराना</option>
-                                    <option value="Pharmacy and Medical Retail">Pharmacy & Medical / दवा स्टोर</option>
-                                    <option value="Textile, Clothing, Fashion, and Apparel">Textile & Garments / कपड़ा व गारमेंट्स</option>
-                                    <option value="Hardware and Construction Materials">Hardware & Tools / हार्डवेयर</option>
-                                    <option value="Cement, Steel, Paint, Pipes, and Electrical Supplies">Cement, Steel & Paints / सरिया-सीमेंट</option>
-                                    <option value="Electronics, Mobiles, and Computers">Electronics & Mobiles / इलेक्ट्रॉनिक्स</option>
-                                    <option value="Agriculture, Seeds, Fertilizers, and Agro-chemicals">Agriculture & Seeds / कृषि बीज-खाद</option>
-                                    <option value="Automotive Spare Parts and Service Centers">Automotive & Spare Parts / ऑटो पार्ट्स</option>
-                                    <option value="Stationery, Books, and School Supplies">Stationery & Books / स्टेशनरी</option>
-                                    <option value="Dairy, Milk Products, Poultry, and Animal Husbandry">Dairy & Poultry / डेयरी</option>
-                                    <option value="Fruits, Vegetables, and Mandi Trading">Fruits & Vegetables / फल-सब्जी</option>
-                                    <option value="Footwear, Shoes, and Leather Goods">Footwear & Leather / जूते-चप्पल</option>
-                                    <option value="Jewellery, Gold, Silver, and Gems">Jewellery & Bullion / आभूषण</option>
-                                    <option value="Solar Energy, Batteries, and Inverters">Solar & Electrical / सोलर व बिजली</option>
-                                    <option value="General">Other / सामान्य व्यवसाय</option>
+                                    <option value="">All Categories</option>
+                                    <option value="Grocery, FMCG, and Supermarkets">Grocery & FMCG</option>
+                                    <option value="Pharmacy and Medical Retail">Pharmacy & Medical</option>
+                                    <option value="Textile, Clothing, Fashion, and Apparel">Textile & Garments</option>
+                                    <option value="Hardware and Construction Materials">Hardware & Tools</option>
+                                    <option value="Cement, Steel, Paint, Pipes, and Electrical Supplies">Cement, Steel & Paints</option>
+                                    <option value="Electronics, Mobiles, and Computers">Electronics & Mobiles</option>
+                                    <option value="Agriculture, Seeds, Fertilizers, and Agro-chemicals">Agriculture & Seeds</option>
+                                    <option value="Automotive Spare Parts and Service Centers">Automotive & Spare Parts</option>
+                                    <option value="Stationery, Books, and School Supplies">Stationery & Books</option>
+                                    <option value="Dairy, Milk Products, Poultry, and Animal Husbandry">Dairy & Poultry</option>
+                                    <option value="Fruits, Vegetables, and Mandi Trading">Fruits & Vegetables</option>
+                                    <option value="Footwear, Shoes, and Leather Goods">Footwear & Leather</option>
+                                    <option value="Jewellery, Gold, Silver, and Gems">Jewellery & Bullion</option>
+                                    <option value="Solar Energy, Batteries, and Inverters">Solar & Electrical</option>
+                                    <option value="General">Other</option>
                                 </select>
                             </div>
 
@@ -825,7 +825,7 @@
                     <div class="section-title-row">
                         <div>
                             <h2 class="section-title">
-                                <i class="fas fa-cash-register" style="color:var(--lime-600);"></i> Sales Register / दैनिक बिक्री
+                                <i class="fas fa-cash-register" style="color:var(--lime-600);"></i> Sales Register
                             </h2>
                             <p style="font-size:0.85rem; color:var(--text-secondary); margin-top:2px;">
                                 Verified sales ledger automatically updating inventory stock, revenue, and gross profit.
@@ -895,7 +895,7 @@
                     <div class="section-title-row">
                         <div>
                             <h2 class="section-title">
-                                <i class="fas fa-chart-line" style="color:var(--lime-600);"></i> Business Reports / मुफ़ाता रिपोर्ट
+                                <i class="fas fa-chart-line" style="color:var(--lime-600);"></i> Business Reports
                             </h2>
                             <p style="font-size:0.85rem; color:var(--text-secondary); margin-top:2px;">
                                 Clear financial audit distinguishing Revenue, Cost of Goods (COGS), Expenses, and Net Profit.
@@ -915,7 +915,7 @@
                     <!-- Financial Metrics Grid -->
                     <div class="metrics-grid" style="margin-bottom:20px;">
                         <div class="metric-card">
-                            <span class="metric-label">Total Revenue (कुल बिक्री)</span>
+                            <span class="metric-label">Total Revenue</span>
                             <div class="metric-val" id="reportRevVal">₹0</div>
                             <span style="color:var(--text-muted); font-size:0.8rem;" id="reportRevMonthly">This Month: ₹0</span>
                         </div>
@@ -930,12 +930,12 @@
                             <span style="color:var(--text-muted); font-size:0.8rem;">Rent, bills, & wastage</span>
                         </div>
                         <div class="metric-card">
-                            <span class="metric-label">Gross Profit (सकल मुनाफ़ा)</span>
+                            <span class="metric-label">Gross Profit</span>
                             <div class="metric-val" id="reportGrossVal" style="color:var(--green-500);">₹0</div>
                             <span style="color:var(--lime-700); font-weight:700; font-size:0.8rem;" id="reportGrossMargin">0.0% Gross Margin</span>
                         </div>
                         <div class="metric-card">
-                            <span class="metric-label">Net Profit (शुद्ध मुनाफ़ा)</span>
+                            <span class="metric-label">Net Profit</span>
                             <div class="metric-val" id="reportNetVal" style="color:var(--green-500);">₹0</div>
                             <span style="color:var(--lime-700); font-weight:700; font-size:0.8rem;" id="reportNetMargin">0.0% Net Margin</span>
                         </div>
@@ -974,7 +974,7 @@
                     <div class="assistant-view-chat" style="margin-top:24px; background:#FFF; border:1.5px solid var(--border-color); border-radius:var(--radius-xl); padding:24px;">
                         <h4 style="font-weight:800; font-size:1.05rem; margin-bottom:14px; display:flex; align-items:center; gap:8px;">
                             <i class="fas fa-comments" style="color:var(--lime-600);"></i>
-                            <span>Ask Shopo Robo AI Assistant / सवाल पूछें</span>
+                            <span>Ask Shopo Robo AI Assistant</span>
                         </h4>
 
                         <form class="ai-input-bar" id="assistantViewForm" onsubmit="handleAssistantViewSubmit(event); return false;">
@@ -994,10 +994,10 @@
                                 💡 Explain Profit Example
                             </button>
                             <button type="button" class="ai-preset-chip" onclick="applyAssistantViewPreset('Mandi me gehun aur sarson ka bhav kya hai?')">
-                                🌾 मंडी भाव (APMC Rates)
+                                🌾 Mandi Rates (APMC Rates)
                             </button>
                             <button type="button" class="ai-preset-chip" onclick="applyAssistantViewPreset('Mera stock aur low items dikhao')">
-                                📦 दुकान का स्टॉक
+                                📦 Shop Stock
                             </button>
                             <button type="button" class="ai-preset-chip" onclick="applyAssistantViewPreset('PMEGP subsidy aur Mudra loan scheme details')">
                                 🏛️ सरकारी योजनाएं
@@ -1019,16 +1019,16 @@
                             <div id="assistantViewActionConfirmCard" style="display:none; margin-top:14px; padding:16px; background:#FEFCE8; border:1.5px solid #EAB308; border-radius:12px; box-shadow:0 4px 12px rgba(234, 179, 8, 0.15);">
                                 <div style="font-weight:800; font-size:1rem; color:#854D0E; margin-bottom:6px; display:flex; align-items:center; gap:8px;" id="assistantViewActionConfirmTitle">
                                     <i class="fas fa-shield-alt" style="color:#D97706;"></i>
-                                    <span>Action Confirmation Required / पुष्टि आवश्यक</span>
+                                    <span>Action Confirmation Required</span>
                                 </div>
                                 <div style="font-size:0.92rem; color:#713F12; margin-bottom:12px; line-height:1.5;" id="assistantViewActionConfirmText"></div>
                                 <div id="assistantViewActionProposedDetails" style="margin-bottom:14px;"></div>
                                 <div style="display:flex; gap:12px; flex-wrap:wrap;">
                                     <button type="button" class="btn btn-primary" id="btnConfirmAssistantAction" style="background:#16A34A; color:#fff; border:none; padding:10px 20px; border-radius:8px; font-weight:700; font-size:0.9rem; cursor:pointer; display:inline-flex; align-items:center; gap:8px; box-shadow:0 2px 6px rgba(22,163,74,0.3);">
-                                        <i class="fas fa-check"></i> Confirm & Execute / सुरक्षित सहेजें
+                                        <i class="fas fa-check"></i> Confirm & Execute
                                     </button>
                                     <button type="button" class="btn btn-outline" id="btnCancelAssistantAction" style="background:#DC2626; color:#fff; border:none; padding:10px 18px; border-radius:8px; font-weight:700; font-size:0.9rem; cursor:pointer; display:inline-flex; align-items:center; gap:8px;">
-                                        <i class="fas fa-times"></i> Cancel / रद्द करें
+                                        <i class="fas fa-times"></i> Cancel
                                     </button>
                                 </div>
                             </div>
@@ -1044,7 +1044,7 @@
                     <div class="section-title-row">
                         <h2 class="section-title">
                             <i class="fas fa-newspaper" style="color:var(--lime-600);"></i>
-                            <span data-i18n="news_view_title">News & Market Intelligence / ताज़ा समाचार व बाज़ार</span>
+                            <span data-i18n="news_view_title">News & Market Intelligence</span>
                         </h2>
                         <span class="demo-data-pill" id="newsLivePill" style="background:var(--lime-100); color:var(--lime-800);">
                             <i class="fas fa-rss"></i> Live RSS & APMC Feeds
@@ -1055,7 +1055,7 @@
                     <div class="news-header-bar">
                         <div class="news-search-box">
                             <i class="fas fa-search" style="color:var(--text-muted);"></i>
-                            <input type="text" id="newsSearchInput" placeholder="Search headlines, commodities, schemes... (खोजें)" oninput="handleNewsSearch(this.value)">
+                            <input type="text" id="newsSearchInput" placeholder="Search headlines, commodities, schemes..." oninput="handleNewsSearch(this.value)">
                         </div>
                         <div style="display:flex; align-items:center; gap:10px;">
                             <div class="news-lang-toggle">
@@ -1071,31 +1071,31 @@
                     <!-- Category Subnav Tabs -->
                     <div class="news-subnav" id="newsSubnav">
                         <button type="button" class="news-tab-btn active" data-cat="top" onclick="switchNewsTab('top')">
-                            <i class="fas fa-star"></i> Today's News (आज की खबरें)
+                            <i class="fas fa-star"></i> Today's News
                         </button>
                         <button type="button" class="news-tab-btn" data-cat="business" onclick="switchNewsTab('business')">
-                            <i class="fas fa-briefcase"></i> Business & Economy (व्यापार)
+                            <i class="fas fa-briefcase"></i> Business & Economy
                         </button>
                         <button type="button" class="news-tab-btn" data-cat="india" onclick="switchNewsTab('india')">
-                            <i class="fas fa-flag"></i> India (भारत)
+                            <i class="fas fa-flag"></i> India
                         </button>
                         <button type="button" class="news-tab-btn" data-cat="world" onclick="switchNewsTab('world')">
-                            <i class="fas fa-globe"></i> World (दुनिया)
+                            <i class="fas fa-globe"></i> World
                         </button>
                         <button type="button" class="news-tab-btn" data-cat="tech" onclick="switchNewsTab('tech')">
-                            <i class="fas fa-microchip"></i> Tech & AI (तकनीक)
+                            <i class="fas fa-microchip"></i> Tech & AI
                         </button>
                         <button type="button" class="news-tab-btn" data-cat="agri" onclick="switchNewsTab('agri')">
-                            <i class="fas fa-seedling"></i> Agriculture & Mandis (कृषि)
+                            <i class="fas fa-seedling"></i> Agriculture & Mandis
                         </button>
                         <button type="button" class="news-tab-btn" data-cat="commodities" onclick="switchNewsTab('commodities')">
-                            <i class="fas fa-coins"></i> Commodities (जिंस व सराफा)
+                            <i class="fas fa-coins"></i> Commodities
                         </button>
                         <button type="button" class="news-tab-btn" data-cat="schemes" onclick="switchNewsTab('schemes')">
-                            <i class="fas fa-landmark"></i> MSME & Govt Schemes (योजनाएं)
+                            <i class="fas fa-landmark"></i> MSME & Govt Schemes
                         </button>
                         <button type="button" class="news-tab-btn" data-cat="market_rates" onclick="switchNewsTab('market_rates')">
-                            <i class="fas fa-chart-bar"></i> Live Rates & Calculator (मंडी दरें)
+                            <i class="fas fa-chart-bar"></i> Live Rates & Calculator
                         </button>
                     </div>
 
@@ -1123,7 +1123,7 @@
                         <div class="unit-calc-card">
                             <h4 style="font-weight:800; margin-bottom:8px; display:flex; align-items:center; gap:8px;">
                                 <i class="fas fa-balance-scale" style="color:var(--lime-600);"></i>
-                                <span>Unit Normalizer & Price Difference Tool (यूनिट कनवर्टर व तुलना)</span>
+                                <span>Unit Normalizer & Price Difference Tool</span>
                             </h4>
                             <p style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:14px;">
                                 Compare quotes from different suppliers across quintals, metric tonnes, 50kg bags, and kilograms with strict unit compatibility.
@@ -1190,9 +1190,59 @@
                 <div class="view-section" id="view-settings">
                     <div class="section-title-row">
                         <h2 class="section-title">
-                            <i class="fas fa-cog" style="color:var(--lime-600);"></i> Settings & Profile / सेटिंग्स
+                            <i class="fas fa-cog" style="color:var(--lime-600);"></i> Settings & Profile
                         </h2>
                     </div>
+                    <!-- Dedicated Language Setting Section (Requirement 1) -->
+                    <div class="settings-lang-card" id="settingLangCard">
+                        <div class="settings-card-header">
+                            <div class="settings-card-icon"><i class="fas fa-globe"></i></div>
+                            <div>
+                                <h3 class="settings-card-title" data-i18n="setting_lang_title">Display Language</h3>
+                                <p class="settings-card-desc" data-i18n="setting_lang_desc">Choose your preferred language for the dashboard interface, menus, and reports.</p>
+                            </div>
+                        </div>
+
+                        <!-- Quick Select Language Pills -->
+                        <div class="lang-quick-pills">
+                            <button type="button" class="lang-pill-btn active" data-lang="hi" onclick="setLanguage('hi')">हिन्दी (Hindi)</button>
+                            <button type="button" class="lang-pill-btn" data-lang="en" onclick="setLanguage('en')">English</button>
+                            <button type="button" class="lang-pill-btn" data-lang="hinglish" onclick="setLanguage('hinglish')">Hinglish</button>
+                            <button type="button" class="lang-pill-btn" data-lang="mr" onclick="setLanguage('mr')">मराठी (Marathi)</button>
+                            <button type="button" class="lang-pill-btn" data-lang="gu" onclick="setLanguage('gu')">ગુજરાતી (Gujarati)</button>
+                            <button type="button" class="lang-pill-btn" data-lang="bn" onclick="setLanguage('bn')">বাংলা (Bengali)</button>
+                            <button type="button" class="lang-pill-btn" data-lang="ta" onclick="setLanguage('ta')">தமிழ் (Tamil)</button>
+                            <button type="button" class="lang-pill-btn" data-lang="te" onclick="setLanguage('te')">తెలుగు (Telugu)</button>
+                            <button type="button" class="lang-pill-btn" data-lang="ur" onclick="setLanguage('ur')">اردو (Urdu)</button>
+                        </div>
+
+                        <!-- Full 16+ Language Dropdown -->
+                        <div class="lang-select-row">
+                            <label for="prefUiLang" style="font-weight:700; font-size:0.88rem; color:var(--text-primary);" data-i18n="pref_ui_lang">Select from All 16+ Supported Languages:</label>
+                            <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+                                <select id="settingLangSelect" class="settings-select" onchange="setLanguage(this.value)">
+                                    <option value="hi">हिन्दी (Hindi) [100% Verified]</option>
+                                    <option value="en">English (English) [100% Verified]</option>
+                                    <option value="hinglish">Hinglish (Colloquial) [100% Verified]</option>
+                                    <option value="mr">मराठी (Marathi) [100% Verified]</option>
+                                    <option value="gu">ગુજરાતી (Gujarati) [100% Verified]</option>
+                                    <option value="bn">বাংলা (Bengali) [100% Verified]</option>
+                                    <option value="ta">தமிழ் (Tamil) [100% Verified]</option>
+                                    <option value="te">తెలుగు (Telugu) [100% Verified]</option>
+                                    <option value="ur">اردو (Urdu) [100% Verified]</option>
+                                    <option value="es">Español (Spanish) [Verified]</option>
+                                    <option value="fr">Français (French) [Verified]</option>
+                                    <option value="de">Deutsch (German) [Verified]</option>
+                                    <option value="ar">العربية (Arabic) [Verified]</option>
+                                    <option value="zh">中文 (Chinese) [Verified]</option>
+                                    <option value="ja">日本語 (Japanese) [Verified]</option>
+                                    <option value="ru">Русский (Russian) [Verified]</option>
+                                </select>
+                                <span class="lang-saved-indicator" id="langSavedNotice" style="display:none; color:var(--color-primary-green); font-weight:700; font-size:0.85rem;"><i class="fas fa-check-circle"></i> Saved</span>
+                            </div>
+                        </div>
+                    </div>
+
 
                     <div style="display:flex; flex-direction:column; gap:20px; max-width:680px;">
 
@@ -1201,7 +1251,7 @@
                             <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;">
                                 <h4 style="font-weight:800; display:flex; align-items:center; gap:8px;">
                                     <i class="fas fa-globe" style="color:var(--lime-600);"></i>
-                                    <span>App Preferences &bull; Language & Region / भाषा एवं क्षेत्र</span>
+                                    <span>App Preferences &bull; Language & Region</span>
                                 </h4>
                                 <button type="button" class="btn-dash btn-dash-secondary" style="font-size:0.8rem; padding:4px 10px;" onclick="openLanguageModal()">
                                     <i class="fas fa-search"></i> Browse All 16+ Languages
@@ -1214,7 +1264,7 @@
                             <form onsubmit="handleSavePreferences(event); return false;">
                                 <div class="pref-grid">
                                     <div class="pref-field">
-                                        <label for="prefUiLang">UI Display Language / स्क्रीन की भाषा</label>
+                                        <label for="prefUiLang">UI Display Language</label>
                                         <select id="prefUiLang" onchange="previewUiLanguage(this.value)">
                                             <option value="hi">हिन्दी (Hindi) [100% Verified]</option>
                                             <option value="en">English [100% Verified]</option>
@@ -1236,7 +1286,7 @@
                                     </div>
 
                                     <div class="pref-field">
-                                        <label for="prefAiLang">AI Voice & Chat Language / AI की भाषा</label>
+                                        <label for="prefAiLang">AI Voice & Chat Language</label>
                                         <select id="prefAiLang">
                                             <option value="hi">हिन्दी (Hindi)</option>
                                             <option value="en">English</option>
@@ -1258,7 +1308,7 @@
                                     </div>
 
                                     <div class="pref-field">
-                                        <label for="prefNewsLang">News Feed Language / समाचार भाषा</label>
+                                        <label for="prefNewsLang">News Feed Language</label>
                                         <select id="prefNewsLang">
                                             <option value="en">English (Google News RSS)</option>
                                             <option value="hi">हिन्दी (Hindi RSS Feeds)</option>
@@ -1266,7 +1316,7 @@
                                     </div>
 
                                     <div class="pref-field">
-                                        <label for="prefDateFormat">Date Format / दिनांक प्रारूप</label>
+                                        <label for="prefDateFormat">Date Format</label>
                                         <select id="prefDateFormat">
                                             <option value="DD/MM/YYYY">DD/MM/YYYY (15/10/2026)</option>
                                             <option value="MM/DD/YYYY">MM/DD/YYYY (10/15/2026)</option>
@@ -1275,7 +1325,7 @@
                                     </div>
 
                                     <div class="pref-field">
-                                        <label for="prefTimeFormat">Time Format / समय प्रारूप</label>
+                                        <label for="prefTimeFormat">Time Format</label>
                                         <select id="prefTimeFormat">
                                             <option value="12h">12-Hour (e.g. 02:45 PM)</option>
                                             <option value="24h">24-Hour (e.g. 14:45)</option>
@@ -1283,7 +1333,7 @@
                                     </div>
 
                                     <div class="pref-field">
-                                        <label for="prefNumberFormat">Currency & Number Scale / संख्या प्रारूप</label>
+                                        <label for="prefNumberFormat">Currency & Number Scale</label>
                                         <select id="prefNumberFormat">
                                             <option value="inr_lakhs">Indian Lakhs & Crores (₹ 1,50,000)</option>
                                             <option value="intl_standard">International Standard ($ 150,000)</option>
@@ -1291,7 +1341,7 @@
                                     </div>
 
                                     <div class="pref-field">
-                                        <label for="prefTempUnit">Temperature Unit / तापमान इकाई</label>
+                                        <label for="prefTempUnit">Temperature Unit</label>
                                         <select id="prefTempUnit">
                                             <option value="celsius">Celsius (°C)</option>
                                             <option value="fahrenheit">Fahrenheit (°F)</option>
@@ -1299,7 +1349,7 @@
                                     </div>
 
                                     <div class="pref-field">
-                                        <label for="prefCity">Default Business City / प्रमुख शहर</label>
+                                        <label for="prefCity">Default Business City</label>
                                         <select id="prefCity">
                                             <option value="Delhi">Delhi (NCR)</option>
                                             <option value="Mumbai">Mumbai</option>
@@ -1333,7 +1383,7 @@
 
                                 <div style="display:flex; justify-content:flex-end; margin-top:20px; gap:12px;">
                                     <button type="submit" class="btn-dash btn-dash-primary" id="btnSavePreferences">
-                                        <i class="fas fa-save"></i> Save Preferences / प्राथमिकताएं सहेजें
+                                        <i class="fas fa-save"></i> Save Preferences
                                     </button>
                                 </div>
                             </form>
@@ -1387,7 +1437,7 @@
                     <div class="section-title-row">
                         <div>
                             <h2 class="section-title">
-                                <i class="fas fa-history" style="color:var(--lime-600);"></i> AI Business Time Machine / टाइम मशीन
+                                <i class="fas fa-history" style="color:var(--lime-600);"></i> AI Business Time Machine
                             </h2>
                             <p class="section-desc">Compare historical sales periods, analyze day-of-week seasonality cycles, and view 30-day predictive forecasts.</p>
                         </div>
@@ -1397,7 +1447,7 @@
                     <div style="background:#FFF; border:1.5px solid var(--border-color); border-radius:var(--radius-lg); padding:20px; margin-bottom:20px;">
                         <h4 style="font-weight:800; margin-bottom:12px; display:flex; align-items:center; gap:8px;">
                             <i class="fas fa-calendar-alt" style="color:var(--lime-600);"></i>
-                            <span>Period Comparison / दो अवधियों की तुलना</span>
+                            <span>Period Comparison</span>
                         </h4>
                         <form onsubmit="handleTimeMachineCompareSubmit(event); return false;">
                             <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:16px;">
@@ -1424,7 +1474,7 @@
                                     <button type="button" class="btn-dash btn-dash-secondary" onclick="applyTimePreset('last_30_days')" style="font-size:0.8rem; padding:6px 10px;">Last 30 vs Prior 30 Days</button>
                                 </div>
                                 <button type="button" class="btn-dash btn-dash-primary" id="btnRunTimeCompare" onclick="handleTimeMachineCompareSubmit(event)">
-                                    <i class="fas fa-play"></i> Compare Periods / तुलना करें
+                                    <i class="fas fa-play"></i> Compare Periods
                                 </button>
 
                             </div>
@@ -1444,7 +1494,7 @@
                             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
                                 <h4 style="font-weight:800; display:flex; align-items:center; gap:8px;">
                                     <i class="fas fa-chart-bar" style="color:var(--lime-600);"></i>
-                                    <span>Weekly Sales Cycle (साप्ताहिक चक्र)</span>
+                                    <span>Weekly Sales Cycle</span>
                                 </h4>
                                 <span class="badge" style="background:var(--blue-50); color:var(--blue-700); font-weight:700;">Verified Cycles</span>
                             </div>
@@ -1458,7 +1508,7 @@
                             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
                                 <h4 style="font-weight:800; display:flex; align-items:center; gap:8px;">
                                     <i class="fas fa-project-diagram" style="color:var(--lime-600);"></i>
-                                    <span>Predictive Forecast (पूर्वानुमान)</span>
+                                    <span>Predictive Forecast</span>
                                 </h4>
                                 <span class="badge" style="background:#FEF3C7; color:#92400E; font-weight:700;">Estimate (80% CI)</span>
                             </div>
@@ -1476,12 +1526,12 @@
                     <div class="section-title-row">
                         <div>
                             <h2 class="section-title">
-                                <i class="fas fa-file-invoice-dollar" style="color:var(--lime-600);"></i> AI Digital Accountant / डिजिटल मुनीम
+                                <i class="fas fa-file-invoice-dollar" style="color:var(--lime-600);"></i> AI Digital Accountant
                             </h2>
                             <p class="section-desc">Manage Accounts Receivable (customer udhari), supplier payables, rolling cash flow, and GST readiness with an immutable audit trail.</p>
                         </div>
                         <button class="btn-dash btn-dash-primary" onclick="openModal('addLedgerModal')">
-                            <i class="fas fa-plus-circle"></i> Record Entry / उधारी या देनदारी
+                            <i class="fas fa-plus-circle"></i> Record Entry
                         </button>
                     </div>
 
@@ -1509,11 +1559,11 @@
                         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:10px;">
                             <h4 style="font-weight:800; display:flex; align-items:center; gap:8px;">
                                 <i class="fas fa-balance-scale" style="color:var(--lime-600);"></i>
-                                <span>Receivables & Payables Ledger (उधारी व देनदारी रजिस्टर)</span>
+                                <span>Receivables & Payables Ledger</span>
                             </h4>
                             <div style="display:flex; gap:8px;">
                                 <select id="ledgerTypeFilter" onchange="fetchAccountantLedger()" style="padding:4px 8px; font-size:0.85rem;">
-                                    <option value="">All Entries / सभी</option>
+                                    <option value="">All Entries</option>
                                     <option value="receivable">Receivables (Customer Udhari)</option>
                                     <option value="payable">Payables (Supplier Dues)</option>
                                 </select>
@@ -1522,12 +1572,12 @@
 
                         <div class="metrics-grid" style="margin-bottom:16px;">
                             <div class="metric-card">
-                                <div class="metric-label">Pending Receivables (लेना है)</div>
+                                <div class="metric-label">Pending Receivables</div>
                                 <div class="metric-value" id="ledgerTotalAr" style="color:#16A34A;">₹0.00</div>
                                 <div class="metric-sub" id="ledgerOverdueArCount">0 overdue</div>
                             </div>
                             <div class="metric-card">
-                                <div class="metric-label">Pending Payables (देना है)</div>
+                                <div class="metric-label">Pending Payables</div>
                                 <div class="metric-value" id="ledgerTotalAp" style="color:#DC2626;">₹0.00</div>
                                 <div class="metric-sub" id="ledgerOverdueApCount">0 overdue</div>
                             </div>
@@ -1598,7 +1648,7 @@
                     <div class="section-title-row">
                         <div>
                             <h2 class="section-title">
-                                <i class="fas fa-calculator" style="color:var(--lime-600);"></i> What-If Business Simulator / व्यापार सिमुलेटर
+                                <i class="fas fa-calculator" style="color:var(--lime-600);"></i> What-If Business Simulator
                             </h2>
                             <p class="section-desc">Test strategic pricing decisions, supplier cost shocks, promotional discounts, and staff hiring in a risk-free sandbox before execution.</p>
                         </div>
@@ -1626,10 +1676,10 @@
 
                         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
                             <button type="button" class="btn-dash btn-dash-primary" onclick="executeCurrentSimulation()">
-                                <i class="fas fa-play"></i> Run Simulation / सिमुलेशन चलाएं
+                                <i class="fas fa-play"></i> Run Simulation
                             </button>
                             <button type="button" class="btn-dash btn-dash-secondary" onclick="saveCurrentSimulation()">
-                                <i class="fas fa-bookmark"></i> Save Decision Brief / सहेजें
+                                <i class="fas fa-bookmark"></i> Save Decision Brief
                             </button>
                         </div>
                     </div>
@@ -1638,7 +1688,7 @@
                     <div id="simOutcomeCard" style="display:none; background:#FFF; border:1.5px solid var(--border-color); border-radius:var(--radius-lg); padding:20px; margin-bottom:20px;">
                         <h4 style="font-weight:800; margin-bottom:14px; display:flex; align-items:center; gap:8px;">
                             <i class="fas fa-chart-line" style="color:var(--lime-600);"></i>
-                            <span>Simulation Outcome & Impact Analysis (सिमुलेशन परिणाम)</span>
+                            <span>Simulation Outcome & Impact Analysis</span>
                         </h4>
                         <div class="metrics-grid" style="margin-bottom:16px;" id="simMetricsGrid"></div>
                         <div id="simVerdictBox" style="background:#F0FDF4; border:1.5px solid #86EFAC; border-radius:var(--radius-md); padding:14px 18px; font-size:0.95rem; font-weight:600; color:#14532D; margin-bottom:14px;"></div>
@@ -1646,7 +1696,7 @@
 
                     <!-- Saved Scenarios List -->
                     <div style="background:#FFF; border:1.5px solid var(--border-color); border-radius:var(--radius-lg); padding:20px;">
-                        <h4 style="font-weight:800; margin-bottom:12px;">Saved Decision Briefs (सहेजे गए सिमुलेशन)</h4>
+                        <h4 style="font-weight:800; margin-bottom:12px;">Saved Decision Briefs</h4>
                         <div id="savedScenariosList" style="color:var(--text-muted); font-size:0.88rem;">No saved simulation scenarios yet.</div>
                     </div>
                 </div>
@@ -1658,16 +1708,16 @@
                     <div class="section-title-row">
                         <div>
                             <h2 class="section-title">
-                                <i class="fas fa-store-alt" style="color:var(--lime-600);"></i> Multi-Store Command Center / मल्टी-स्टोर हब
+                                <i class="fas fa-store-alt" style="color:var(--lime-600);"></i> Multi-Store Command Center
                             </h2>
                             <p class="section-desc">Consolidated inventory, multi-branch revenue tracking, and atomic inter-store stock transfers with ledger audit.</p>
                         </div>
                         <div style="display:flex; gap:10px; flex-wrap:wrap;">
                             <button type="button" class="btn-dash btn-dash-primary" onclick="openModal('addBranchModal')">
-                                <i class="fas fa-plus"></i> Add Branch / नई शाखा
+                                <i class="fas fa-plus"></i> Add Branch
                             </button>
                             <button type="button" class="btn-dash btn-dash-secondary" onclick="openTransferStockModal()">
-                                <i class="fas fa-exchange-alt"></i> Transfer Stock / ट्रांसफर करें
+                                <i class="fas fa-exchange-alt"></i> Transfer Stock
                             </button>
                         </div>
                     </div>
@@ -1675,7 +1725,7 @@
                     <!-- Consolidated KPIs -->
                     <div class="metrics-grid" style="margin-bottom:24px;">
                         <div class="metric-card">
-                            <div class="metric-label">Active Branches / शाखाएं</div>
+                            <div class="metric-label">Active Branches</div>
                             <div class="metric-value" id="msActiveStoresCount">--</div>
                             <div class="metric-sub">Multi-Branch Network</div>
                         </div>
@@ -1700,7 +1750,7 @@
                     <div style="margin-bottom:24px;">
                         <h4 style="font-weight:800; margin-bottom:14px; display:flex; align-items:center; gap:8px;">
                             <i class="fas fa-network-wired" style="color:var(--lime-600);"></i>
-                            <span>Store Branch Network (शाखा विवरण)</span>
+                            <span>Store Branch Network</span>
                         </h4>
                         <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:16px;" id="multiStoreCardsContainer">
                             <!-- Populated dynamically -->
@@ -1712,7 +1762,7 @@
                         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:10px;">
                             <h4 style="font-weight:800; display:flex; align-items:center; gap:8px;">
                                 <i class="fas fa-history" style="color:var(--lime-600);"></i>
-                                <span>Inter-Store Stock Transfer Log (स्टॉक ट्रांसफर रजिस्टर)</span>
+                                <span>Inter-Store Stock Transfer Log</span>
                             </h4>
                             <button class="btn-dash btn-dash-secondary" style="font-size:0.82rem; padding:4px 10px;" onclick="fetchMultiStoreTransfers()">
                                 <i class="fas fa-sync-alt"></i> Refresh
@@ -1746,7 +1796,7 @@
                     <div class="section-title-row">
                         <div>
                             <h2 class="section-title">
-                                <i class="fas fa-camera" style="color:var(--lime-600);"></i> Smart Shelf Scanner / शेल्फ स्कैनर
+                                <i class="fas fa-camera" style="color:var(--lime-600);"></i> Smart Shelf Scanner
                             </h2>
                             <p class="section-desc">AI-assisted visual shelf audit. Upload shelf photos to compare visible counts against catalog stock. Confirmation required before updating inventory.</p>
                         </div>
@@ -1756,12 +1806,12 @@
                     <div style="background:#FFF; border:1.5px solid var(--border-color); border-radius:var(--radius-lg); padding:20px; margin-bottom:20px;">
                         <h4 style="font-weight:800; margin-bottom:14px; display:flex; align-items:center; gap:8px;">
                             <i class="fas fa-upload" style="color:var(--lime-600);"></i>
-                            <span>Upload Shelf Image or Take Photo (शेल्फ की फोटो अपलोड करें)</span>
+                            <span>Upload Shelf Image or Take Photo</span>
                         </h4>
                         <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:20px; align-items:start;">
                             <div>
                                 <div class="form-group-dash" style="margin-bottom:12px;">
-                                    <label>Select Target Store / दुकान चुनें</label>
+                                    <label>Select Target Store</label>
                                     <select id="shelfScanStoreSelect" style="width:100%; padding:8px 12px; border:1px solid var(--border-color); border-radius:var(--radius-md);">
                                         <!-- Loaded dynamically -->
                                     </select>
@@ -1777,7 +1827,7 @@
                                 </div>
                                 <div style="display:flex; gap:10px;">
                                     <button type="button" class="btn-dash btn-dash-primary" id="btnRunShelfScan" onclick="runShelfAnalysis()" disabled style="flex:1;">
-                                        <i class="fas fa-microchip"></i> Analyze Shelf / शेल्फ विश्लेषण करें
+                                        <i class="fas fa-microchip"></i> Analyze Shelf
                                     </button>
                                     <button type="button" class="btn-dash btn-dash-secondary" onclick="clearShelfScan()" style="padding:8px 14px;">
                                         Reset
@@ -1799,7 +1849,7 @@
                         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:10px;">
                             <h4 style="font-weight:800; display:flex; align-items:center; gap:8px;">
                                 <i class="fas fa-clipboard-check" style="color:var(--lime-600);"></i>
-                                <span>Shelf Audit Results (शेल्फ ऑडिट परिणाम)</span>
+                                <span>Shelf Audit Results</span>
                             </h4>
                             <span id="shelfScanEngineBadge" class="badge" style="background:#ECFDF5; color:#065F46; border:1px solid #A7F3D0; font-weight:700; padding:4px 10px;">Gemini Vision Active</span>
                         </div>
@@ -1855,14 +1905,14 @@
                         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
                             <div style="font-size:0.85rem; color:var(--text-muted);" id="shelfAuditScanId">Scan ID: --</div>
                             <button type="button" class="btn-dash btn-dash-primary" id="btnApplyShelfAdjustments" onclick="applyShelfAuditAdjustments()">
-                                <i class="fas fa-check-circle"></i> Apply Confirmed Adjustments / स्टॉक अपडेट करें
+                                <i class="fas fa-check-circle"></i> Apply Confirmed Adjustments
                             </button>
                         </div>
                     </div>
 
                     <!-- Shelf Audits History -->
                     <div style="background:#FFF; border:1.5px solid var(--border-color); border-radius:var(--radius-lg); padding:20px;">
-                        <h4 style="font-weight:800; margin-bottom:12px;">Past Shelf Scans History (पुराने शेल्फ ऑडिट)</h4>
+                        <h4 style="font-weight:800; margin-bottom:12px;">Past Shelf Scans History</h4>
                         <div id="shelfScansHistoryList" style="font-size:0.88rem; color:var(--text-muted);">No shelf audits performed yet.</div>
                     </div>
                 </div>
@@ -1875,7 +1925,7 @@
                         <div>
                             <h2 style="font-weight:800; font-size:1.5rem; display:flex; align-items:center; gap:10px;">
                                 <i class="fas fa-crosshairs" style="color:var(--lime-600);"></i>
-                                <span data-i18n="comp_title">AI Competitor Intelligence / प्रतिस्पर्धी दर विश्लेषण</span>
+                                <span data-i18n="comp_title">AI Competitor Intelligence</span>
                             </h2>
                             <p style="color:var(--text-muted); font-size:0.9rem; margin-top:4px;" data-i18n="comp_sub">
                                 Compare store prices against verified APMC Mandi rates and local market observations. Identify margin gains and pricing risks.
@@ -1919,7 +1969,7 @@
                     <div style="background:#F0FDF4; border:1.5px solid #86EFAC; border-radius:var(--radius-lg); padding:16px 20px; margin-bottom:24px;">
                         <div style="font-weight:700; color:#166534; font-size:0.95rem; display:flex; align-items:center; gap:8px; margin-bottom:6px;">
                             <i class="fas fa-lightbulb"></i>
-                            <span>Strategic AI Takeaway / रणनीतिक विश्लेषण</span>
+                            <span>Strategic AI Takeaway</span>
                         </div>
                         <div id="compInsightEn" style="color:#15803D; font-size:0.92rem; font-weight:600;">Analyzing dukaan products against verified benchmarks...</div>
                         <div id="compInsightHi" style="color:#166534; font-size:0.88rem; margin-top:4px;">बाजार दरों से तुलना की जा रही है...</div>
@@ -1929,13 +1979,13 @@
                     <div style="background:#FFF; border:1.5px solid var(--border-color); border-radius:var(--radius-lg); padding:20px; margin-bottom:24px;">
                         <h4 style="font-weight:800; margin-bottom:14px; display:flex; align-items:center; gap:8px;">
                             <i class="fas fa-balance-scale" style="color:var(--lime-600);"></i>
-                            <span>Price Benchmarking Matrix (उत्पाद दर तुलना)</span>
+                            <span>Price Benchmarking Matrix</span>
                         </h4>
                         <div class="table-responsive">
                             <table class="data-table" id="competitorTable">
                                 <thead>
                                     <tr>
-                                        <th>Product / उत्पाद</th>
+                                        <th>Product</th>
                                         <th>Dukaan Price</th>
                                         <th>Market / Competitor</th>
                                         <th>Difference</th>
@@ -1955,7 +2005,7 @@
                     <div style="background:#FFF; border:1.5px solid var(--border-color); border-radius:var(--radius-lg); padding:20px;">
                         <h4 style="font-weight:800; margin-bottom:14px; display:flex; align-items:center; gap:8px;">
                             <i class="fas fa-store" style="color:var(--lime-600);"></i>
-                            <span>Locally Recorded Competitor Observations (दुकानदार द्वारा दर्ज स्थानीय दरें)</span>
+                            <span>Locally Recorded Competitor Observations</span>
                         </h4>
                         <div id="userBenchmarksList" style="font-size:0.9rem; color:var(--text-muted);">No local observations recorded yet. Click "Record Local Observation" to add.</div>
                     </div>
@@ -1969,7 +2019,7 @@
                         <div>
                             <h2 style="font-weight:800; font-size:1.5rem; display:flex; align-items:center; gap:10px;">
                                 <i class="fas fa-ear-listen" style="color:var(--lime-600);"></i>
-                                <span data-i18n="demand_title">Customer Demand Listening / ग्राहक मांग विश्लेषण</span>
+                                <span data-i18n="demand_title">Customer Demand Listening</span>
                             </h2>
                             <p style="color:var(--text-muted); font-size:0.9rem; margin-top:4px;" data-i18n="demand_sub">
                                 Real sales velocity analysis, stockout-suppressed demand detection, and customer unstocked item requests.
@@ -1983,7 +2033,7 @@
                                 <option value="60">Last 60 Days</option>
                             </select>
                             <button type="button" class="btn-dash btn-dash-primary" onclick="openModal('logDemandModal')">
-                                <i class="fas fa-plus"></i> Log Customer Request / मांग दर्ज करें
+                                <i class="fas fa-plus"></i> Log Customer Request
                             </button>
                         </div>
                     </div>
@@ -2016,7 +2066,7 @@
                     <div style="background:#FEFCE8; border:1.5px solid #FDE047; border-radius:var(--radius-lg); padding:16px 20px; margin-bottom:24px;">
                         <div style="font-weight:700; color:#854D0E; font-size:0.95rem; display:flex; align-items:center; gap:8px; margin-bottom:6px;">
                             <i class="fas fa-chart-line"></i>
-                            <span>Demand Insights & Stockout Intelligence / मांग सारांश</span>
+                            <span>Demand Insights & Stockout Intelligence</span>
                         </div>
                         <div id="demandTakeawayEn" style="color:#713F12; font-size:0.92rem; font-weight:600;">Calculating sales velocity and inventory patterns...</div>
                         <div id="demandTakeawayHi" style="color:#854D0E; font-size:0.88rem; margin-top:4px;">बिक्री गति और स्टॉक स्थिति जांची जा रही है...</div>
@@ -2026,13 +2076,13 @@
                     <div style="background:#FFF; border:1.5px solid var(--border-color); border-radius:var(--radius-lg); padding:20px; margin-bottom:24px;">
                         <h4 style="font-weight:800; margin-bottom:14px; display:flex; align-items:center; gap:8px;">
                             <i class="fas fa-tachometer-alt" style="color:var(--lime-600);"></i>
-                            <span>Inventory Demand & Velocity Analysis (बिक्री गति व मांग स्थिति)</span>
+                            <span>Inventory Demand & Velocity Analysis</span>
                         </h4>
                         <div class="table-responsive">
                             <table class="data-table" id="demandTable">
                                 <thead>
                                     <tr>
-                                        <th>Product / उत्पाद</th>
+                                        <th>Product</th>
                                         <th>Current Stock</th>
                                         <th>Velocity (Units/Day)</th>
                                         <th>Total Sold</th>
@@ -2052,7 +2102,7 @@
                     <div style="background:#FFF; border:1.5px solid var(--border-color); border-radius:var(--radius-lg); padding:20px;">
                         <h4 style="font-weight:800; margin-bottom:14px; display:flex; align-items:center; gap:8px;">
                             <i class="fas fa-clipboard-list" style="color:var(--lime-600);"></i>
-                            <span>Logged Customer Demand Requests (ग्राहकों द्वारा मांगे गए नए उत्पाद)</span>
+                            <span>Logged Customer Demand Requests</span>
                         </h4>
                         <div class="table-responsive">
                             <table class="data-table" id="demandRequestsTable">
@@ -2083,7 +2133,7 @@
                         <div>
                             <h2 style="font-weight:800; font-size:1.5rem; display:flex; align-items:center; gap:10px;">
                                 <i class="fas fa-handshake" style="color:var(--lime-600);"></i>
-                                <span data-i18n="neg_title">AI Negotiation Coach / सप्लायर मोलभाव रणनीतिकार</span>
+                                <span data-i18n="neg_title">AI Negotiation Coach</span>
                             </h2>
                             <p style="color:var(--text-muted); font-size:0.9rem; margin-top:4px;" data-i18n="neg_sub">
                                 Data-backed target prices, potential savings, and polite persuasive scripts in Hindi, Hinglish, and English.
@@ -2096,44 +2146,44 @@
 
                     <!-- Strategy Generator Form Card -->
                     <div style="background:#FFF; border:1.5px solid var(--border-color); border-radius:var(--radius-lg); padding:24px; margin-bottom:24px;">
-                        <h4 style="font-weight:800; margin-bottom:16px;">Create Negotiation Strategy (नई मोलभाव योजना बनाएं)</h4>
+                        <h4 style="font-weight:800; margin-bottom:16px;">Create Negotiation Strategy</h4>
                         <form onsubmit="handleGenerateNegotiation(event); return false;">
                             <div class="form-row-2" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:16px; margin-bottom:16px;">
                                 <div class="form-group-dash">
-                                    <label>Supplier / Vendor Name (आपूर्तिकर्ता)</label>
+                                    <label>Supplier / Vendor Name</label>
                                     <input type="text" id="negSupplierName" placeholder="e.g. Sharma FMCG Distributors" required>
                                 </div>
                                 <div class="form-group-dash">
-                                    <label>Product Name (सामान का नाम)</label>
+                                    <label>Product Name</label>
                                     <input type="text" id="negProductName" placeholder="e.g. Fortune Oil 1L" required>
                                 </div>
                                 <div class="form-group-dash">
-                                    <label>Quoted Price per Unit (कोटेड दर ₹)</label>
+                                    <label>Quoted Price per Unit (₹)</label>
                                     <input type="number" id="negQuotedPrice" min="0.01" step="any" placeholder="e.g. 140" required>
                                 </div>
                                 <div class="form-group-dash">
-                                    <label>Order Quantity (ऑर्डर संख्या)</label>
+                                    <label>Order Quantity</label>
                                     <input type="number" id="negQuantity" min="1" step="any" placeholder="e.g. 50" required>
                                 </div>
                             </div>
                             <div class="form-row-2" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:16px; margin-bottom:20px;">
                                 <div class="form-group-dash">
-                                    <label>Negotiation Scenario (परिस्थिति)</label>
+                                    <label>Negotiation Scenario</label>
                                     <select id="negScenario" required>
-                                        <option value="bulk_discount">Bulk Volume Discount (बड़ा ऑर्डर छूट)</option>
-                                        <option value="payment_terms">Fast Cash / 48-hr Payment Rebate (नकद भुगतान छूट)</option>
-                                        <option value="damaged_goods">Defective / Damaged Lot Compensation (खराब माल मुआवजा)</option>
-                                        <option value="shipping_terms">Free Delivery / Cartage Offset (भाड़ा खर्च छूट)</option>
-                                        <option value="contract_renewal">Quarterly Vendor Loyalty Lock (त्रैमासिक अनुबंध दर)</option>
+                                        <option value="bulk_discount">Bulk Volume Discount</option>
+                                        <option value="payment_terms">Fast Cash / 48-hr Payment Rebate</option>
+                                        <option value="damaged_goods">Defective / Damaged Lot Compensation</option>
+                                        <option value="shipping_terms">Free Delivery / Cartage Offset</option>
+                                        <option value="contract_renewal">Quarterly Vendor Loyalty Lock</option>
                                     </select>
                                 </div>
                                 <div class="form-group-dash">
-                                    <label>Custom Target Price (वैकल्पिक लक्ष्य दर ₹)</label>
+                                    <label>Custom Target Price (₹)</label>
                                     <input type="number" id="negTargetPrice" min="0" step="any" placeholder="Auto-calculated if blank">
                                 </div>
                             </div>
                             <button type="submit" class="btn-dash btn-dash-primary" id="btnGenerateNeg">
-                                <i class="fas fa-magic"></i> Generate Persuasive Scripts / रणनीति तैयार करें
+                                <i class="fas fa-magic"></i> Generate Persuasive Scripts
                             </button>
                         </form>
                     </div>
@@ -2177,7 +2227,7 @@
                         </div>
 
                         <!-- Persuasive Scripts (Hindi, English, Hinglish) -->
-                        <h5 style="font-weight:800; margin-bottom:12px;">Persuasive Ready-to-Send Scripts (तैयार संदेश):</h5>
+                        <h5 style="font-weight:800; margin-bottom:12px;">Persuasive Ready-to-Send Scripts:</h5>
                         <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:16px; margin-bottom:16px;">
                             <!-- Hindi Card -->
                             <div style="background:#F0FDF4; border:1px solid #BBF7D0; border-radius:var(--radius-md); padding:16px; display:flex; flex-direction:column; justify-content:space-between;">
@@ -2230,7 +2280,7 @@
                     <div style="background:#FFF; border:1.5px solid var(--border-color); border-radius:var(--radius-lg); padding:20px;">
                         <h4 style="font-weight:800; margin-bottom:14px; display:flex; align-items:center; gap:8px;">
                             <i class="fas fa-history" style="color:var(--lime-600);"></i>
-                            <span>Saved Negotiation Scenarios (पुराने मोलभाव ड्राफ्ट्स)</span>
+                            <span>Saved Negotiation Scenarios</span>
                         </h4>
                         <div id="savedNegotiationsList" style="font-size:0.9rem; color:var(--text-muted);">No negotiation scenarios saved yet.</div>
                     </div>
@@ -2244,7 +2294,7 @@
                         <div>
                             <h2 style="font-weight:800; font-size:1.5rem; display:flex; align-items:center; gap:10px;">
                                 <i class="fas fa-language" style="color:var(--lime-600);"></i>
-                                <span data-i18n="trans_title">AI Business Translator / बहुभाषी व्यापार अनुवादक</span>
+                                <span data-i18n="trans_title">AI Business Translator</span>
                             </h2>
                             <p style="color:var(--text-muted); font-size:0.9rem; margin-top:4px;" data-i18n="trans_sub">
                                 High-fidelity business translation with mathematical entity preservation for currencies (₹), units, and numbers.
@@ -2269,7 +2319,7 @@
                         <!-- Left: Source Panel -->
                         <div style="background:#FFF; border:1.5px solid var(--border-color); border-radius:var(--radius-lg); padding:20px;">
                             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-                                <label style="font-weight:700; font-size:0.92rem;">Source Text / मूल संदेश:</label>
+                                <label style="font-weight:700; font-size:0.92rem;">Source Text:</label>
                                 <span id="transDetectedLang" class="badge" style="background:#F3F4F6; color:#4B5563;">Auto Detect</span>
                             </div>
                             <div class="form-group-dash" style="margin-bottom:12px;">
@@ -2284,7 +2334,7 @@
                             <textarea id="transSourceText" rows="6" placeholder="Type or paste customer notes, supplier messages, invoice items, or product description..." style="width:100%; border:1px solid var(--border-color); border-radius:var(--radius-md); padding:12px; font-size:0.92rem; font-family:inherit; resize:vertical;"></textarea>
                             <div style="margin-top:14px; display:flex; justify-content:space-between; align-items:center;">
                                 <button type="button" class="btn-dash btn-dash-primary" id="btnRunTranslate" onclick="executeBusinessTranslation()">
-                                    <i class="fas fa-language"></i> Translate / अनुवाद करें
+                                    <i class="fas fa-language"></i> Translate
                                 </button>
                                 <button type="button" class="btn-dash btn-dash-secondary" onclick="document.getElementById('transSourceText').value=''" style="font-size:0.82rem;">Clear</button>
                             </div>
@@ -2331,7 +2381,7 @@
             <div class="view-section" id="view-autopilot">
                 <div class="view-header">
                     <div>
-                        <h2><i class="fas fa-robot" style="color:var(--lime-600);"></i> AI Business Autopilot / स्वायत्त व्यापार सहायक</h2>
+                        <h2><i class="fas fa-robot" style="color:var(--lime-600);"></i> AI Business Autopilot</h2>
                         <p class="text-muted">Proactive store monitoring, automated task drafting, and restocking intelligence with human-in-the-loop safeguards.</p>
                     </div>
                     <div style="display:flex; gap:10px;">
@@ -2348,7 +2398,7 @@
                 <div style="background:#EFF6FF; border:1.5px solid #BFDBFE; border-radius:var(--radius-lg); padding:16px 20px; margin-bottom:20px; display:flex; gap:14px; align-items:flex-start;">
                     <i class="fas fa-shield-halved" style="color:#2563EB; font-size:1.3rem; margin-top:2px;"></i>
                     <div style="font-size:0.88rem; color:#1E40AF; line-height:1.5;">
-                        <strong>🔒 Autonomy Safeguards Active (मानव नियंत्रण सुरक्षित):</strong>
+                        <strong>🔒 Autonomy Safeguards Active:</strong>
                         Autopilot continuously monitors stock levels, overdue balances, and expense anomalies. It generates draft recommendations, but <u>never</u> executes stock purchases, changes selling prices, or transfers funds without your explicit human approval.
                     </div>
                 </div>
@@ -2357,17 +2407,17 @@
                 <div class="overview-metrics-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); margin-bottom:24px;">
                     <div class="metric-card">
                         <div class="metric-icon" style="background:var(--lime-100); color:var(--lime-700);"><i class="fas fa-clipboard-list"></i></div>
-                        <div class="metric-label">Proposed Tasks (प्रस्तावित)</div>
+                        <div class="metric-label">Proposed Tasks</div>
                         <div class="metric-val" id="apCountProposed">0</div>
                     </div>
                     <div class="metric-card">
                         <div class="metric-icon" style="background:#FEF3C7; color:#D97706;"><i class="fas fa-thumbs-up"></i></div>
-                        <div class="metric-label">Approved by You (स्वीकृत)</div>
+                        <div class="metric-label">Approved by You</div>
                         <div class="metric-val" id="apCountApproved">0</div>
                     </div>
                     <div class="metric-card">
                         <div class="metric-icon" style="background:#DCFCE7; color:#15803D;"><i class="fas fa-check-double"></i></div>
-                        <div class="metric-label">Executed Actions (लागू)</div>
+                        <div class="metric-label">Executed Actions</div>
                         <div class="metric-val" id="apCountExecuted">0</div>
                     </div>
                     <div class="metric-card">
@@ -2388,7 +2438,7 @@
 
                 <!-- Audit Trail Drawer/Card -->
                 <div id="autopilotAuditTrailCard" style="display:none; margin-top:24px; background:var(--bg-card); border-radius:var(--radius-lg); border:1px solid var(--border-color); padding:20px;">
-                    <h3 style="font-size:1.1rem; margin-bottom:14px;"><i class="fas fa-history" style="color:var(--lime-600);"></i> Autopilot Audit Trail (कार्य इतिहास)</h3>
+                    <h3 style="font-size:1.1rem; margin-bottom:14px;"><i class="fas fa-history" style="color:var(--lime-600);"></i> Autopilot Audit Trail</h3>
                     <div id="autopilotAuditTrailList" style="display:flex; flex-direction:column; gap:10px; font-size:0.88rem;">
                         <!-- Dynamically populated -->
                     </div>
@@ -2401,7 +2451,7 @@
             <div class="view-section" id="view-notifications">
                 <div class="view-header">
                     <div>
-                        <h2><i class="fas fa-bell" style="color:var(--lime-600);"></i> Intelligent Notification Center / सूचना केंद्र</h2>
+                        <h2><i class="fas fa-bell" style="color:var(--lime-600);"></i> Intelligent Notification Center</h2>
                         <p class="text-muted">Centralized multi-category alert hub with low-stock, expiry, payment, and autopilot notifications.</p>
                     </div>
                     <div style="display:flex; gap:10px;">
@@ -2416,7 +2466,7 @@
 
                 <!-- Filter Chips -->
                 <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:20px;">
-                    <button class="btn-dash btn-dash-secondary notif-filter-btn active" data-filter="all" onclick="filterNotifications('all')">All / सभी</button>
+                    <button class="btn-dash btn-dash-secondary notif-filter-btn active" data-filter="all" onclick="filterNotifications('all')">All</button>
                     <button class="btn-dash btn-dash-secondary notif-filter-btn" data-filter="stock" onclick="filterNotifications('stock')">📦 Stock Alerts</button>
                     <button class="btn-dash btn-dash-secondary notif-filter-btn" data-filter="expiry" onclick="filterNotifications('expiry')">⏳ Expiry Alerts</button>
                     <button class="btn-dash btn-dash-secondary notif-filter-btn" data-filter="payment" onclick="filterNotifications('payment')">💰 Payment Dues</button>
@@ -2440,7 +2490,7 @@
             <div class="view-section" id="view-memory">
                 <div class="view-header">
                     <div>
-                        <h2><i class="fas fa-brain" style="color:var(--lime-600);"></i> Business Memory Graph / व्यापार स्मृति</h2>
+                        <h2><i class="fas fa-brain" style="color:var(--lime-600);"></i> Business Memory Graph</h2>
                         <p class="text-muted">Structured relational graph connecting products, suppliers, sales, and past prices with verified evidence.</p>
                     </div>
                     <div style="display:flex; gap:10px;">
@@ -2453,7 +2503,7 @@
                 <!-- Natural Language Search Bar -->
                 <div style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:var(--radius-lg); padding:20px; margin-bottom:24px;">
                     <label style="font-size:0.95rem; font-weight:700; display:block; margin-bottom:8px;">
-                        <i class="fas fa-search" style="color:var(--lime-600);"></i> Ask Your Business Memory (हिंदी, Hinglish, English):
+                        <i class="fas fa-search" style="color:var(--lime-600);"></i> Ask Your Business Memory:
                     </label>
                     <div style="display:flex; gap:10px;">
                         <input type="text" id="memorySearchInput" class="form-input" style="flex:1;" placeholder="e.g. 'Gupta Wholesalers history', 'Star selling product', 'पिछली बार किस भाव में खरीदा'..." onkeydown="if(event.key==='Enter') searchMemoryGraph()">
@@ -2518,7 +2568,7 @@
             <div class="view-section" id="view-radar">
                 <div class="view-header">
                     <div>
-                        <h2><i class="fas fa-satellite-dish" style="color:var(--lime-600);"></i> Business Opportunity Radar / व्यापार अवसर रडार</h2>
+                        <h2><i class="fas fa-satellite-dish" style="color:var(--lime-600);"></i> Business Opportunity Radar</h2>
                         <p class="text-muted">Evidence-based commercial growth discovery across 8 growth vectors using actual sales, stock, and margins.</p>
                     </div>
                     <div style="display:flex; gap:10px;">
@@ -2532,12 +2582,12 @@
                 <div class="overview-metrics-grid" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); margin-bottom:24px;">
                     <div class="metric-card">
                         <div class="metric-icon" style="background:var(--lime-100); color:var(--lime-700);"><i class="fas fa-compass"></i></div>
-                        <div class="metric-label">Identified Opportunities (अवसर)</div>
+                        <div class="metric-label">Identified Opportunities</div>
                         <div class="metric-val" id="radarTotalCount">0</div>
                     </div>
                     <div class="metric-card">
                         <div class="metric-icon" style="background:#DCFCE7; color:#15803D;"><i class="fas fa-arrow-trend-up"></i></div>
-                        <div class="metric-label">Projected Impact (अनुमानित लाभ)</div>
+                        <div class="metric-label">Projected Impact</div>
                         <div class="metric-val" id="radarTotalImpact" style="color:#15803D;">₹0.00</div>
                     </div>
                     <div class="metric-card">
@@ -2592,7 +2642,7 @@
     <div class="modal-overlay" id="addProductModal">
         <div class="modal-card" style="max-width:560px;">
             <div class="modal-header">
-                <h3><i class="fas fa-plus-circle" style="color:var(--lime-600);"></i> Add Product / नया सामान</h3>
+                <h3><i class="fas fa-plus-circle" style="color:var(--lime-600);"></i> Add Product</h3>
                 <button class="modal-close-btn" onclick="closeModal('addProductModal')"><i class="fas fa-times"></i></button>
             </div>
             <form onsubmit="handleAddProductSubmit(event)">
@@ -2600,77 +2650,77 @@
                     <div id="addProdError" style="display:none; background:var(--red-100); color:var(--red-500); padding:10px 14px; border-radius:8px; font-size:0.85rem; font-weight:600; margin-bottom:12px;"></div>
 
                     <div class="form-group-dash">
-                        <label>Item Name / सामान का नाम <span style="color:var(--red-500);">*</span></label>
+                        <label>Item Name<span style="color:var(--red-500);">*</span></label>
                         <input type="text" id="newProdName" placeholder="e.g. Fortune Kachi Ghani Mustard Oil 1L" required>
                     </div>
 
                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
                         <div class="form-group-dash">
-                            <label>Category / श्रेणी <span style="color:var(--red-500);">*</span></label>
+                            <label>Category<span style="color:var(--red-500);">*</span></label>
                             <select id="newProdCategory" onchange="handleCategoryChange('add')" required>
-                                <option value="Grocery, FMCG, and Supermarkets">Grocery & FMCG / किराना</option>
-                                <option value="Pharmacy and Medical Retail">Pharmacy & Medical / दवा स्टोर</option>
-                                <option value="Textile, Clothing, Fashion, and Apparel">Textile & Garments / कपड़ा व गारमेंट्स</option>
-                                <option value="Hardware and Construction Materials">Hardware & Tools / हार्डवेयर</option>
-                                <option value="Cement, Steel, Paint, Pipes, and Electrical Supplies">Cement, Steel & Paints / सरिया-सीमेंट</option>
-                                <option value="Electronics, Mobiles, and Computers">Electronics & Mobiles / इलेक्ट्रॉनिक्स</option>
-                                <option value="Agriculture, Seeds, Fertilizers, and Agro-chemicals">Agriculture & Seeds / कृषि बीज-खाद</option>
-                                <option value="Automotive Spare Parts and Service Centers">Automotive & Spare Parts / ऑटो पार्ट्स</option>
-                                <option value="Stationery, Books, and School Supplies">Stationery & Books / स्टेशनरी</option>
-                                <option value="Dairy, Milk Products, Poultry, and Animal Husbandry">Dairy & Poultry / डेयरी</option>
-                                <option value="Fruits, Vegetables, and Mandi Trading">Fruits & Vegetables / फल-सब्जी</option>
-                                <option value="Footwear, Shoes, and Leather Goods">Footwear & Leather / जूते-चप्पल</option>
-                                <option value="Jewellery, Gold, Silver, and Gems">Jewellery & Bullion / आभूषण</option>
-                                <option value="Solar Energy, Batteries, and Inverters">Solar & Electrical / सोलर व बिजली</option>
-                                <option value="General">Other / सामान्य व्यवसाय</option>
+                                <option value="Grocery, FMCG, and Supermarkets">Grocery & FMCG</option>
+                                <option value="Pharmacy and Medical Retail">Pharmacy & Medical</option>
+                                <option value="Textile, Clothing, Fashion, and Apparel">Textile & Garments</option>
+                                <option value="Hardware and Construction Materials">Hardware & Tools</option>
+                                <option value="Cement, Steel, Paint, Pipes, and Electrical Supplies">Cement, Steel & Paints</option>
+                                <option value="Electronics, Mobiles, and Computers">Electronics & Mobiles</option>
+                                <option value="Agriculture, Seeds, Fertilizers, and Agro-chemicals">Agriculture & Seeds</option>
+                                <option value="Automotive Spare Parts and Service Centers">Automotive & Spare Parts</option>
+                                <option value="Stationery, Books, and School Supplies">Stationery & Books</option>
+                                <option value="Dairy, Milk Products, Poultry, and Animal Husbandry">Dairy & Poultry</option>
+                                <option value="Fruits, Vegetables, and Mandi Trading">Fruits & Vegetables</option>
+                                <option value="Footwear, Shoes, and Leather Goods">Footwear & Leather</option>
+                                <option value="Jewellery, Gold, Silver, and Gems">Jewellery & Bullion</option>
+                                <option value="Solar Energy, Batteries, and Inverters">Solar & Electrical</option>
+                                <option value="General">Other</option>
                             </select>
                         </div>
                         <div class="form-group-dash">
-                            <label>Brand / ब्रांड</label>
+                            <label>Brand</label>
                             <input type="text" id="newProdBrand" placeholder="e.g. Fortune, Amul, Tata">
                         </div>
                     </div>
 
                     <div style="display:grid; grid-template-columns:1.2fr 1fr; gap:12px;">
                         <div class="form-group-dash">
-                            <label>Barcode / बारकोड</label>
+                            <label>Barcode</label>
                             <div style="display:flex; gap:6px;">
                                 <input type="text" id="newProdBarcode" placeholder="e.g. 8901058852393">
                             </div>
                         </div>
                         <div class="form-group-dash">
-                            <label>SKU / आइटम कोड</label>
+                            <label>SKU</label>
                             <input type="text" id="newProdSku" placeholder="e.g. OIL-001">
                         </div>
                     </div>
 
                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
                         <div class="form-group-dash">
-                            <label>Purchase Price (₹) / खरीद <span style="color:var(--red-500);">*</span></label>
+                            <label>Purchase Price (₹)<span style="color:var(--red-500);">*</span></label>
                             <input type="number" id="newProdBuy" placeholder="₹ Buy" step="0.5" min="0" required>
                         </div>
                         <div class="form-group-dash">
-                            <label>Selling Price (₹) / बिक्री <span style="color:var(--red-500);">*</span></label>
+                            <label>Selling Price (₹)<span style="color:var(--red-500);">*</span></label>
                             <input type="number" id="newProdSell" placeholder="₹ Sell" step="0.5" min="0" required>
                         </div>
                     </div>
 
                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
                         <div class="form-group-dash">
-                            <label>Quantity / शुरुआती स्टॉक <span style="color:var(--red-500);">*</span></label>
+                            <label>Quantity<span style="color:var(--red-500);">*</span></label>
                             <input type="number" id="newProdQty" placeholder="e.g. 25" min="0" step="0.5" required>
                         </div>
                         <div class="form-group-dash">
-                            <label>Unit / इकाई <span style="color:var(--red-500);">*</span></label>
+                            <label>Unit<span style="color:var(--red-500);">*</span></label>
                             <select id="newProdUnit" required>
-                                <option value="pcs">pcs (नग)</option>
-                                <option value="packet">packet (पैकेट)</option>
-                                <option value="kg">kg (किलो)</option>
-                                <option value="gm">gm (ग्राम)</option>
-                                <option value="litre">litre (लीटर)</option>
-                                <option value="ml">ml (मिली)</option>
-                                <option value="box">box (पेटी/बॉक्स)</option>
-                                <option value="dozen">dozen (दर्जन)</option>
+                                <option value="pcs">pcs</option>
+                                <option value="packet">packet</option>
+                                <option value="kg">kg</option>
+                                <option value="gm">gm</option>
+                                <option value="litre">litre</option>
+                                <option value="ml">ml</option>
+                                <option value="box">Box / Case</option>
+                                <option value="dozen">dozen</option>
                             </select>
                         </div>
                     </div>
@@ -2681,7 +2731,7 @@
                             <input type="number" id="newProdLowThreshold" value="5" min="0" step="1" title="Get alerted when stock drops to or below this level">
                         </div>
                         <div class="form-group-dash">
-                            <label>Expiry Date / अंतिम तिथि (Optional)</label>
+                            <label>Expiry DateOptional)</label>
                             <input type="date" id="newProdExpiry">
                         </div>
                     </div>
@@ -2705,7 +2755,7 @@
     <div class="modal-overlay" id="editProductModal">
         <div class="modal-card" style="max-width:560px;">
             <div class="modal-header">
-                <h3><i class="fas fa-edit" style="color:var(--lime-600);"></i> Edit Product / सामान संपादित करें</h3>
+                <h3><i class="fas fa-edit" style="color:var(--lime-600);"></i> Edit Product</h3>
                 <button class="modal-close-btn" onclick="closeModal('editProductModal')"><i class="fas fa-times"></i></button>
             </div>
             <form onsubmit="handleEditProductSubmit(event)">
@@ -2714,75 +2764,75 @@
                     <div id="editProdError" style="display:none; background:var(--red-100); color:var(--red-500); padding:10px 14px; border-radius:8px; font-size:0.85rem; font-weight:600; margin-bottom:12px;"></div>
 
                     <div class="form-group-dash">
-                        <label>Item Name / सामान का नाम <span style="color:var(--red-500);">*</span></label>
+                        <label>Item Name<span style="color:var(--red-500);">*</span></label>
                         <input type="text" id="editProdName" required>
                     </div>
 
                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
                         <div class="form-group-dash">
-                            <label>Category / श्रेणी <span style="color:var(--red-500);">*</span></label>
+                            <label>Category<span style="color:var(--red-500);">*</span></label>
                             <select id="editProdCategory" onchange="handleCategoryChange('edit')" required>
-                                <option value="Grocery, FMCG, and Supermarkets">Grocery & FMCG / किराना</option>
-                                <option value="Pharmacy and Medical Retail">Pharmacy & Medical / दवा स्टोर</option>
-                                <option value="Textile, Clothing, Fashion, and Apparel">Textile & Garments / कपड़ा व गारमेंट्स</option>
-                                <option value="Hardware and Construction Materials">Hardware & Tools / हार्डवेयर</option>
-                                <option value="Cement, Steel, Paint, Pipes, and Electrical Supplies">Cement, Steel & Paints / सरिया-सीमेंट</option>
-                                <option value="Electronics, Mobiles, and Computers">Electronics & Mobiles / इलेक्ट्रॉनिक्स</option>
-                                <option value="Agriculture, Seeds, Fertilizers, and Agro-chemicals">Agriculture & Seeds / कृषि बीज-खाद</option>
-                                <option value="Automotive Spare Parts and Service Centers">Automotive & Spare Parts / ऑटो पार्ट्स</option>
-                                <option value="Stationery, Books, and School Supplies">Stationery & Books / स्टेशनरी</option>
-                                <option value="Dairy, Milk Products, Poultry, and Animal Husbandry">Dairy & Poultry / डेयरी</option>
-                                <option value="Fruits, Vegetables, and Mandi Trading">Fruits & Vegetables / फल-सब्जी</option>
-                                <option value="Footwear, Shoes, and Leather Goods">Footwear & Leather / जूते-चप्पल</option>
-                                <option value="Jewellery, Gold, Silver, and Gems">Jewellery & Bullion / आभूषण</option>
-                                <option value="Solar Energy, Batteries, and Inverters">Solar & Electrical / सोलर व बिजली</option>
-                                <option value="General">Other / सामान्य व्यवसाय</option>
+                                <option value="Grocery, FMCG, and Supermarkets">Grocery & FMCG</option>
+                                <option value="Pharmacy and Medical Retail">Pharmacy & Medical</option>
+                                <option value="Textile, Clothing, Fashion, and Apparel">Textile & Garments</option>
+                                <option value="Hardware and Construction Materials">Hardware & Tools</option>
+                                <option value="Cement, Steel, Paint, Pipes, and Electrical Supplies">Cement, Steel & Paints</option>
+                                <option value="Electronics, Mobiles, and Computers">Electronics & Mobiles</option>
+                                <option value="Agriculture, Seeds, Fertilizers, and Agro-chemicals">Agriculture & Seeds</option>
+                                <option value="Automotive Spare Parts and Service Centers">Automotive & Spare Parts</option>
+                                <option value="Stationery, Books, and School Supplies">Stationery & Books</option>
+                                <option value="Dairy, Milk Products, Poultry, and Animal Husbandry">Dairy & Poultry</option>
+                                <option value="Fruits, Vegetables, and Mandi Trading">Fruits & Vegetables</option>
+                                <option value="Footwear, Shoes, and Leather Goods">Footwear & Leather</option>
+                                <option value="Jewellery, Gold, Silver, and Gems">Jewellery & Bullion</option>
+                                <option value="Solar Energy, Batteries, and Inverters">Solar & Electrical</option>
+                                <option value="General">Other</option>
                             </select>
                         </div>
                         <div class="form-group-dash">
-                            <label>Brand / ब्रांड</label>
+                            <label>Brand</label>
                             <input type="text" id="editProdBrand">
                         </div>
                     </div>
 
                     <div style="display:grid; grid-template-columns:1.2fr 1fr; gap:12px;">
                         <div class="form-group-dash">
-                            <label>Barcode / बारकोड</label>
+                            <label>Barcode</label>
                             <input type="text" id="editProdBarcode">
                         </div>
                         <div class="form-group-dash">
-                            <label>SKU / आइटम कोड</label>
+                            <label>SKU</label>
                             <input type="text" id="editProdSku">
                         </div>
                     </div>
 
                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
                         <div class="form-group-dash">
-                            <label>Purchase Price (₹) / खरीद <span style="color:var(--red-500);">*</span></label>
+                            <label>Purchase Price (₹)<span style="color:var(--red-500);">*</span></label>
                             <input type="number" id="editProdBuy" step="0.5" min="0" required>
                         </div>
                         <div class="form-group-dash">
-                            <label>Selling Price (₹) / बिक्री <span style="color:var(--red-500);">*</span></label>
+                            <label>Selling Price (₹)<span style="color:var(--red-500);">*</span></label>
                             <input type="number" id="editProdSell" step="0.5" min="0" required>
                         </div>
                     </div>
 
                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
                         <div class="form-group-dash">
-                            <label>Quantity / उपलब्ध स्टॉक <span style="color:var(--red-500);">*</span></label>
+                            <label>Quantity<span style="color:var(--red-500);">*</span></label>
                             <input type="number" id="editProdQty" min="0" step="0.5" required>
                         </div>
                         <div class="form-group-dash">
-                            <label>Unit / इकाई <span style="color:var(--red-500);">*</span></label>
+                            <label>Unit<span style="color:var(--red-500);">*</span></label>
                             <select id="editProdUnit" required>
-                                <option value="pcs">pcs (नग)</option>
-                                <option value="packet">packet (पैकेट)</option>
-                                <option value="kg">kg (किलो)</option>
-                                <option value="gm">gm (ग्राम)</option>
-                                <option value="litre">litre (लीटर)</option>
-                                <option value="ml">ml (मिली)</option>
-                                <option value="box">box (पेटी/बॉक्स)</option>
-                                <option value="dozen">dozen (दर्जन)</option>
+                                <option value="pcs">pcs</option>
+                                <option value="packet">packet</option>
+                                <option value="kg">kg</option>
+                                <option value="gm">gm</option>
+                                <option value="litre">litre</option>
+                                <option value="ml">ml</option>
+                                <option value="box">Box / Case</option>
+                                <option value="dozen">dozen</option>
                             </select>
                         </div>
                     </div>
@@ -2793,7 +2843,7 @@
                             <input type="number" id="editProdLowThreshold" min="0" step="1">
                         </div>
                         <div class="form-group-dash">
-                            <label>Expiry Date / अंतिम तिथि (Optional)</label>
+                            <label>Expiry DateOptional)</label>
                             <input type="date" id="editProdExpiry">
                         </div>
                     </div>
@@ -2817,7 +2867,7 @@
     <div class="modal-overlay" id="deleteConfirmModal">
         <div class="modal-card" style="max-width:440px;">
             <div class="modal-header">
-                <h3><i class="fas fa-trash-alt" style="color:var(--red-500);"></i> Delete Product / सामान हटाएं</h3>
+                <h3><i class="fas fa-trash-alt" style="color:var(--red-500);"></i> Delete Product</h3>
                 <button class="modal-close-btn" onclick="closeModal('deleteConfirmModal')"><i class="fas fa-times"></i></button>
             </div>
             <div class="modal-body" style="text-align:center; padding:24px 20px;">
@@ -2848,7 +2898,7 @@
                 <h3>
                     <i class="fas fa-qrcode" style="color:var(--lime-600);"></i>
                     <i class="fas fa-barcode" style="color:var(--lime-600); margin-left:-4px;"></i>
-                    <span>Universal Barcode & QR Scanner / बारकोड स्कैनर</span>
+                    <span>Universal Barcode & QR Scanner</span>
                 </h3>
                 <button type="button" class="modal-close-btn" onclick="closeBarcodeModal()">
                     <i class="fas fa-times"></i>
@@ -2858,16 +2908,16 @@
             <!-- Tab Navigation Bar -->
             <div class="scanner-tab-bar">
                 <button type="button" class="scanner-tab-btn active" id="scannerTabCamera" onclick="switchScannerTab('camera')">
-                    <i class="fas fa-camera"></i> Live Camera / कैमरा
+                    <i class="fas fa-camera"></i> Live Camera
                 </button>
                 <button type="button" class="scanner-tab-btn" id="scannerTabUpload" onclick="switchScannerTab('upload')">
-                    <i class="fas fa-file-image"></i> Upload Image / फोटो
+                    <i class="fas fa-file-image"></i> Upload Image
                 </button>
                 <button type="button" class="scanner-tab-btn" id="scannerTabManual" onclick="switchScannerTab('manual')">
-                    <i class="fas fa-keyboard"></i> Manual Code / टाइप करें
+                    <i class="fas fa-keyboard"></i> Manual Code
                 </button>
                 <button type="button" class="scanner-tab-btn" id="scannerTabSamples" onclick="switchScannerTab('samples')">
-                    <i class="fas fa-vial"></i> Sample Codes / टेस्ट कोड
+                    <i class="fas fa-vial"></i> Sample Codes
                 </button>
             </div>
 
@@ -2895,7 +2945,7 @@
                     </div>
                     <div class="scanner-status-hint" id="scannerStatusText">
                         <i class="fas fa-info-circle" style="color:var(--lime-600);"></i>
-                        <span>Point camera at any product barcode or QR code / बारकोड या QR सामने लाएं</span>
+                        <span>Point camera at any product barcode or QR code</span>
                     </div>
                 </div>
 
@@ -2972,10 +3022,10 @@
 
             <div class="modal-footer" style="padding:12px 20px; background:#F8FAFC; border-top:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
                 <button type="button" class="btn-dash btn-dash-secondary" onclick="resetScannerView()">
-                    <i class="fas fa-redo"></i> Scan Again / पुनः स्कैन
+                    <i class="fas fa-redo"></i> Scan Again
                 </button>
                 <button type="button" class="btn-dash btn-dash-secondary" onclick="closeBarcodeModal()">
-                    Close / बंद करें
+                    Close
                 </button>
             </div>
         </div>
@@ -2987,7 +3037,7 @@
     <div class="modal-overlay" id="recordSaleModal">
         <div class="modal-card">
             <div class="modal-header">
-                <h3><i class="fas fa-cash-register" style="color:var(--lime-600);"></i> Record Sale / बिक्री दर्ज करें</h3>
+                <h3><i class="fas fa-cash-register" style="color:var(--lime-600);"></i> Record Sale</h3>
                 <button class="modal-close-btn" onclick="closeModal('recordSaleModal')"><i class="fas fa-times"></i></button>
             </div>
             <form onsubmit="handleRecordSaleSubmit(event)">
@@ -2995,7 +3045,7 @@
                     <div id="recordSaleError" style="display:none; background:var(--red-100); color:var(--red-500); padding:10px 14px; border-radius:8px; font-size:0.85rem; font-weight:600; margin-bottom:12px;"></div>
 
                     <div class="form-group-dash">
-                        <label>Select Product from Inventory / सामान चुनें <span style="color:var(--red-500);">*</span></label>
+                        <label>Select Product from Inventory<span style="color:var(--red-500);">*</span></label>
                         <select id="saleProdSelect" onchange="handleSaleProductSelectChange(this.value)" required>
                             <option value="">-- Choose product --</option>
                         </select>
@@ -3003,7 +3053,7 @@
                     </div>
                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
                         <div class="form-group-dash">
-                            <label>Quantity / मात्रा <span style="color:var(--red-500);">*</span></label>
+                            <label>Quantity<span style="color:var(--red-500);">*</span></label>
                             <input type="number" id="saleQty" value="1" min="0.5" step="0.5" required oninput="calculateSaleTotalPreview()">
                         </div>
                         <div class="form-group-dash">
@@ -3013,11 +3063,11 @@
                     </div>
                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
                         <div class="form-group-dash">
-                            <label>Payment Mode / भुगतान</label>
+                            <label>Payment Mode</label>
                             <select id="salePaymentMode">
-                                <option value="Cash">Cash (नकद)</option>
+                                <option value="Cash">Cash</option>
                                 <option value="UPI">UPI (PhonePe / GPay / Paytm)</option>
-                                <option value="Khata">Khata / Udhar (खाता / उधार)</option>
+                                <option value="Khata">Khata / Credit</option>
                             </select>
                         </div>
                         <div class="form-group-dash">
@@ -3040,17 +3090,17 @@
     <div class="modal-overlay" id="setupModal">
         <div class="modal-card">
             <div class="modal-header">
-                <h3><i class="fas fa-store" style="color:var(--lime-600);"></i> Configure Shop / दुकान की जानकारी</h3>
+                <h3><i class="fas fa-store" style="color:var(--lime-600);"></i> Configure Shop</h3>
                 <button class="modal-close-btn" onclick="closeModal('setupModal')"><i class="fas fa-times"></i></button>
             </div>
             <form onsubmit="handleQuickShopSetupSubmit(event)">
                 <div class="modal-body">
                     <div class="form-group-dash">
-                        <label>Shop Name / दुकान का नाम</label>
+                        <label>Shop Name</label>
                         <input type="text" id="quickShopName" placeholder="e.g. Ramesh Kirana Store" required>
                     </div>
                     <div class="form-group-dash">
-                        <label>Shop Category / दुकान का प्रकार</label>
+                        <label>Shop Category</label>
                         <select id="quickShopType">
                             <option value="Grocery & Kirana Store">Grocery & Kirana Store</option>
                             <option value="Pharmacy & Medical Store">Pharmacy & Medical Store</option>
@@ -3061,7 +3111,7 @@
                         </select>
                     </div>
                     <div class="form-group-dash">
-                        <label>Address / पता (Optional)</label>
+                        <label>AddressOptional)</label>
                         <textarea id="quickShopAddress" rows="2" placeholder="e.g. Main Market, Shop No. 12"></textarea>
                     </div>
                 </div>
@@ -3078,7 +3128,7 @@
     <div class="modal-overlay" id="languageModal">
         <div class="modal-card lang-modal-dialog">
             <div class="modal-header">
-                <h3><i class="fas fa-globe" style="color:var(--lime-600);"></i> Select Application Language / भाषा चुनें</h3>
+                <h3><i class="fas fa-globe" style="color:var(--lime-600);"></i> Select Application Language</h3>
                 <button class="modal-close-btn" onclick="closeModal('languageModal')"><i class="fas fa-times"></i></button>
             </div>
             <div class="lang-search-header">
@@ -3091,7 +3141,7 @@
             </div>
             <div class="modal-footer" style="display:flex; justify-content:space-between; align-items:center;">
                 <span style="font-size:0.78rem; color:var(--text-muted);"><i class="fas fa-info-circle"></i> RTL layout automatically activates for Arabic & Urdu</span>
-                <button type="button" class="btn-dash btn-dash-secondary" onclick="closeModal('languageModal')">Close / बंद करें</button>
+                <button type="button" class="btn-dash btn-dash-secondary" onclick="closeModal('languageModal')">Close</button>
             </div>
         </div>
     </div>
@@ -3102,29 +3152,29 @@
     <div class="modal-overlay" id="addLedgerModal">
         <div class="modal-card" style="max-width:540px;">
             <div class="modal-header">
-                <h3><i class="fas fa-file-invoice-dollar" style="color:var(--lime-600);"></i> Record Ledger Entry / उधारी व देनदारी</h3>
+                <h3><i class="fas fa-file-invoice-dollar" style="color:var(--lime-600);"></i> Record Ledger Entry</h3>
                 <button class="modal-close-btn" onclick="closeModal('addLedgerModal')"><i class="fas fa-times"></i></button>
             </div>
             <form onsubmit="handleRecordLedgerSubmit(event); return false;">
                 <div class="modal-body">
                     <div class="form-group-dash">
-                        <label>Entry Type / प्रकार</label>
+                        <label>Entry Type</label>
                         <select id="ledgerEntryType" required>
-                            <option value="receivable">Receivable (Customer Udhari / ग्राहक से लेना है)</option>
-                            <option value="payable">Payable (Supplier Bill / सप्लायर को देना है)</option>
+                            <option value="receivable">Receivable (Customer Udhari</option>
+                            <option value="payable">Payable (Supplier Bill</option>
                         </select>
                     </div>
                     <div class="form-group-dash">
-                        <label>Party Name / ग्राहक या सप्लायर का नाम</label>
+                        <label>Party Name</label>
                         <input type="text" id="ledgerPartyName" placeholder="e.g. Ramesh Kirana or Sharma Wholesale" required>
                     </div>
                     <div class="form-row-2">
                         <div class="form-group-dash">
-                            <label>Amount (₹) / कुल रकम</label>
+                            <label>Amount (₹)</label>
                             <input type="number" id="ledgerAmount" placeholder="₹" step="0.5" required min="1">
                         </div>
                         <div class="form-group-dash">
-                            <label>Due Date / भुगतान तिथि</label>
+                            <label>Due Date</label>
                             <input type="date" id="ledgerDueDate" required>
                         </div>
                     </div>
@@ -3133,13 +3183,13 @@
                         <input type="text" id="ledgerInvoiceRef" placeholder="e.g. INV-1002">
                     </div>
                     <div class="form-group-dash">
-                        <label>Notes / विवरण (Optional)</label>
+                        <label>NotesOptional)</label>
                         <textarea id="ledgerNotes" rows="2" placeholder="e.g. Credit for monthly rations"></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn-dash btn-dash-secondary" onclick="closeModal('addLedgerModal')">Cancel</button>
-                    <button type="submit" class="btn-dash btn-dash-primary" id="btnSaveLedger"><i class="fas fa-check"></i> Save Entry / दर्ज करें</button>
+                    <button type="submit" class="btn-dash btn-dash-primary" id="btnSaveLedger"><i class="fas fa-check"></i> Save Entry</button>
                 </div>
             </form>
         </div>
@@ -3152,7 +3202,7 @@
     <div class="modal-overlay" id="aiSummaryModal">
         <div class="modal-card" style="max-width:580px;">
             <div class="modal-header">
-                <h3><i class="fas fa-sparkles" style="color:var(--lime-600);"></i> AI Business Summary / त्वरित सारांश</h3>
+                <h3><i class="fas fa-sparkles" style="color:var(--lime-600);"></i> AI Business Summary</h3>
                 <button class="modal-close-btn" onclick="closeModal('aiSummaryModal')"><i class="fas fa-times"></i></button>
             </div>
             <div class="modal-body" style="padding:20px;">
@@ -3183,7 +3233,7 @@
                 <div>
                     <h3 style="display:flex; align-items:center; gap:8px;">
                         <i class="fas fa-dna" style="color:var(--lime-600);"></i>
-                        <span>Product DNA & Traceability (उत्पाद जीवन चक्र)</span>
+                        <span>Product DNA & Traceability</span>
                     </h3>
                     <div id="dnaProductSubTitle" style="font-size:0.85rem; color:var(--text-muted); margin-top:2px;">Detailed lifecycle audit, stock events, and batch traceability</div>
                 </div>
@@ -3218,7 +3268,7 @@
                 <div style="background:#FFF; border:1px solid var(--border-color); border-radius:var(--radius-md); padding:14px; margin-bottom:16px;">
                     <div style="display:flex; justify-content:space-between; align-items:center; cursor:pointer;" onclick="toggleDnaAdjustForm()">
                         <strong style="font-size:0.92rem; color:var(--text-primary); display:flex; align-items:center; gap:6px;">
-                            <i class="fas fa-sliders-h" style="color:var(--lime-600);"></i> Record Stock Adjustment / स्टॉक संशोधन
+                            <i class="fas fa-sliders-h" style="color:var(--lime-600);"></i> Record Stock Adjustment
                         </strong>
                         <span id="dnaAdjustFormToggleIcon" style="font-size:0.8rem; color:var(--text-muted);"><i class="fas fa-chevron-down"></i></span>
                     </div>
@@ -3229,7 +3279,7 @@
                                 <label style="font-size:0.82rem;">Adjustment Action</label>
                                 <select id="dnaAdjustAction" required style="font-size:0.85rem; padding:6px 10px;">
                                     <option value="addition">Add to Stock (+)</option>
-                                    <option value="reduction">Deduct from Stock (-)</option>
+                                    <option value="reduction">Deduct from Stock</option>
                                     <option value="set_total">Reset Exact Count (=)</option>
                                 </select>
                             </div>
@@ -3241,13 +3291,13 @@
                                 <label style="font-size:0.82rem;">Reason (Mandatory)</label>
                                 <select id="dnaAdjustReason" required style="font-size:0.85rem; padding:6px 10px;">
                                     <option value="">Select reason...</option>
-                                    <option value="damaged">Damaged / टूटा-फूटा सामान</option>
-                                    <option value="spoiled">Spoiled / ख़राब हुआ</option>
-                                    <option value="supplier_return">Returned to Supplier / सप्लायर वापसी</option>
-                                    <option value="customer_return">Customer Return / ग्राहक वापसी</option>
-                                    <option value="stock_audit">Physical Stock Audit / भौतिक गणना</option>
-                                    <option value="sample_gift">Sample / Gift / नमूना</option>
-                                    <option value="other">Other / अन्य</option>
+                                    <option value="damaged">Damaged</option>
+                                    <option value="spoiled">Spoiled</option>
+                                    <option value="supplier_return">Returned to Supplier</option>
+                                    <option value="customer_return">Customer Return</option>
+                                    <option value="stock_audit">Physical Stock Audit</option>
+                                    <option value="sample_gift">Sample / Gift</option>
+                                    <option value="other">Other</option>
                                 </select>
                             </div>
                         </div>
@@ -3257,13 +3307,13 @@
                                 <input type="text" id="dnaAdjustBatch" placeholder="e.g. BATCH-2026-X" style="font-size:0.85rem; padding:6px 10px;">
                             </div>
                             <div class="form-group-dash">
-                                <label style="font-size:0.82rem;">Audit Notes / विवरण</label>
+                                <label style="font-size:0.82rem;">Audit Notes</label>
                                 <input type="text" id="dnaAdjustNotes" placeholder="Additional audit details" style="font-size:0.85rem; padding:6px 10px;">
                             </div>
                         </div>
                         <div style="text-align:right;">
                             <button type="submit" class="btn-dash btn-dash-primary" style="font-size:0.85rem; padding:6px 14px;">
-                                <i class="fas fa-check"></i> Apply Adjustment / दर्ज करें
+                                <i class="fas fa-check"></i> Apply Adjustment
                             </button>
                         </div>
                     </form>
@@ -3272,16 +3322,16 @@
                 <!-- Timeline Header & Filter -->
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
                     <div style="font-weight:700; font-size:0.92rem; color:var(--text-primary); display:flex; align-items:center; gap:6px;">
-                        <i class="fas fa-stream" style="color:var(--lime-600);"></i> Lifecycle Timeline (इतिहास)
+                        <i class="fas fa-stream" style="color:var(--lime-600);"></i> Lifecycle Timeline
                     </div>
                     <div style="display:flex; gap:6px;">
                         <select id="dnaTimelineFilter" onchange="filterDnaTimeline(this.value)" style="font-size:0.8rem; padding:4px 8px; border:1px solid var(--border-color); border-radius:var(--radius-sm);">
-                            <option value="all">All Events / सभी</option>
-                            <option value="creation">Creation / निर्माण</option>
-                            <option value="stock_addition">Stock In / आवक</option>
-                            <option value="sale">Sales / बिक्री</option>
-                            <option value="price_change">Price Changes / मूल्य</option>
-                            <option value="adjustment">Adjustments / संशोधन</option>
+                            <option value="all">All Events</option>
+                            <option value="creation">Creation</option>
+                            <option value="stock_addition">Stock In</option>
+                            <option value="sale">Sales</option>
+                            <option value="price_change">Price Changes</option>
+                            <option value="adjustment">Adjustments</option>
                         </select>
                     </div>
                 </div>
@@ -3305,22 +3355,22 @@
     <div class="modal-overlay" id="addBranchModal">
         <div class="modal-card" style="max-width:520px;">
             <div class="modal-header">
-                <h3><i class="fas fa-store" style="color:var(--lime-600);"></i> Add Store Branch / नई दुकान शाखा</h3>
+                <h3><i class="fas fa-store" style="color:var(--lime-600);"></i> Add Store Branch</h3>
                 <button class="modal-close-btn" onclick="closeModal('addBranchModal')"><i class="fas fa-times"></i></button>
             </div>
             <form onsubmit="handleCreateStoreSubmit(event); return false;">
                 <div class="modal-body" style="padding:20px;">
                     <div class="form-group-dash" style="margin-bottom:12px;">
-                        <label>Store Branch Name / दुकान का नाम</label>
+                        <label>Store Branch Name</label>
                         <input type="text" id="newStoreName" placeholder="e.g. Market Branch or Sector 14 Outlet" required>
                     </div>
                     <div class="form-group-dash" style="margin-bottom:12px;">
-                        <label>Store Address / पता</label>
+                        <label>Store Address</label>
                         <input type="text" id="newStoreAddress" placeholder="e.g. Shop 12, Main Market">
                     </div>
                     <div class="form-row-2" style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
                         <div class="form-group-dash">
-                            <label>Phone Number / फ़ोन</label>
+                            <label>Phone Number</label>
                             <input type="tel" id="newStorePhone" placeholder="e.g. 9876543210">
                         </div>
                         <div class="form-group-dash">
@@ -3329,14 +3379,14 @@
                         </div>
                     </div>
                     <div class="form-group-dash">
-                        <label>Store Notes / टिप्पणी</label>
+                        <label>Store Notes</label>
                         <textarea id="newStoreNotes" rows="2" placeholder="e.g. Warehouse or suburban counter outlet"></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn-dash btn-dash-secondary" onclick="closeModal('addBranchModal')">Cancel</button>
                     <button type="submit" class="btn-dash btn-dash-primary" id="btnCreateStore">
-                        <i class="fas fa-check"></i> Create Branch / शाखा जोड़ें
+                        <i class="fas fa-check"></i> Create Branch
                     </button>
                 </div>
             </form>
@@ -3349,45 +3399,45 @@
     <div class="modal-overlay" id="transferStockModal">
         <div class="modal-card" style="max-width:540px;">
             <div class="modal-header">
-                <h3><i class="fas fa-exchange-alt" style="color:var(--lime-600);"></i> Transfer Stock Between Stores / स्टॉक ट्रांसफर</h3>
+                <h3><i class="fas fa-exchange-alt" style="color:var(--lime-600);"></i> Transfer Stock Between Stores</h3>
                 <button class="modal-close-btn" onclick="closeModal('transferStockModal')"><i class="fas fa-times"></i></button>
             </div>
             <form onsubmit="handleStockTransferSubmit(event); return false;">
                 <div class="modal-body" style="padding:20px;">
                     <div class="form-row-2" style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
                         <div class="form-group-dash">
-                            <label>Source Branch (भेजने वाला)</label>
+                            <label>Source Branch</label>
                             <select id="transferSourceStore" required onchange="handleTransferSourceStoreChange()">
                                 <!-- Populated dynamically -->
                             </select>
                         </div>
                         <div class="form-group-dash">
-                            <label>Destination Branch (पाने वाला)</label>
+                            <label>Destination Branch</label>
                             <select id="transferDestStore" required>
                                 <!-- Populated dynamically -->
                             </select>
                         </div>
                     </div>
                     <div class="form-group-dash" style="margin-bottom:12px;">
-                        <label>Select Product / सामान चुनें</label>
+                        <label>Select Product</label>
                         <select id="transferProductSelect" required onchange="handleTransferProductChange()">
                             <!-- Populated dynamically -->
                         </select>
                         <div id="transferAvailableStockText" style="font-size:0.8rem; color:var(--text-muted); margin-top:3px;">Available: --</div>
                     </div>
                     <div class="form-group-dash" style="margin-bottom:12px;">
-                        <label>Quantity to Transfer / संख्या</label>
+                        <label>Quantity to Transfer</label>
                         <input type="number" id="transferQuantity" min="0.01" step="any" placeholder="Qty" required>
                     </div>
                     <div class="form-group-dash">
-                        <label>Transfer Reason / Note / संदर्भ</label>
+                        <label>Transfer Reason / Note</label>
                         <input type="text" id="transferReason" placeholder="e.g. Stock replenishment or customer order" required>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn-dash btn-dash-secondary" onclick="closeModal('transferStockModal')">Cancel</button>
                     <button type="submit" class="btn-dash btn-dash-primary" id="btnExecuteTransfer">
-                        <i class="fas fa-check"></i> Transfer Stock / ट्रांसफर करें
+                        <i class="fas fa-check"></i> Transfer Stock
                     </button>
                 </div>
             </form>
@@ -3400,22 +3450,22 @@
     <div class="modal-overlay" id="addCompetitorModal">
         <div class="modal-card" style="max-width:520px;">
             <div class="modal-header">
-                <h3><i class="fas fa-crosshairs" style="color:var(--lime-600);"></i> Record Competitor Price / प्रतिस्पर्धी दर दर्ज करें</h3>
+                <h3><i class="fas fa-crosshairs" style="color:var(--lime-600);"></i> Record Competitor Price</h3>
                 <button class="modal-close-btn" onclick="closeModal('addCompetitorModal')"><i class="fas fa-times"></i></button>
             </div>
             <form onsubmit="handleRecordCompetitorObservation(event); return false;">
                 <div class="modal-body" style="padding:20px;">
                     <div class="form-group-dash" style="margin-bottom:12px;">
-                        <label>Competitor / Store Name (प्रतिस्पर्धी दुकान का नाम)</label>
+                        <label>Competitor / Store Name</label>
                         <input type="text" id="obsCompetitorName" placeholder="e.g. Modern Supermarket, Local Mandi" required>
                     </div>
                     <div class="form-group-dash" style="margin-bottom:12px;">
-                        <label>Product Name (उत्पाद का नाम)</label>
-                        <input type="text" id="obsProductName" placeholder="e.g. Wheat (गेहूँ) or Fortune Oil 1L" required>
+                        <label>Product Name</label>
+                        <input type="text" id="obsProductName" placeholder="e.g. Wheat or Fortune Oil 1L" required>
                     </div>
                     <div class="form-row-2" style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
                         <div class="form-group-dash">
-                            <label>Observed Price (दर ₹)</label>
+                            <label>Observed Price (₹)</label>
                             <input type="number" id="obsPrice" min="0.01" step="any" placeholder="e.g. 135" required>
                         </div>
                         <div class="form-group-dash">
@@ -3428,7 +3478,7 @@
                     </div>
                     <div class="form-row-2" style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
                         <div class="form-group-dash">
-                            <label>Category (श्रेणी)</label>
+                            <label>Category</label>
                             <input type="text" id="obsCategory" placeholder="e.g. Groceries, Edible Oil">
                         </div>
                         <div class="form-group-dash">
@@ -3437,14 +3487,14 @@
                         </div>
                     </div>
                     <div class="form-group-dash">
-                        <label>Notes / Observations (टिप्पणी)</label>
+                        <label>Notes / Observations</label>
                         <input type="text" id="obsNotes" placeholder="e.g. Promotional price or shelf tag">
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn-dash btn-dash-secondary" onclick="closeModal('addCompetitorModal')">Cancel</button>
                     <button type="submit" class="btn-dash btn-dash-primary" id="btnSaveObservation">
-                        <i class="fas fa-check"></i> Save Observation / सुरक्षित करें
+                        <i class="fas fa-check"></i> Save Observation
                     </button>
                 </div>
             </form>
@@ -3457,32 +3507,32 @@
     <div class="modal-overlay" id="logDemandModal">
         <div class="modal-card" style="max-width:520px;">
             <div class="modal-header">
-                <h3><i class="fas fa-ear-listen" style="color:var(--lime-600);"></i> Log Customer Demand / ग्राहक मांग दर्ज करें</h3>
+                <h3><i class="fas fa-ear-listen" style="color:var(--lime-600);"></i> Log Customer Demand</h3>
                 <button class="modal-close-btn" onclick="closeModal('logDemandModal')"><i class="fas fa-times"></i></button>
             </div>
             <form onsubmit="handleLogCustomerDemand(event); return false;">
                 <div class="modal-body" style="padding:20px;">
                     <div class="form-group-dash" style="margin-bottom:12px;">
-                        <label>Requested Product Name (मांगे गए सामान का नाम)</label>
+                        <label>Requested Product Name</label>
                         <input type="text" id="demandReqProductName" placeholder="e.g. Organic Almond Milk 1L, Amul Butter 100g" required>
                     </div>
                     <div class="form-row-2" style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
                         <div class="form-group-dash">
-                            <label>Inquiries / Customers Asking (पूछताछ संख्या)</label>
+                            <label>Inquiries / Customers Asking</label>
                             <input type="number" id="demandReqCount" min="1" value="1" required>
                         </div>
                         <div class="form-group-dash">
-                            <label>Est. Customer Budget (अनुमानित दर ₹)</label>
+                            <label>Est. Customer Budget (₹)</label>
                             <input type="number" id="demandReqBudget" min="0" step="any" placeholder="e.g. 180">
                         </div>
                     </div>
                     <div class="form-row-2" style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
                         <div class="form-group-dash">
-                            <label>Category (श्रेणी)</label>
+                            <label>Category</label>
                             <input type="text" id="demandReqCategory" placeholder="e.g. Dairy, Beverages">
                         </div>
                         <div class="form-group-dash">
-                            <label>Urgency Level (प्राथमिकता)</label>
+                            <label>Urgency Level</label>
                             <select id="demandReqUrgency">
                                 <option value="medium">Medium Demand</option>
                                 <option value="high">High Demand (Frequent Loss)</option>
@@ -3491,14 +3541,14 @@
                         </div>
                     </div>
                     <div class="form-group-dash">
-                        <label>Customer Remarks / Notes (ग्राहक का संदर्भ)</label>
+                        <label>Customer Remarks / Notes</label>
                         <input type="text" id="demandReqNotes" placeholder="e.g. 2 customers asked today, brand unavailable locally">
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn-dash btn-dash-secondary" onclick="closeModal('logDemandModal')">Cancel</button>
                     <button type="submit" class="btn-dash btn-dash-primary" id="btnSaveDemand">
-                        <i class="fas fa-check"></i> Log Demand / मांग दर्ज करें
+                        <i class="fas fa-check"></i> Log Demand
                     </button>
                 </div>
             </form>
@@ -3509,7 +3559,7 @@
     <div class="modal-overlay" id="autopilotActionModal">
         <div class="modal-card" style="max-width:620px;">
             <div class="modal-header">
-                <h3><i class="fas fa-robot" style="color:var(--lime-600);"></i> Review Proposed Action / कार्य समीक्षा</h3>
+                <h3><i class="fas fa-robot" style="color:var(--lime-600);"></i> Review Proposed Action</h3>
                 <button class="modal-close-btn" onclick="closeModal('autopilotActionModal')"><i class="fas fa-times"></i></button>
             </div>
             <div class="modal-body">
@@ -3564,7 +3614,7 @@
     <div class="modal-overlay" id="notificationPreferencesModal">
         <div class="modal-card" style="max-width:480px;">
             <div class="modal-header">
-                <h3><i class="fas fa-sliders-h" style="color:var(--lime-600);"></i> Notification Preferences / प्राथमिकताएं</h3>
+                <h3><i class="fas fa-sliders-h" style="color:var(--lime-600);"></i> Notification Preferences</h3>
                 <button class="modal-close-btn" onclick="closeModal('notificationPreferencesModal')"><i class="fas fa-times"></i></button>
             </div>
             <div class="modal-body" style="display:flex; flex-direction:column; gap:14px;">
