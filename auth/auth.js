@@ -401,10 +401,10 @@ async function handleSetPassword(e) {
         setToken(result.data.token);
         setUser(result.data.user);
 
-        // Show success screen
-        document.getElementById('successUserName').textContent = result.data.user.full_name;
-        navigateTo('success');
-        triggerConfetti();
+        // Trigger Animated Account Creation Celebration (Prompt Section 4)
+        const successUserEl = document.getElementById('successUserName');
+        if (successUserEl) successUserEl.textContent = result.data.user.full_name;
+        startAccountCreationCelebration(result.data.user);
     } else {
         showToast(result.message, 'error');
     }
@@ -872,3 +872,103 @@ document.addEventListener('DOMContentLoaded', () => {
     // Check if user already has a valid session
     checkExistingSession();
 });
+
+
+// ════════════════════════════════════════════
+// ACCOUNT CREATION CELEBRATION (Section 4)
+// ════════════════════════════════════════════
+
+let celebrationVoiceUtterance = null;
+let celebrationVoiceTimer = null;
+
+function startAccountCreationCelebration(user) {
+    navigateTo('celebration');
+
+    // Generate confetti particles
+    generateCelebrationParticles();
+
+    // Voice Dialogue Timed Trigger (after robot arrives and thumbs up pops at ~2.1s)
+    if (celebrationVoiceTimer) clearTimeout(celebrationVoiceTimer);
+    celebrationVoiceTimer = setTimeout(() => {
+        playCelebrationVoice("Congratulations! Your Shopo account is created, Boss!");
+    }, 2100);
+}
+
+function generateCelebrationParticles() {
+    const container = document.getElementById('celebrationConfetti');
+    if (!container) return;
+    container.innerHTML = '';
+
+    const colors = ['#84CC16', '#16803C', '#22C55E', '#A3E635', '#F59E0B', '#10B981'];
+    const particleCount = 42;
+
+    for (let i = 0; i < particleCount; i++) {
+        const p = document.createElement('div');
+        p.className = 'confetti-particle';
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        const left = Math.random() * 100;
+        const width = 6 + Math.random() * 8;
+        const height = 8 + Math.random() * 12;
+        const delay = Math.random() * 3.2;
+        const duration = 2.8 + Math.random() * 2.2;
+
+        p.style.left = `${left}%`;
+        p.style.width = `${width}px`;
+        p.style.height = `${height}px`;
+        p.style.background = color;
+        p.style.animationDelay = `${delay}s`;
+        p.style.animationDuration = `${duration}s`;
+
+        container.appendChild(p);
+    }
+}
+
+function playCelebrationVoice(sentence) {
+    if (!('speechSynthesis' in window)) return;
+    try {
+        window.speechSynthesis.cancel();
+        celebrationVoiceUtterance = new SpeechSynthesisUtterance(sentence);
+        celebrationVoiceUtterance.rate = 0.96;
+        celebrationVoiceUtterance.pitch = 1.05;
+        celebrationVoiceUtterance.lang = 'en-IN';
+
+        celebrationVoiceUtterance.onstart = () => {
+            const btn = document.getElementById('speechAudioBtn');
+            if (btn) btn.classList.add('playing');
+        };
+        celebrationVoiceUtterance.onend = () => {
+            const btn = document.getElementById('speechAudioBtn');
+            if (btn) btn.classList.remove('playing');
+        };
+        celebrationVoiceUtterance.onerror = () => {
+            const btn = document.getElementById('speechAudioBtn');
+            if (btn) btn.classList.remove('playing');
+        };
+
+        window.speechSynthesis.speak(celebrationVoiceUtterance);
+    } catch (e) {
+        console.warn('Speech synthesis bypassed:', e);
+    }
+}
+
+function toggleCelebrationAudio() {
+    if ('speechSynthesis' in window && window.speechSynthesis.speaking) {
+        window.speechSynthesis.cancel();
+        const btn = document.getElementById('speechAudioBtn');
+        if (btn) btn.classList.remove('playing');
+    } else {
+        playCelebrationVoice("Congratulations! Your Shopo account is created, Boss!");
+    }
+}
+
+function proceedToShopSetup() {
+    if (celebrationVoiceTimer) {
+        clearTimeout(celebrationVoiceTimer);
+        celebrationVoiceTimer = null;
+    }
+    if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+    }
+    // Navigate cleanly to the existing Shop Setup screen (Section 4, Step 6)
+    navigateTo('shop-setup');
+}

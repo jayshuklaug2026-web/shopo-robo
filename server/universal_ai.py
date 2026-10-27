@@ -270,11 +270,17 @@ class GeminiProvider(BaseAIProvider):
 
         return {"success": False, "error": "Gemini request timed out after retries.", "provider": "Google Gemini"}
 
-    def synthesize_tool_response(self, prompt: str, tool_name: str, tool_result: Dict[str, Any], fn_args: Dict[str, Any] = None, system_prompt: str = "") -> Dict[str, Any]:
+    def synthesize_tool_response(self, prompt: str, tool_name: str, tool_result: Dict[str, Any], fn_args: Dict[str, Any] = None, system_prompt: str = "", model_part: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         """Multi-turn follow-up: Send executed tool result back to Gemini to synthesize natural language response."""
         url = f"https://generativelanguage.googleapis.com/v1beta/models/{self.model_name}:generateContent?key={self.api_key}"
 
         call_args = fn_args or {}
+        # Retain original thoughtSignature from model_part if available (required by Gemini 2.0/3.0+)
+        if model_part and isinstance(model_part, dict) and "functionCall" in model_part:
+            model_turn_part = model_part
+        else:
+            model_turn_part = {"functionCall": {"name": tool_name, "args": call_args}}
+
         payload = {
             "contents": [
                 {
@@ -283,7 +289,7 @@ class GeminiProvider(BaseAIProvider):
                 },
                 {
                     "role": "model",
-                    "parts": [{"functionCall": {"name": tool_name, "args": call_args}}]
+                    "parts": [model_turn_part]
                 },
                 {
                     "role": "user",
@@ -852,6 +858,30 @@ class SmartLocalEngine(BaseAIProvider):
                     "• *'Record sale 20 kg maida'*\n"
                     "• *'Set sugar stock to 30 kg'*"
                 )
+            return {
+                "success": True,
+                "text": msg,
+                "provider": "Shopo Robo Smart Local Engine",
+                "model": "Local Store Assistant",
+                "is_live_external_model": False
+            }
+
+        has_store_word = any(w in lower for w in [
+            "shop", "dukan", "dukaan", "store", "godown", "stock", "inventory", "maal", "saman",
+            "aata", "chawal", "sugar", "maida", "bolt", "cement", "shirt", "oil", "tel", "ghee",
+            "sale", "bikri", "becha", "kharida", "aaya", "aya", "bhav", "rate", "cost", "price", "profit", "munafa"
+        ])
+
+        if has_store_word:
+            msg = (
+                f"🏪 **दुकान सहायता (Store Assistant):**\n\n"
+                f"मैंने आपके उत्पाद/दुकान संबंधी निर्देश *\"{clean}\"* को समझा। "
+                f"कृपया स्पष्ट करें कि क्या आप स्टॉक जोड़ना (Inward), बिक्री दर्ज करना (Sale), या स्टॉक जांचना (Check Stock) चाहते हैं?\n\n"
+                f"उदाहरण:\n"
+                f"• *'100 kg maida aaya hai, purchase cost 4000, sell 42'*\n"
+                f"• *'Aaj 20 kg maida bik gaya'*\n"
+                f"• *'Sugar ka stock kitna hai?'*"
+            )
             return {
                 "success": True,
                 "text": msg,

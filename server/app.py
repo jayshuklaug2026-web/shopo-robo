@@ -161,6 +161,10 @@ def create_app() -> Flask:
     def serve_manifest():
         return send_from_directory(project_root, "manifest.json")
 
+    @app.route("/favicon.ico")
+    def serve_favicon():
+        return send_from_directory(project_root, "favicon.ico", mimetype="image/x-icon")
+
     @app.route("/sw.js")
     def serve_sw():
         return send_from_directory(project_root, "sw.js")

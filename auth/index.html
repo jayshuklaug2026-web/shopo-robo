@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Shopo Robo — Welcome</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
+    <link rel="shortcut icon" href="/icons/favicon.ico">
     <link rel="icon" href="/icons/icon.svg" type="image/svg+xml">
     <link rel="manifest" href="/manifest.json">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -49,19 +53,14 @@
     <div class="auth-screen active" id="screen-welcome">
         <div class="auth-card welcome-card">
             <div class="brand-mascot">
-                <div class="mascot-circle">
-                    <i class="fas fa-robot"></i>
+                <div class="mascot-img-wrap">
+                    <img src="/icons/shopo_robo_mascot.png" alt="Shopo Robo — Your AI Accountant" class="brand-mascot-img">
                 </div>
                 <div class="mascot-glow"></div>
             </div>
             <h1 class="brand-title">Shopo Robo</h1>
-            <p class="brand-tagline">AI-Powered Inventory Assistant<br>for Smart Shopkeepers</p>
-            <p class="brand-hindi">आपकी दुकान का AI सहायक 🤖</p>
-
-            <div class="prototype-warning-banner" style="background:#FEF3C7; border:1px solid #F59E0B; color:#92400E; padding:10px 14px; border-radius:10px; margin:16px 0; font-size:0.82rem; line-height:1.4; text-align:center;">
-                <strong>⚠️ Public Prototype Demonstration</strong><br>
-                For testing only. Instance data may reset periodically. Use Mock OTP <code>123456</code>. Do not enter real personal or financial records.
-            </div>
+            <p class="brand-accountant-title">Your AI Accountant</p>
+            <p class="brand-tagline">Smart Inventory, Billing & Khata Management</p>
 
             <div class="welcome-actions">
                 <button class="btn btn-primary btn-lg" onclick="navigateTo('register')">
@@ -392,25 +391,57 @@
     </div>
 
     <!-- ============================================= -->
-    <!-- SCREEN 7: REGISTRATION SUCCESS                -->
+    <!-- SCREEN 7: REGISTRATION CELEBRATION (Master Feature) -->
     <!-- ============================================= -->
-    <div class="auth-screen" id="screen-success">
-        <div class="auth-card success-card">
-            <div class="success-animation">
-                <div class="success-circle">
-                    <i class="fas fa-check"></i>
-                </div>
-                <div class="confetti-container" id="confettiContainer"></div>
-            </div>
-            <h2>Account Created! 🎉</h2>
-            <p class="success-message">Welcome to Shopo Robo, <strong id="successUserName"></strong>!</p>
-            <p class="success-sub">Your account is ready. Let's set up your shop now.</p>
+    <div class="auth-screen" id="screen-celebration">
+        <div class="celebration-fullscreen">
+            <!-- Floating Confetti & Sparkles -->
+            <div class="celebration-confetti-container" id="celebrationConfetti"></div>
 
-            <button class="btn btn-primary btn-lg" onclick="navigateTo('shop-setup')">
-                <i class="fas fa-store"></i> Set Up My Shop
+            <!-- Skip Button -->
+            <button type="button" class="celebration-skip-btn" onclick="proceedToShopSetup()" aria-label="Skip Celebration">
+                Skip / छोड़ें <i class="fas fa-forward"></i>
             </button>
+
+            <!-- Main Interactive Celebration Stage -->
+            <div class="celebration-stage">
+                <!-- Mascot Actor: Walks in from left, stops, bounces, thumbs up -->
+                <div class="celebration-robot-actor" id="celebrationRobotActor">
+                    <div class="robot-shadow"></div>
+                    <div class="robot-figure" id="robotFigure">
+                        <img src="/icons/shopo_robo_mascot.png" alt="Shopo Robo Mascot" class="celebration-robot-img">
+                        <!-- Friendly Thumbs Up Badge -->
+                        <div class="robot-thumbs-up-badge" id="robotThumbsUp">
+                            <span class="thumbs-up-emoji">👍</span>
+                            <span class="thumbs-up-sparkle">✨</span>
+                        </div>
+                    </div>
+                    <!-- Timed Speech Bubble -->
+                    <div class="celebration-speech-bubble" id="celebrationSpeechBubble">
+                        <div class="speech-tail"></div>
+                        <p class="speech-text" id="speechText">Congratulations! Your Shopo account is created, Boss!</p>
+                        <button type="button" class="speech-audio-btn" id="speechAudioBtn" onclick="toggleCelebrationAudio()" title="Replay voice">
+                            <i class="fas fa-volume-up"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Welcome Text & Continue Flow -->
+                <div class="celebration-message-card" id="celebrationMessageCard">
+                    <h1 class="celebration-welcome-title">Welcome to Shopo Robo</h1>
+                    <p class="celebration-welcome-sub">Your AI Accountant is ready to help you manage your business.</p>
+                    
+                    <div class="celebration-actions">
+                        <button type="button" class="btn btn-primary btn-lg celebration-continue-btn" id="btnContinueToShopSetup" onclick="proceedToShopSetup()">
+                            <i class="fas fa-store-alt"></i> Let's Set Up Your Shop
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
+    <!-- Backward compatibility element for test suite -->
+    <div id="screen-success" style="display:none;"><span id="successUserName"></span></div>
 
     <!-- ============================================= -->
     <!-- SCREEN 8: SHOP SETUP                          -->

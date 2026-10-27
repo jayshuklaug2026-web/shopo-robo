@@ -392,6 +392,91 @@ def stage_record_expense(user_id: str, category: str, amount: float, description
     }
 
 
+def stage_record_return(
+    user_id: str,
+    product_name: str,
+    quantity: float,
+    unit: str = "pcs",
+    return_type: str = "customer_return",
+    reason: str = "Customer return",
+    refund_amount: float = 0.0
+) -> Dict[str, Any]:
+    """Stage customer or supplier return for explicit confirmation."""
+    if quantity <= 0:
+        raise ValueError("Return quantity must be greater than zero.")
+    if not product_name or not product_name.strip():
+        raise ValueError("Product name cannot be empty.")
+
+    clean_type = "Customer Return" if return_type == "customer_return" else "Supplier Return"
+    summary = f"Record {clean_type}: {quantity:g} {unit} of '{product_name}' (Reason: {reason})."
+
+    args = {
+        "product_name": product_name.strip(),
+        "quantity": quantity,
+        "unit": unit,
+        "return_type": return_type,
+        "reason": reason,
+        "refund_amount": refund_amount
+    }
+
+    conf = create_action_confirmation(
+        user_id=user_id,
+        tool_name="record_return",
+        arguments=args,
+        summary_text=summary
+    )
+
+    return {
+        "action_required": "confirmation",
+        "confirmation_token": conf["confirmation_id"],
+        "tool_name": "record_return",
+        "summary": summary,
+        "proposed_changes": args,
+        "expires_at": conf["expires_at"],
+        "message": f"Consequential action requires confirmation: {summary}"
+    }
+
+
+def stage_record_damage(
+    user_id: str,
+    product_name: str,
+    quantity: float,
+    unit: str = "pcs",
+    reason: str = "Damaged / Spoilage"
+) -> Dict[str, Any]:
+    """Stage damaged, expired, or wasted stock write-off for confirmation."""
+    if quantity <= 0:
+        raise ValueError("Damaged stock quantity must be greater than zero.")
+    if not product_name or not product_name.strip():
+        raise ValueError("Product name cannot be empty.")
+
+    summary = f"Remove damaged/spoiled stock: -{quantity:g} {unit} of '{product_name}' (Reason: {reason})."
+
+    args = {
+        "product_name": product_name.strip(),
+        "quantity": quantity,
+        "unit": unit,
+        "reason": reason
+    }
+
+    conf = create_action_confirmation(
+        user_id=user_id,
+        tool_name="record_damage",
+        arguments=args,
+        summary_text=summary
+    )
+
+    return {
+        "action_required": "confirmation",
+        "confirmation_token": conf["confirmation_id"],
+        "tool_name": "record_damage",
+        "summary": summary,
+        "proposed_changes": args,
+        "expires_at": conf["expires_at"],
+        "message": f"Consequential action requires confirmation: {summary}"
+    }
+
+
 def stage_add_stock(
     user_id: str,
     product_name: str,
@@ -826,6 +911,28 @@ def execute_confirmed_action(confirmation_token: str, user_id: str) -> Dict[str,
                 "action_executed": "update_product_details",
                 "result": res,
                 "message": f"✅ Details for '{prod_name}' successfully updated!"
+            }
+
+        elif tool_name == "record_return":
+            from inventory_service import inventory_service
+            ret_record = inventory_service.record_return(user_id=user_id, data=args)
+            resolve_action_confirmation(confirmation_token, "confirmed")
+            return {
+                "success": True,
+                "action_executed": "record_return",
+                "result": ret_record,
+                "message": ret_record.get("message", "Return successfully recorded!")
+            }
+
+        elif tool_name == "record_damage":
+            from inventory_service import inventory_service
+            dmg_record = inventory_service.record_damage(user_id=user_id, data=args)
+            resolve_action_confirmation(confirmation_token, "confirmed")
+            return {
+                "success": True,
+                "action_executed": "record_damage",
+                "result": dmg_record,
+                "message": dmg_record.get("message", "Damaged stock successfully removed!")
             }
 
         else:

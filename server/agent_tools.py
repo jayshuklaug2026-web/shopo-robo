@@ -295,7 +295,7 @@ AGENT_TOOLS_DEFINITIONS: List[Dict[str, Any]] = [
     },
     {
         "name": "create_product",
-        "description": "Create a completely new product item in the store catalogue when it does not exist yet. (Consequential: stages draft for merchant confirmation).",
+        "description": "Create a new product definition in the store catalogue. Supports diverse categories (Grocery, Pharmacy, Hardware, Electronics, Apparel, Stationery, etc.) and optional custom attributes without requiring immediate stock entry. (Consequential: stages draft for merchant confirmation).",
         "parameters": {
             "type": "OBJECT",
             "properties": {
@@ -305,30 +305,50 @@ AGENT_TOOLS_DEFINITIONS: List[Dict[str, Any]] = [
                 },
                 "category": {
                     "type": "STRING",
-                    "description": "Commercial category (e.g. 'Grocery', 'FMCG', 'Dairy', 'Apparel', 'Hardware', 'Healthcare', 'Electronics', 'Stationery')"
+                    "description": "Commercial category (e.g. 'Grocery', 'Pharmacy', 'Hardware', 'Clothing', 'Electronics', 'Stationery', 'Agriculture', or custom category)"
                 },
                 "purchase_price": {
                     "type": "NUMBER",
-                    "description": "Wholesale buying cost per unit in INR"
+                    "description": "Optional wholesale buying cost per unit in INR (default 0.0)"
                 },
                 "selling_price": {
                     "type": "NUMBER",
-                    "description": "Retail selling price per unit in INR"
+                    "description": "Optional retail selling price per unit in INR (default 0.0)"
                 },
                 "quantity": {
                     "type": "NUMBER",
-                    "description": "Initial stock quantity (default 0)"
+                    "description": "Optional initial stock quantity (default 0)"
                 },
                 "unit": {
                     "type": "STRING",
-                    "description": "Packaging unit (e.g. 'kg', 'pcs', 'packet', 'box', 'metre', 'bottle')"
+                    "description": "Base measurement unit (e.g. 'pcs', 'kg', 'packet', 'box', 'metre', 'bottle', 'strip')"
+                },
+                "packaging_unit": {
+                    "type": "STRING",
+                    "description": "Optional wholesale packaging unit (e.g. 'carton', 'bag', 'box', 'strip')"
+                },
+                "pack_size": {
+                    "type": "NUMBER",
+                    "description": "Number of base units per packaging unit (e.g. 24 bottles per carton, 50 kg per bag, 10 tablets per strip)"
+                },
+                "brand": {
+                    "type": "STRING",
+                    "description": "Brand or manufacturer name"
+                },
+                "sku": {
+                    "type": "STRING",
+                    "description": "Optional SKU or article code"
                 },
                 "barcode": {
                     "type": "STRING",
                     "description": "Optional barcode number"
+                },
+                "description": {
+                    "type": "STRING",
+                    "description": "Optional product description"
                 }
             },
-            "required": ["product_name", "category", "purchase_price", "selling_price"]
+            "required": ["product_name"]
         },
         "is_consequential": True
     },
@@ -405,6 +425,97 @@ AGENT_TOOLS_DEFINITIONS: List[Dict[str, Any]] = [
             "required": ["category", "amount"]
         },
         "is_consequential": True
+    },
+    {
+        "name": "record_return",
+        "description": "Record a customer return or supplier return of goods. Customer returns restore stock and adjust the sales ledger; supplier returns deduct defective/expired stock. (Consequential: stages draft for merchant confirmation).",
+        "parameters": {
+            "type": "OBJECT",
+            "properties": {
+                "product_name": {
+                    "type": "STRING",
+                    "description": "Name of the product being returned"
+                },
+                "quantity": {
+                    "type": "NUMBER",
+                    "description": "Quantity being returned"
+                },
+                "unit": {
+                    "type": "STRING",
+                    "description": "Unit of measurement (e.g. 'pcs', 'kg', 'box', 'packet')"
+                },
+                "return_type": {
+                    "type": "STRING",
+                    "description": "Type of return: 'customer_return' or 'supplier_return' (default 'customer_return')",
+                    "enum": ["customer_return", "supplier_return"]
+                },
+                "reason": {
+                    "type": "STRING",
+                    "description": "Reason for return (e.g. 'Wrong size', 'Customer changed mind', 'Defective batch', 'Near expiry')"
+                },
+                "refund_amount": {
+                    "type": "NUMBER",
+                    "description": "Optional total refund amount in INR"
+                }
+            },
+            "required": ["product_name", "quantity"]
+        },
+        "is_consequential": True
+    },
+    {
+        "name": "record_damage",
+        "description": "Record damaged, spoiled, expired, or wasted stock and remove it from store inventory. (Consequential: stages draft for merchant confirmation).",
+        "parameters": {
+            "type": "OBJECT",
+            "properties": {
+                "product_name": {
+                    "type": "STRING",
+                    "description": "Name of the damaged product"
+                },
+                "quantity": {
+                    "type": "NUMBER",
+                    "description": "Quantity damaged or wasted"
+                },
+                "unit": {
+                    "type": "STRING",
+                    "description": "Unit of measurement (e.g. 'pcs', 'kg', 'packet', 'bottle')"
+                },
+                "reason": {
+                    "type": "STRING",
+                    "description": "Reason for damage/write-off (e.g. 'Broken packaging', 'Water leakage', 'Expired stock', 'Transit damage')"
+                }
+            },
+            "required": ["product_name", "quantity"]
+        },
+        "is_consequential": True
+    },
+    {
+        "name": "get_stock_valuation",
+        "description": "Calculate total store stock valuation: total items count, total units, wholesale purchase cost valuation, retail selling valuation, and unrealized gross profit margin.",
+        "parameters": {
+            "type": "OBJECT",
+            "properties": {
+                "category": {
+                    "type": "STRING",
+                    "description": "Optional category filter to value a specific inventory category"
+                }
+            }
+        },
+        "is_consequential": False
+    },
+    {
+        "name": "get_expiring_products",
+        "description": "Query products expiring soon or within a specified number of days (useful for Pharmacy, FMCG, and Grocery).",
+        "parameters": {
+            "type": "OBJECT",
+            "properties": {
+                "days": {
+                    "type": "INTEGER",
+                    "description": "Number of days threshold to check expiry (default 30)"
+                }
+            }
+        },
+        "is_consequential": False
     }
 ]
 
@@ -475,6 +586,11 @@ class AgentToolExecutor:
             q = str(args.get("query", "")).strip()
             cat = args.get("category")
             items = db.get_inventory_items(user_id=user_id, q=q, category=cat)
+            if not items and q:
+                import action_registry
+                cat_item, _ = action_registry.resolve_catalogue_product(user_id, q)
+                if cat_item:
+                    items = [cat_item]
             return {
                 "success": True,
                 "tool_name": tool_name,
@@ -503,19 +619,33 @@ class AgentToolExecutor:
             else:
                 items = db.get_inventory_items(user_id=user_id, q=name)
                 item = items[0] if items else None
+                if not item:
+                    all_items = db.get_inventory_items(user_id=user_id)
+                    for it in all_items:
+                        if name.lower() in it["product_name"].lower() or it["product_name"].lower() in name.lower():
+                            item = it
+                            break
+                if not item:
+                    import action_registry
+                    cat_item, _ = action_registry.resolve_catalogue_product(user_id, name)
+                    if cat_item:
+                        item = cat_item
 
             if not item:
                 return {
-                    "success": False,
+                    "success": True,
                     "tool_name": tool_name,
                     "found": False,
-                    "message": f"Product '{name}' not found in catalogue."
+                    "product_name": name,
+                    "quantity": 0.0,
+                    "message": f"Product '{name}' is not in stock. Current quantity in inventory is 0."
                 }
 
             return {
                 "success": True,
                 "tool_name": tool_name,
                 "found": True,
+                "product_name": item["product_name"],
                 "product": {
                     "id": item["id"],
                     "name": item["product_name"],
@@ -579,15 +709,33 @@ class AgentToolExecutor:
 
         # 5. get_sales_summary
         elif tool_name == "get_sales_summary":
-            sales = db.get_sales(user_id=user_id, limit=50)
+            sales = db.get_sales(user_id=user_id, limit=100)
             fin = db.get_business_financials(user_id)
+            today_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+            today_sales = [s for s in sales if (s.get("created_at") or "")[:10] == today_str]
+            today_qty = sum(float(s.get("quantity", 0)) for s in today_sales)
+            today_rev = fin.get("revenue", {}).get("today", 0)
+            if today_rev == 0 and today_sales:
+                today_rev = sum(float(s.get("total_revenue", 0)) for s in today_sales)
+
             return {
                 "success": True,
                 "tool_name": tool_name,
+                "period": args.get("period", "today"),
                 "total_sales_count": len(sales),
-                "revenue_today": fin.get("revenue", {}).get("today", 0),
+                "sales_count_today": len(today_sales),
+                "items_sold_today": round(today_qty, 2),
+                "revenue_today": round(today_rev, 2),
                 "revenue_monthly": fin.get("revenue", {}).get("monthly", 0),
                 "revenue_total": fin.get("revenue", {}).get("total", 0),
+                "today_items": [
+                    {
+                        "product_name": s["product_name"],
+                        "quantity": float(s["quantity"]),
+                        "total": float(s["total_revenue"])
+                    }
+                    for s in today_sales
+                ],
                 "recent_sales": [
                     {
                         "product_name": s["product_name"],
@@ -647,6 +795,34 @@ class AgentToolExecutor:
             expiry_date = None
             if raw_expiry:
                 expiry_date = inventory_actions.parse_relative_expiry(str(raw_expiry)) or str(raw_expiry)
+
+            # Check if product already exists in catalogue
+            existing = db.get_inventory_items(user_id=user_id, q=name)
+            if not existing:
+                all_items = db.get_inventory_items(user_id=user_id)
+                existing = [it for it in all_items if name.lower() in it["product_name"].lower()]
+
+            # If brand new product with zero cost and zero selling price, request missing required details
+            if not existing and total_cost <= 0 and unit_cost <= 0 and selling_price <= 0:
+                return {
+                    "success": False,
+                    "action_status": "needs_clarification",
+                    "product_name": name,
+                    "quantity": qty,
+                    "unit": unit,
+                    "message": f"'{name}' नया उत्पाद है। कृपया इसका कुल खरीद मूल्य (Total purchase cost) या भाव बताएं (जैसे: '4000 रुपये में आया')।"
+                }
+
+            # If existing item with zero cost provided, inherit previous purchase and selling rates
+            if existing and total_cost <= 0 and unit_cost <= 0:
+                unit_cost = float(existing[0].get("purchase_price", 0.0))
+                total_cost = round(unit_cost * qty, 2)
+                if selling_price <= 0:
+                    selling_price = float(existing[0].get("selling_price", 0.0))
+                if not unit:
+                    unit = existing[0].get("unit", unit)
+                if cat == "General":
+                    cat = existing[0].get("category", cat)
 
             # Compute cost prices
             if total_cost > 0 and unit_cost == 0:
@@ -757,11 +933,13 @@ class AgentToolExecutor:
 
         # 11. create_product
         elif tool_name == "create_product":
+            from inventory_service import inventory_service
             name = str(args.get("product_name", "")).strip()
-            cat = str(args.get("category", "General")).strip()
-            buy = float(args.get("purchase_price", 0))
-            sell = float(args.get("selling_price", 0))
-            qty = float(args.get("quantity", 0))
+            raw_cat = args.get("category")
+            cat = inventory_service.detect_category(name, raw_cat)
+            buy = max(0.0, float(args.get("purchase_price", 0.0) or 0.0))
+            sell = max(0.0, float(args.get("selling_price", 0.0) or 0.0))
+            qty = max(0.0, float(args.get("quantity", 0.0) or 0.0))
             unit = normalize_unit(args.get("unit"))
             barcode = args.get("barcode", "")
 
@@ -813,7 +991,7 @@ class AgentToolExecutor:
         elif tool_name == "update_product_details":
             name = str(args.get("product_name", "")).strip()
             updates = {}
-            for k in ["category", "unit", "purchase_price", "selling_price"]:
+            for k in ["category", "unit", "purchase_price", "selling_price", "packaging_unit", "pack_size", "description"]:
                 if k in args and args[k] is not None:
                     updates[k] = args[k]
 
@@ -860,6 +1038,81 @@ class AgentToolExecutor:
                 "confirmation_token": staged["confirmation_token"],
                 "summary": staged["summary"],
                 "proposed_changes": staged.get("proposed_changes", {})
+            }
+
+        # 15. record_return
+        elif tool_name == "record_return":
+            pname = str(args.get("product_name", "")).strip()
+            rqty = float(args.get("quantity", 0))
+            runit = normalize_unit(args.get("unit"))
+            rtype = str(args.get("return_type", "customer_return")).strip()
+            rreason = str(args.get("reason", "Customer return")).strip()
+            refund = float(args.get("refund_amount", 0.0) or 0.0)
+
+            staged = store_tools.stage_record_return(
+                user_id=user_id,
+                product_name=pname,
+                quantity=rqty,
+                unit=runit,
+                return_type=rtype,
+                reason=rreason,
+                refund_amount=refund
+            )
+
+            return {
+                "success": True,
+                "tool_name": tool_name,
+                "action_status": "awaiting_confirmation",
+                "action_staged": staged,
+                "confirmation_token": staged["confirmation_token"],
+                "summary": staged["summary"],
+                "proposed_changes": staged.get("proposed_changes", {})
+            }
+
+        # 16. record_damage
+        elif tool_name == "record_damage":
+            pname = str(args.get("product_name", "")).strip()
+            dqty = float(args.get("quantity", 0))
+            dunit = normalize_unit(args.get("unit"))
+            dreason = str(args.get("reason", "Damaged / Spoilage")).strip()
+
+            staged = store_tools.stage_record_damage(
+                user_id=user_id,
+                product_name=pname,
+                quantity=dqty,
+                unit=dunit,
+                reason=dreason
+            )
+
+            return {
+                "success": True,
+                "tool_name": tool_name,
+                "action_status": "awaiting_confirmation",
+                "action_staged": staged,
+                "confirmation_token": staged["confirmation_token"],
+                "summary": staged["summary"],
+                "proposed_changes": staged.get("proposed_changes", {})
+            }
+
+        # 17. get_stock_valuation
+        elif tool_name == "get_stock_valuation":
+            cat = args.get("category")
+            val_res = db.get_inventory_valuation(user_id=user_id, category=cat)
+            return {
+                "success": True,
+                "tool_name": tool_name,
+                "valuation": val_res
+            }
+
+        # 18. get_expiring_products
+        elif tool_name == "get_expiring_products":
+            from inventory_service import inventory_service
+            days = int(args.get("days", 30))
+            exp_res = inventory_service.get_expiring_products(user_id=user_id, days=days)
+            return {
+                "success": True,
+                "tool_name": tool_name,
+                "expiring_data": exp_res
             }
 
         return {

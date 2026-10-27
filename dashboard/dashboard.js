@@ -9,10 +9,15 @@
 let currentUser = null;
 let currentLanguage = 'hi';
 let speechRecognition = null;
+
+
 let isListening = false;
+let isStartingRecognition = false;
+let isProcessingAICommand = false;
 
 // ── Inventory State (Phase 2) ──
 let inventoryItems = [];
+let lastModifiedProductId = null;
 let inventorySummary = null;
 let inventoryFilters = {
     q: '',
@@ -98,10 +103,10 @@ const I18N = {
         nav_notifications: 'Notifications / सूचनाएं',
         nav_memory: 'Business Memory / व्यापार स्मृति',
         nav_radar: 'Opportunity Radar / अवसर रडार',
-        nav_assistant: 'AI Robo / सहायक',
+        nav_assistant: 'Your AI Accountant',
         nav_settings: 'Settings / सेटिंग्स',
         news_view_title: 'News & Market Intelligence / ताज़ा समाचार व बाज़ार',
-        ai_assistant_title: 'Shopo Robo Voice Assistant',
+        ai_assistant_title: 'Your AI Accountant',
         ai_status_ready: 'Online • आपकी दुकान के लिए तैयार हूँ (Ready)',
         mic_tap_to_speak: 'माइक दबाकर बोलें (Tap Mic to Speak)',
         preset_label: 'यह बोलकर देखें:',
@@ -121,6 +126,25 @@ const I18N = {
         alerts_title: 'Alerts / चेतावनियाँ',
         wizard_title: 'दुकान का सेटअप पूरा करें! (Setup Your Shop)',
         wizard_desc: 'अपनी दुकान का नाम और प्रकार चुनें ताकि शोपो रोबो आपका सही इन्वेंटरी डेटा तैयार कर सके।',
+        nav_accountant: 'AI मुनीम एवं टैक्स',
+        nav_competitor: 'प्रतिस्पर्धी रडार',
+        nav_demand: 'ग्राहक मांग',
+        nav_negotiation: 'मोलभाव कोच',
+        nav_simulator: 'व्यापार सिमुलेटर',
+        nav_time_machine: 'समय मशीन पूर्वानुमान',
+        nav_translator: 'वॉइस अनुवादक',
+        comp_title: 'प्रतिस्पर्धी मूल्य एवं बाज़ार विश्लेषण',
+        comp_sub: 'स्थानीय बाज़ार भाव एवं प्रतिस्पर्धी मार्जिन ट्रैक करें',
+        demand_title: 'ग्राहक मांग एवं आवश्यकता विश्लेषक',
+        demand_sub: 'अपूर्ण ग्राहक मांगों और अधिक मांग वाले उत्पादों का विश्लेषण करें',
+        neg_title: 'आपूर्तिकर्ता मोलभाव एवं बातचीत कोच',
+        neg_sub: 'मंडी भाव और रणनीतिक खरीद मार्जिन सलाह',
+        trans_title: 'व्यापारिक बहुभाषी अनुवादक',
+        trans_sub: 'अंतरराज्यीय व्यापार के लिए त्वरित आवाज़ और टेक्स्ट अनुवाद',
+        pref_ui_lang: 'स्क्रीन प्रदर्शन भाषा',
+        pref_ai_lang: 'AI आवाज़ व चैट भाषा',
+        pref_news_lang: 'समाचार फ़ीड भाषा',
+
     },
     en: {
         nav_home: 'Home Dashboard',
@@ -134,10 +158,10 @@ const I18N = {
         nav_notifications: 'Notification Center',
         nav_memory: 'Business Memory Graph',
         nav_radar: 'Opportunity Radar',
-        nav_assistant: 'AI Robo Assistant',
+        nav_assistant: 'Your AI Accountant',
         nav_settings: 'Settings & Profile',
         news_view_title: 'News & Market Intelligence',
-        ai_assistant_title: 'Shopo Robo AI Assistant',
+        ai_assistant_title: 'Your AI Accountant',
         ai_status_ready: 'Online • Ready to assist your store',
         mic_tap_to_speak: 'Tap Microphone to Speak',
         preset_label: 'Try voice commands:',
@@ -157,6 +181,25 @@ const I18N = {
         alerts_title: 'Inventory Alerts',
         wizard_title: 'Complete Your Shop Setup!',
         wizard_desc: 'Enter your shop name and store category to enable AI features.',
+        nav_accountant: 'AI Accountant & Tax',
+        nav_competitor: 'Competitor Radar',
+        nav_demand: 'Demand Listener',
+        nav_negotiation: 'Negotiation Coach',
+        nav_simulator: 'What-If Simulator',
+        nav_time_machine: 'Time Machine Forecast',
+        nav_translator: 'Voice Translator',
+        comp_title: 'Competitor Price Intelligence',
+        comp_sub: 'Track local market prices and competitor margins',
+        demand_title: 'Customer Demand Listener',
+        demand_sub: 'Analyze unfulfilled requests and high-demand products',
+        neg_title: 'Supplier Negotiation Coach',
+        neg_sub: 'Strategic margin coaching and mandi price benchmarks',
+        trans_title: 'Multilingual Business Translator',
+        trans_sub: 'Instant voice and text translation for multi-state trade',
+        pref_ui_lang: 'UI Display Language',
+        pref_ai_lang: 'AI Voice & Chat Language',
+        pref_news_lang: 'News Feed Language',
+
     },
     hinglish: {
         nav_home: 'Home / Dashboard',
@@ -166,10 +209,10 @@ const I18N = {
         nav_sales: 'Bikri / Sales',
         nav_reports: 'Munafa / Reports',
         nav_news: 'Taaza Khabar / News',
-        nav_assistant: 'AI Robo Assistant',
+        nav_assistant: 'Your AI Accountant',
         nav_settings: 'Settings / Profile',
         news_view_title: 'Live News & Market Rates',
-        ai_assistant_title: 'Shopo Robo Assistant',
+        ai_assistant_title: 'Your AI Accountant',
         ai_status_ready: 'Online • Dukaan assistant ready hai',
         mic_tap_to_speak: 'Mic dabayein aur boliye (Tap Mic)',
         preset_label: 'Try bol kar dekhein:',
@@ -189,6 +232,29 @@ const I18N = {
         alerts_title: 'Stock & Expiry Alerts',
         wizard_title: 'Setup your Dukaan profile!',
         wizard_desc: 'Dukaan ka name aur category select karein for smart AI inventory.',
+        nav_accountant: 'AI Munim & Tax',
+        nav_competitor: 'Competitor Radar',
+        nav_demand: 'Customer Demand',
+        nav_negotiation: 'Molbhav Coach',
+        nav_simulator: 'What-If Simulator',
+        nav_time_machine: 'Time Machine Forecast',
+        nav_translator: 'Voice Translator',
+        nav_autopilot: 'AI Business Autopilot',
+        nav_notifications: 'Notification Center',
+        nav_memory: 'Business Memory Graph',
+        nav_radar: 'Opportunity Radar',
+        comp_title: 'Competitor Price & Market Intelligence',
+        comp_sub: 'Local market prices aur competitor margins track karein',
+        demand_title: 'Customer Demand & Needs Listener',
+        demand_sub: 'Unfulfilled customer demand aur trending items analyze karein',
+        neg_title: 'Supplier Molbhav & Negotiation Coach',
+        neg_sub: 'Mandi rate aur strategic purchase margin advice',
+        trans_title: 'Multilingual Business Translator',
+        trans_sub: 'Interstate trade ke liye instant voice aur text translation',
+        pref_ui_lang: 'UI Display Language',
+        pref_ai_lang: 'AI Voice & Chat Language',
+        pref_news_lang: 'News Feed Language',
+
     },
     es: {
         nav_home: 'Inicio / Panel',
@@ -219,6 +285,31 @@ const I18N = {
         alerts_title: 'Alertas de Inventario',
         wizard_title: '¡Completa la configuración de tu tienda!',
         wizard_desc: 'Ingresa el nombre y tipo de tienda para activar la IA.',
+        nav_accountant: 'Contador IA e Impuestos',
+        nav_competitor: 'Radar de Competidores',
+        nav_demand: 'Monitor de Demanda',
+        nav_negotiation: 'Coach de Negociación',
+        nav_simulator: 'Simulador de Negocio',
+        nav_time_machine: 'Pronóstico Temporal',
+        nav_translator: 'Traductor de Voz',
+        nav_autopilot: 'Piloto Automático IA',
+        nav_notifications: 'Centro de Notificaciones',
+        nav_memory: 'Grafo de Memoria Comercial',
+        nav_radar: 'Radar de Oportunidades',
+        nav_multi_store: 'Hub Multitienda',
+        nav_shelf_scanner: 'Escáner Inteligente',
+        comp_title: 'Inteligencia de Precios de Competidores',
+        comp_sub: 'Rastree precios del mercado local y márgenes de competidores',
+        demand_title: 'Monitor de Demanda de Clientes',
+        demand_sub: 'Analice solicitudes pendientes y productos de alta demanda',
+        neg_title: 'Entrenador de Negociación con Proveedores',
+        neg_sub: 'Estrategias de margen y precios de referencia del mercado',
+        trans_title: 'Traductor Multilingüe de Negocios',
+        trans_sub: 'Traducción instantánea de voz y texto para el comercio',
+        pref_ui_lang: 'Idioma de la Interfaz',
+        pref_ai_lang: 'Idioma de Voz y Chat de IA',
+        pref_news_lang: 'Idioma de Noticias',
+
     },
     fr: {
         nav_home: 'Accueil / Tableau',
@@ -652,6 +743,20 @@ function renderUserData(user) {
     document.getElementById('sidebarUserShop').textContent = shopName;
     document.getElementById('sidebarUserInitials').textContent = initials;
 
+    // Welcome Greeting update (Prompt Section 3)
+    const welcomeGreeting = document.getElementById('dashboardWelcomeGreeting');
+    const welcomeSubtitle = document.getElementById('dashboardWelcomeSubtitle');
+    if (welcomeGreeting) {
+        const hour = new Date().getHours();
+        let timeSalutation = "Good Morning!";
+        if (hour >= 12 && hour < 17) timeSalutation = "Good Afternoon!";
+        else if (hour >= 17 || hour < 4) timeSalutation = "Good Evening!";
+        welcomeGreeting.textContent = `${timeSalutation} Here's what's happening with ${shopName} today.`;
+    }
+    if (welcomeSubtitle) {
+        welcomeSubtitle.textContent = `Live dukaan overview • All metrics calculated from your saved business records.`;
+    }
+
     // Settings view updates
     document.getElementById('settingsShopName').textContent = shopName;
     document.getElementById('settingsShopType').textContent = user.shop_type || 'Grocery & Kirana Store';
@@ -772,6 +877,7 @@ function toggleSidebar() {
 // LANGUAGE & REGION CONTROLLER (Feature 1)
 // ════════════════════════════════════════════════
 
+
 function setLanguage(lang, persist = true) {
     currentLanguage = lang;
     userPreferences.ui_language = lang;
@@ -859,33 +965,77 @@ function setupSpeechRecognition() {
 
     recognizer.onstart = () => {
         isListening = true;
-        updateListeningUI(true);
+        isStartingRecognition = false;
+        setAIAssistantState('listening');
     };
 
     recognizer.onresult = (event) => {
-        const transcript = event.results[0][0].transcript;
-        document.getElementById('cmdInput').value = transcript;
-        processAICommand(transcript);
+        isListening = false;
+        isStartingRecognition = false;
+
+        const transcript = event.results && event.results[0] && event.results[0][0] ? event.results[0][0].transcript : '';
+        const trimmed = (transcript || '').trim();
+        if (!trimmed) {
+            setAIAssistantState('error', 'आवाज़ साफ़ नहीं आई (Could not hear clearly)');
+            showSimulatedResponse(
+                "⚠️ कोई आवाज़ साफ़ सुनाई नहीं दी। कृपया माइक दबाकर दोबारा बोलें या टाइप करें। (No speech detected. Please speak clearly or type.)"
+            );
+            return;
+        }
+
+        setAIAssistantState('processing');
+        const input = document.getElementById('cmdInput');
+        if (input) input.value = trimmed;
+        processAICommand(trimmed);
     };
 
     recognizer.onerror = (event) => {
-        console.warn('Speech error:', event.error);
+        console.warn('Speech recognition error:', event.error);
         isListening = false;
-        updateListeningUI(false);
-        showSimulatedResponse(
-            "माइक अनुमति नहीं मिली या ऑडियो साफ़ नहीं था। कृपया टाइप करके अपना सवाल पूछें। (Microphone permission was not granted or audio was unclear. Please type your command.)"
-        );
+        isStartingRecognition = false;
+
+        if (event.error === 'aborted') {
+            setAIAssistantState('ready');
+            return;
+        }
+
+        setAIAssistantState('error', 'माइक त्रुटि (Microphone error)');
+
+        let errorMsg = "माइक में कुछ समस्या आई। कृपया टाइप करके अपना सवाल पूछें। (Speech recognition error. Please type your query.)";
+        if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
+            errorMsg = "⚠️ <strong>माइक अनुमति अस्वीकृत (Microphone Permission Denied):</strong> कृपया ब्राउज़र सेटिंग्स में जाकर माइक्रोफ़ोन की अनुमति (Allow) दें और पुनः प्रयास करें।";
+        } else if (event.error === 'no-speech') {
+            errorMsg = "⚠️ <strong>कोई आवाज़ नहीं मिली (No Speech Detected):</strong> माइक्रोफ़ोन ने कोई आवाज़ नहीं पकड़ी। कृपया माइक के पास बोलें या टाइप करें।";
+        } else if (event.error === 'audio-capture') {
+            errorMsg = "⚠️ <strong>माइक्रोफ़ोन नहीं मिला (Audio Capture Failed):</strong> माइक्रोफ़ोन हार्डवेयर उपलब्ध नहीं है या किसी अन्य ऐप द्वारा व्यस्त है।";
+        } else if (event.error === 'network') {
+            errorMsg = "⚠️ <strong>नेटवर्क त्रुटि (Speech Network Error):</strong> वॉइस सेवा से संपर्क नहीं हो सका। कृपया इंटरनेट जांचें या टाइप करें।";
+        }
+        showSimulatedResponse(errorMsg);
     };
 
     recognizer.onend = () => {
         isListening = false;
-        updateListeningUI(false);
+        isStartingRecognition = false;
+        if (!isProcessingAICommand && (!window.speechSynthesis || !window.speechSynthesis.speaking)) {
+            setAIAssistantState('ready');
+        }
     };
 
     return recognizer;
 }
 
 function toggleVoiceInput() {
+    // 1. Immediately cancel any ongoing speech synthesis to prevent echo feedback loops
+    if (window.speechSynthesis && (window.speechSynthesis.speaking || window.speechSynthesis.pending)) {
+        window.speechSynthesis.cancel();
+    }
+
+    // 2. Prevent initiating speech recognition while an AI command is actively in-flight
+    if (isProcessingAICommand) {
+        return;
+    }
+
     if (!speechRecognition) {
         speechRecognition = setupSpeechRecognition();
     }
@@ -895,39 +1045,170 @@ function toggleVoiceInput() {
         showSimulatedResponse(
             "आपका ब्राउज़र सीधे वॉइस इनपुट सपोर्ट नहीं करता। कृपया नीचे टेक्स्ट बॉक्स में टाइप करें। (Browser does not support Speech Recognition. Please use text input.)"
         );
-        document.getElementById('cmdInput').focus();
+        const input = document.getElementById('cmdInput');
+        if (input) input.focus();
         return;
     }
 
     if (isListening) {
-        speechRecognition.stop();
+        try {
+            speechRecognition.stop();
+        } catch (e) {
+            console.warn('Could not stop recognition:', e);
+        }
+        isListening = false;
+        isStartingRecognition = false;
+        updateListeningUI(false);
     } else {
+        // Guard against rapid duplicate clicks (avoids InvalidStateError)
+        if (isStartingRecognition) return;
+        isStartingRecognition = true;
+
         // Set speech language based on current selection
         speechRecognition.lang = currentLanguage === 'en' ? 'en-IN' : 'hi-IN';
         try {
             speechRecognition.start();
         } catch (e) {
             console.warn('Could not start recognition:', e);
+            isStartingRecognition = false;
+            isListening = false;
+            updateListeningUI(false);
         }
     }
 }
 
-function updateListeningUI(listening) {
+let aiStateWatchdogTimer = null;
+
+function setAIAssistantState(state, customMessage) {
     const micContainer = document.getElementById('micBtnContainer');
+    const heroCard = document.getElementById('assistantHeroCard');
     const helperText = document.getElementById('micHelperText');
     const statusText = document.getElementById('aiStatusText');
+    const micIcon = document.getElementById('micIcon') || (micContainer ? micContainer.querySelector('.mic-btn i') : null);
 
-    if (listening) {
-        micContainer.classList.add('listening');
-        helperText.textContent = "सुन रहा हूँ... बोलिए (Listening...)";
-        statusText.textContent = "🔴 Listening to voice input...";
-        statusText.style.color = "#DC2626";
-    } else {
-        micContainer.classList.remove('listening');
-        helperText.textContent = I18N[currentLanguage]?.mic_tap_to_speak || "माइक दबाकर बोलें";
-        statusText.textContent = "Online • आपकी दुकान के लिए तैयार हूँ (Ready)";
-        statusText.style.color = "var(--lime-700)";
+    if (!micContainer) return;
+
+    // Clear any existing watchdog or auto-reset timers
+    if (aiStateWatchdogTimer) {
+        clearTimeout(aiStateWatchdogTimer);
+        aiStateWatchdogTimer = null;
     }
+
+    // Reset state classes
+    micContainer.classList.remove(
+        'state-ready', 'state-listening', 'state-processing', 
+        'state-speaking', 'state-success', 'state-error', 'listening'
+    );
+    if (heroCard) {
+        heroCard.classList.remove(
+            'hero-state-listening', 'hero-state-processing', 
+            'hero-state-speaking', 'hero-state-success', 'hero-state-error'
+        );
+    }
+
+    micContainer.classList.add(`state-${state}`);
+    if (heroCard && state !== 'ready') {
+        heroCard.classList.add(`hero-state-${state}`);
+    }
+
+    if (state === 'listening') {
+        micContainer.classList.add('listening');
+    }
+
+    // Dynamic icon switching
+    if (micIcon) {
+        micIcon.className = '';
+        switch (state) {
+            case 'listening':
+                micIcon.className = 'fas fa-microphone-lines';
+                break;
+            case 'processing':
+                micIcon.className = 'fas fa-circle-notch fa-spin';
+                break;
+            case 'speaking':
+                micIcon.className = 'fas fa-volume-high';
+                break;
+            case 'success':
+                micIcon.className = 'fas fa-check';
+                break;
+            case 'error':
+                micIcon.className = 'fas fa-exclamation';
+                break;
+            case 'ready':
+            default:
+                micIcon.className = 'fas fa-microphone';
+                break;
+        }
+    }
+
+    switch (state) {
+        case 'listening':
+            if (helperText) helperText.textContent = customMessage || "सुन रहा हूँ... बोलिए (Listening...)";
+            if (statusText) {
+                statusText.innerHTML = '<span class="status-indicator-dot listening"></span> 🔴 सुन रहा हूँ... बोलिए (Listening to voice input...)';
+                statusText.style.color = "#DC2626";
+            }
+            break;
+        case 'processing':
+            if (helperText) helperText.textContent = customMessage || "विचार कर रहा हूँ... (Thinking...)";
+            if (statusText) {
+                statusText.innerHTML = '<span class="status-indicator-dot processing"></span> ⚡ सोच रहा हूँ... (Processing AI Intelligence...)';
+                statusText.style.color = "#D97706";
+            }
+            // Safety watchdog timer: never stay stuck in processing indefinitely if connection drops
+            aiStateWatchdogTimer = setTimeout(() => {
+                if (isProcessingAICommand) {
+                    isProcessingAICommand = false;
+                    const sendBtn = document.getElementById('aiSendBtn');
+                    if (sendBtn) sendBtn.disabled = false;
+                    setAIAssistantState('error', 'प्रतिक्रिया में अधिक समय लगा (Request timed out). कृपया पुनः प्रयास करें।');
+                }
+            }, 25000);
+            break;
+        case 'speaking':
+            if (helperText) helperText.textContent = customMessage || "बोल रहा हूँ... (Speaking...)";
+            if (statusText) {
+                statusText.innerHTML = '<span class="status-indicator-dot speaking"></span> 🔊 उत्तर दे रहा हूँ... (Speaking...)';
+                statusText.style.color = "#2563EB";
+            }
+            break;
+        case 'success':
+            if (helperText) helperText.textContent = customMessage || "सफलतापूर्वक पूर्ण! (Success!)";
+            if (statusText) {
+                statusText.innerHTML = '<span class="status-indicator-dot success"></span> ✅ कार्य पूर्ण हुआ (Completed)';
+                statusText.style.color = "#16A34A";
+            }
+            aiStateWatchdogTimer = setTimeout(() => {
+                if (!isListening && !isProcessingAICommand && (!window.speechSynthesis || !window.speechSynthesis.speaking)) {
+                    setAIAssistantState('ready');
+                }
+            }, 2500);
+            break;
+        case 'error':
+            if (helperText) helperText.textContent = customMessage || "कृपया पुनः प्रयास करें (Try Again)";
+            if (statusText) {
+                statusText.innerHTML = '<span class="status-indicator-dot error"></span> ⚠️ ' + (customMessage || "कृपया पुनः प्रयास करें (Please try again)");
+                statusText.style.color = "#DC2626";
+            }
+            aiStateWatchdogTimer = setTimeout(() => {
+                if (!isListening && !isProcessingAICommand && (!window.speechSynthesis || !window.speechSynthesis.speaking)) {
+                    setAIAssistantState('ready');
+                }
+            }, 3500);
+            break;
+        case 'ready':
+        default:
+            if (helperText) helperText.textContent = (typeof I18N !== 'undefined' && I18N[currentLanguage]?.mic_tap_to_speak) || "माइक दबाकर बोलें (Tap Mic to Speak in Hindi, Hinglish, English)";
+            if (statusText) {
+                statusText.innerHTML = '<span class="status-indicator-dot ready"></span> Online &bull; Ready to help your shop (तैयार हूँ)';
+                statusText.style.color = "var(--lime-700)";
+            }
+            break;
+    }
+}
+
+function updateListeningUI(listening) {
+    setAIAssistantState(listening ? 'listening' : 'ready');
 }
 
 function formatMarkdown(text) {
@@ -966,10 +1247,26 @@ function applyPresetCommand(text) {
 let currentStagedActionToken = null;
 
 async function processAICommand(query) {
+    if (!query || !query.trim()) return;
+    if (isProcessingAICommand) return; // Prevent duplicate rapid requests
+    isProcessingAICommand = true;
+    setAIAssistantState('processing');
+
+    // If speech recognition is still running, stop it so it does not capture background noise while thinking
+    if (speechRecognition && isListening) {
+        try { speechRecognition.stop(); } catch(e) {}
+        isListening = false;
+        isStartingRecognition = false;
+        updateListeningUI(false);
+    }
+
     const box = document.getElementById('aiResponseBox');
     const body = document.getElementById('aiResponseBody');
     const intentBadge = document.getElementById('aiIntentBadge');
     const actionCard = document.getElementById('aiActionConfirmCard');
+    const sendBtn = document.getElementById('aiSendBtn');
+
+    if (sendBtn) sendBtn.disabled = true;
 
     if (box) {
         box.classList.add('show');
@@ -989,7 +1286,7 @@ async function processAICommand(query) {
             method: 'POST',
             headers: headers,
             body: JSON.stringify({
-                message: query,
+                message: query.trim(),
                 language: currentLanguage || 'hi'
             })
         });
@@ -1017,6 +1314,16 @@ async function processAICommand(query) {
                 'business_financials_query': '💰 Verified Store Financials',
                 'consequential_action_staged': '⚠️ Action Confirmation Needed',
                 'web_search_query': '🔍 Web Search Citations',
+                'read_only_stock_query': '📦 Stock Check',
+                'read_only_sales_query': '📊 Sales Summary',
+                'read_only_profit_query': '📈 Profit Summary',
+                'stock_valuation_query': '💰 Stock Valuation',
+                'clarification_needed': '❓ Clarification Needed',
+                'inward_stock_purchase': '📥 Inward Stock',
+                'retail_sale': '🛒 Record Sale',
+                'product_creation': '✨ New Product',
+                'needs_login': '🔒 Login Required',
+                'business_auth_required': '🔒 Login Required',
                 'general_knowledge': '🌐 Universal Intelligence'
             };
 
@@ -1063,7 +1370,7 @@ async function processAICommand(query) {
                 if (actionCard) actionCard.style.display = 'none';
             }
 
-            // Spoken speech synthesis readout (Module 8)
+            // Spoken speech synthesis readout (Prevent echo feedback: halt speech recognition while speaking)
             if (window.speechSynthesis && data.spoken_text) {
                 try {
                     window.speechSynthesis.cancel();
@@ -1071,15 +1378,49 @@ async function processAICommand(query) {
                     const utter = new SpeechSynthesisUtterance(cleanSpoken);
                     utter.lang = currentLanguage === 'en' ? 'en-IN' : 'hi-IN';
                     utter.rate = 1.0;
+
+                    utter.onstart = () => {
+                        setAIAssistantState('speaking');
+                        // Ensure speech recognition is aborted if running so it does not capture the speaker's own voice
+                        if (speechRecognition && isListening) {
+                            try { speechRecognition.abort(); } catch(e){}
+                            isListening = false;
+                            isStartingRecognition = false;
+                            updateListeningUI(false);
+                        }
+                    };
+
+                    utter.onend = () => {
+                        if (!currentStagedActionToken) {
+                            setAIAssistantState('ready');
+                        }
+                    };
+
+                    utter.onerror = () => {
+                        if (!currentStagedActionToken) {
+                            setAIAssistantState('ready');
+                        }
+                    };
+
                     window.speechSynthesis.speak(utter);
-                } catch (e) {}
+                } catch (e) {
+                    console.warn('Speech synthesis error:', e);
+                }
             }
         } else {
             if (body) body.innerHTML = `<span style="color:#DC2626;">❌ ${escapeHtml(res.message || 'Error communicating with AI engine.')}</span>`;
+            setAIAssistantState('error', res.message || 'Error communicating with AI');
         }
     } catch (err) {
         console.error('AI chat failed:', err);
         if (body) body.innerHTML = `<span style="color:#DC2626;">❌ Server connection error. Please ensure backend is running.</span>`;
+        setAIAssistantState('error', 'सर्वर कनेक्शन त्रुटि (Server Error)');
+    } finally {
+        isProcessingAICommand = false;
+        if (sendBtn) sendBtn.disabled = false;
+        if ((!window.speechSynthesis || !window.speechSynthesis.speaking) && !currentStagedActionToken) {
+            setAIAssistantState('ready');
+        }
     }
 }
 
@@ -1110,6 +1451,11 @@ function renderActionStatusBadge(badgeEl, status) {
         badgeEl.style.background = '#F1F5F9';
         badgeEl.style.color = '#475569';
         badgeEl.style.border = '1px solid #94A3B8';
+    } else if (status === 'needs_login') {
+        badgeEl.textContent = '🔒 Login Required';
+        badgeEl.style.background = '#FEE2E2';
+        badgeEl.style.color = '#B91C1C';
+        badgeEl.style.border = '1px solid #EF4444';
     }
 }
 
@@ -1155,6 +1501,12 @@ async function executeStagedAction(decision, badgeEl) {
         if (assistantActionCard) assistantActionCard.style.display = 'none';
 
         if (res.success) {
+            if (decision !== 'cancel') {
+                if (res.result && (res.result.product_id || res.result.id)) {
+                    lastModifiedProductId = res.result.product_id || res.result.id;
+                }
+                setAIAssistantState('success', res.message || 'कार्रवाई सफलतापूर्वक पूर्ण हुई!');
+            }
             if (badgeEl) renderActionStatusBadge(badgeEl, decision === 'cancel' ? 'cancelled' : 'saved');
             if (body) {
                 const bg = decision === 'cancel' ? '#F1F5F9' : '#DCFCE7';
@@ -1167,13 +1519,16 @@ async function executeStagedAction(decision, badgeEl) {
             fetchInventorySummary();
             fetchSales();
             fetchFinancials();
+            setAIAssistantState('success', decision === 'cancel' ? 'कार्य रद्द किया गया (Cancelled)' : 'सफलतापूर्वक पूर्ण (Action Saved!)');
         } else {
             if (badgeEl) renderActionStatusBadge(badgeEl, 'failed');
             alert(res.message || 'Action failed.');
+            setAIAssistantState('error', 'कार्रवाई असफल (Action failed)');
         }
     } catch (err) {
         if (badgeEl) renderActionStatusBadge(badgeEl, 'failed');
         console.error('Error confirming action:', err);
+        setAIAssistantState('error', 'कार्रवाई में समस्या आई');
     } finally {
         currentStagedActionToken = null;
     }
@@ -1243,6 +1598,16 @@ async function processAssistantViewCommand(query) {
                 'business_financials_query': '💰 Verified Store Financials',
                 'consequential_action_staged': '⚠️ Action Confirmation Needed',
                 'web_search_query': '🔍 Web Search Citations',
+                'read_only_stock_query': '📦 Stock Check',
+                'read_only_sales_query': '📊 Sales Summary',
+                'read_only_profit_query': '📈 Profit Summary',
+                'stock_valuation_query': '💰 Stock Valuation',
+                'clarification_needed': '❓ Clarification Needed',
+                'inward_stock_purchase': '📥 Inward Stock',
+                'retail_sale': '🛒 Record Sale',
+                'product_creation': '✨ New Product',
+                'needs_login': '🔒 Login Required',
+                'business_auth_required': '🔒 Login Required',
                 'general_knowledge': '🌐 Universal Intelligence'
             };
 
@@ -1316,8 +1681,15 @@ function openModal(id) {
 }
 
 function closeModal(id) {
+    if (id === 'barcodeModal') {
+        stopBarcodeScanner();
+    }
     const m = document.getElementById(id);
     if (m) m.classList.remove('active');
+}
+
+function closeBarcodeModal() {
+    closeModal('barcodeModal');
 }
 
 function openAddProductModal() {
@@ -1326,7 +1698,8 @@ function openAddProductModal() {
 }
 function openBarcodeModal() {
     openModal('barcodeModal');
-    document.getElementById('barcodeResultBox').style.display = 'none';
+    resetScannerView();
+    switchScannerTab('camera');
 }
 function openRecordSaleModal() { openModal('recordSaleModal'); }
 function openSetupModal() {
@@ -1461,6 +1834,7 @@ async function fetchSales() {
             salesRecords = res.data.sales || [];
             renderRecentSalesFeed();
             renderSalesRegisterView();
+            renderSalesOverviewChart();
             checkFirstTimeUserStatus();
         }
     } catch (err) {
@@ -1559,6 +1933,37 @@ function updateOverviewMetrics() {
         } else {
             profitSub.textContent = 'Gross Margin: 0.0%';
             if (profitTrend) profitTrend.className = 'metric-trend';
+        }
+    }
+
+    // 6. Stock Value (Prompt Section 4)
+    const stockValEl = document.getElementById('metricStockValue');
+    const stockValSub = document.getElementById('metricStockValueSub');
+    if (stockValEl && inventorySummary) {
+        const val = inventorySummary.total_purchase_value || 0;
+        stockValEl.textContent = `₹${Math.round(val).toLocaleString('en-IN')}`;
+    }
+    if (stockValSub && inventorySummary) {
+        const retailVal = inventorySummary.total_selling_value || 0;
+        stockValSub.textContent = `Retail valuation: ₹${Math.round(retailVal).toLocaleString('en-IN')}`;
+    }
+
+    // 7. Profit & Loss Card (Prompt Section 5)
+    const pnlGross = document.getElementById('pnlGrossRevenue');
+    const pnlCogs = document.getElementById('pnlCOGS');
+    const pnlExp = document.getElementById('pnlExpenses');
+    const pnlNet = document.getElementById('pnlNetProfit');
+    if (businessFinancials) {
+        const rev = businessFinancials.revenue?.total ?? 0;
+        const cogs = businessFinancials.cogs?.total ?? 0;
+        const exp = businessFinancials.operating_expenses?.total ?? 0;
+        const net = businessFinancials.net_profit?.total ?? (rev - cogs - exp);
+        if (pnlGross) pnlGross.textContent = `₹${Math.round(rev).toLocaleString('en-IN')}`;
+        if (pnlCogs) pnlCogs.textContent = `₹${Math.round(cogs).toLocaleString('en-IN')}`;
+        if (pnlExp) pnlExp.textContent = `₹${Math.round(exp).toLocaleString('en-IN')}`;
+        if (pnlNet) {
+            pnlNet.textContent = `₹${Math.round(net).toLocaleString('en-IN')}`;
+            pnlNet.className = net >= 0 ? 'pnl-val profit' : 'pnl-val';
         }
     }
 }
@@ -1811,6 +2216,14 @@ function renderInventoryTable() {
     const thirtyDaysFromNow = new Date();
     thirtyDaysFromNow.setDate(now.getDate() + 30);
 
+    if (lastModifiedProductId) {
+        setTimeout(() => {
+            const el = tbody.querySelector('.row-highlight-flash');
+            if (el) el.classList.remove('row-highlight-flash');
+            lastModifiedProductId = null;
+        }, 2200);
+    }
+
     tbody.innerHTML = inventoryItems.map(item => {
         const qty = Number(item.quantity);
         const threshold = Number(item.low_stock_threshold || 5);
@@ -1868,8 +2281,9 @@ function renderInventoryTable() {
             }
         }
 
+        const isRecentlyModified = lastModifiedProductId && String(item.id) === String(lastModifiedProductId);
         return `
-            <tr>
+            <tr data-product-id="${item.id}" class="${isRecentlyModified ? 'row-highlight-flash' : ''}">
                 <td>
                     <div class="prod-main-title">${escapeHtml(item.product_name)}</div>
                     ${item.brand ? `<div class="prod-sub-brand"><i class="fas fa-tag"></i> ${escapeHtml(item.brand)}</div>` : ''}
@@ -2241,6 +2655,9 @@ async function handleAddProductSubmit(e) {
 
         if (res.success) {
             closeModal('addProductModal');
+            if (res.item && res.item.id) {
+                lastModifiedProductId = res.item.id;
+            }
             // Reset form fields
             document.getElementById('newProdName').value = '';
             document.getElementById('newProdBrand').value = '';
@@ -2345,6 +2762,7 @@ async function handleEditProductSubmit(e) {
 
         if (res.success) {
             closeModal('editProductModal');
+            lastModifiedProductId = id;
             fetchInventory();
             fetchInventorySummary();
             fetchFinancials();
@@ -2400,52 +2818,849 @@ async function executeDeleteProduct() {
     }
 }
 
-// ── Barcode Scanner Simulator (Connected to Real Inventory) ──
-function simulateBarcodeScan(code, defaultName) {
-    const resultBox = document.getElementById('barcodeResultBox');
-    resultBox.style.display = 'block';
+// ══════════════════════════════════════════════════════════════
+// UNIVERSAL BARCODE & QR CODE SCANNER CLIENT ENGINE
+// ══════════════════════════════════════════════════════════════
 
-    const match = inventoryItems.find(it => it.barcode === code);
+let html5QrScanner = null;
+let scannerAvailableCameras = [];
+let scannerActiveCameraId = null;
+let scannerFacingMode = 'environment'; // default to back camera
+let scannerIsRunning = false;
+let scannerLastScannedCode = null;
+let scannerLastScannedTime = 0;
+let scannerTorchOn = false;
 
-    if (match) {
-        resultBox.style.background = 'var(--lime-50)';
-        resultBox.style.borderColor = 'var(--lime-400)';
-        resultBox.innerHTML = `
-            <div style="color:var(--lime-800);">
-                <i class="fas fa-check-circle" style="color:var(--green-500);"></i>
-                <strong>Found in Stock:</strong> ${escapeHtml(match.product_name)}<br>
-                <span style="font-size:0.8rem; color:var(--text-secondary);">
-                    Stock: ${match.quantity} ${escapeHtml(match.unit)} &bull; Sell: ₹${match.selling_price} &bull; Barcode: ${code}
-                </span>
-                <div style="margin-top:8px;">
-                    <button class="btn-dash btn-dash-primary" style="padding:4px 12px; font-size:0.8rem;" onclick="closeModal('barcodeModal'); openEditProductModal('${match.id}');">
-                        <i class="fas fa-edit"></i> Edit Product
-                    </button>
-                </div>
-            </div>
-        `;
+function switchScannerTab(tabName) {
+    const tabs = ['camera', 'upload', 'manual', 'samples'];
+    tabs.forEach(t => {
+        const btn = document.getElementById(`scannerTab${t.charAt(0).toUpperCase() + t.slice(1)}`);
+        const panel = document.getElementById(`scanner${t.charAt(0).toUpperCase() + t.slice(1)}Panel`);
+        if (btn) btn.classList.toggle('active', t === tabName);
+        if (panel) panel.style.display = (t === tabName) ? 'block' : 'none';
+    });
+
+    if (tabName === 'camera') {
+        if (!scannerIsRunning) {
+            startBarcodeScanner(scannerActiveCameraId);
+        }
     } else {
-        resultBox.style.background = '#FFFBEB';
-        resultBox.style.borderColor = '#FCD34D';
-        resultBox.innerHTML = `
-            <div style="color:#92400E;">
-                <i class="fas fa-info-circle"></i>
-                Scanned: <strong>${defaultName}</strong> (${code})<br>
-                <span style="font-size:0.8rem; color:var(--text-secondary);">Not yet in your dukaan inventory.</span>
-                <div style="margin-top:8px;">
-                    <button class="btn-dash btn-dash-primary" style="padding:4px 12px; font-size:0.8rem;" onclick="prepareAddScannedProduct('${escapeHtml(defaultName)}', '${code}')">
-                        <i class="fas fa-plus"></i> Add to Inventory
-                    </button>
-                </div>
-            </div>
-        `;
+        if (scannerIsRunning) {
+            stopBarcodeScanner();
+        }
     }
 }
 
+async function initScannerCameraDevices() {
+    const select = document.getElementById('scannerCameraSelect');
+    if (!select) return;
+
+    if (typeof Html5Qrcode === 'undefined') {
+        select.innerHTML = '<option value="">Scanner Library Loading...</option>';
+        return;
+    }
+
+    try {
+        const devices = await Html5Qrcode.getCameras();
+        scannerAvailableCameras = devices || [];
+        if (scannerAvailableCameras.length > 0) {
+            let html = '';
+            // Prefer back camera
+            let defaultId = scannerAvailableCameras[0].id;
+            scannerAvailableCameras.forEach((cam, idx) => {
+                const label = cam.label || `Camera ${idx + 1}`;
+                if (label.toLowerCase().includes('back') || label.toLowerCase().includes('environment') || label.toLowerCase().includes('rear')) {
+                    defaultId = cam.id;
+                }
+                html += `<option value="${cam.id}">${escapeHtml(label)}</option>`;
+            });
+            select.innerHTML = html;
+            select.value = defaultId;
+            scannerActiveCameraId = defaultId;
+        } else {
+            select.innerHTML = '<option value="">No cameras detected</option>';
+        }
+    } catch (err) {
+        console.warn('Camera enumeration error (permissions may be needed):', err);
+        select.innerHTML = '<option value="">Default Camera / सामान्य कैमरा</option>';
+    }
+}
+
+async function startBarcodeScanner(cameraId) {
+    const statusText = document.getElementById('scannerStatusText');
+    const reticle = document.getElementById('scannerReticle');
+    const laser = document.getElementById('scannerLaser');
+
+    if (typeof Html5Qrcode === 'undefined') {
+        if (statusText) {
+            statusText.innerHTML = '<span style="color:#DC2626;">⚠️ Scanner library not loaded. Use Manual Code or Upload Image.</span>';
+        }
+        return;
+    }
+
+    if (!html5QrScanner) {
+        html5QrScanner = new Html5Qrcode("scannerReader", {
+            formatsToSupport: [
+                Html5QrcodeSupportedFormats.EAN_13,
+                Html5QrcodeSupportedFormats.EAN_8,
+                Html5QrcodeSupportedFormats.UPC_A,
+                Html5QrcodeSupportedFormats.UPC_E,
+                Html5QrcodeSupportedFormats.CODE_128,
+                Html5QrcodeSupportedFormats.CODE_39,
+                Html5QrcodeSupportedFormats.CODE_93,
+                Html5QrcodeSupportedFormats.CODABAR,
+                Html5QrcodeSupportedFormats.ITF,
+                Html5QrcodeSupportedFormats.QR_CODE,
+                Html5QrcodeSupportedFormats.DATA_MATRIX,
+                Html5QrcodeSupportedFormats.AZTEC
+            ],
+            verbose: false
+        });
+    }
+
+    if (scannerIsRunning) {
+        await stopBarcodeScanner();
+    }
+
+    const config = {
+        fps: 15,
+        qrbox: { width: 250, height: 160 },
+        aspectRatio: 1.5
+    };
+
+    const cameraConfig = cameraId ? { deviceId: { exact: cameraId } } : { facingMode: scannerFacingMode };
+
+    try {
+        if (statusText) {
+            statusText.innerHTML = '<i class="fas fa-spinner fa-spin" style="color:var(--lime-600);"></i> <span>Starting camera stream... / कैमरा शुरू हो रहा है...</span>';
+        }
+
+        await html5QrScanner.start(
+            cameraConfig,
+            config,
+            (decodedText, decodedResult) => {
+                onBarcodeScanSuccess(decodedText, decodedResult);
+            },
+            (errorMessage) => {
+                // Throttle silent scan failures during continuous frame analysis
+            }
+        );
+
+        scannerIsRunning = true;
+        if (reticle) reticle.style.display = 'flex';
+        if (laser) laser.style.display = 'block';
+        if (statusText) {
+            statusText.innerHTML = '<i class="fas fa-check-circle" style="color:var(--green-500);"></i> <span>Align barcode or QR code inside the box / कोड को बॉक्स के बीच रखें</span>';
+        }
+
+        // Check torch capability
+        checkTorchCapability();
+
+        // Populate camera list once permission is granted
+        if (scannerAvailableCameras.length === 0) {
+            initScannerCameraDevices();
+        }
+    } catch (err) {
+        scannerIsRunning = false;
+        if (reticle) reticle.style.display = 'none';
+        if (laser) laser.style.display = 'none';
+
+        const errMsg = err ? (err.message || err.toString()) : '';
+        let userAdvice = 'Camera access was blocked or not available.';
+        if (errMsg.includes('NotAllowedError') || errMsg.includes('Permission denied')) {
+            userAdvice = 'कैमरा अनुमति अस्वीकृत (Camera Permission Denied). कृपया ब्राउज़र सेटिंग्स में कैमरा अनुमति दें या नीचे मैन्युअल कोड / फोटो अपलोड का उपयोग करें।';
+        } else if (errMsg.includes('NotFoundError') || errMsg.includes('DevicesNotFoundError')) {
+            userAdvice = 'कोई कैमरा नहीं मिला (No Camera Found). कृपया फोटो अपलोड या मैन्युअल कोड का उपयोग करें।';
+        } else if (window.location.protocol !== 'https:' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+            userAdvice = 'कैमरा सुरक्षित कनेक्शन (HTTPS/Localhost) मांगता है। कृपया मैन्युअल कोड या फोटो अपलोड का उपयोग करें।';
+        }
+
+        if (statusText) {
+            statusText.innerHTML = `
+                <div style="background:#FEE2E2; border:1px solid #FCA5A5; color:#991B1B; padding:10px 14px; border-radius:8px; font-size:0.85rem; text-align:left; width:100%;">
+                    <strong><i class="fas fa-exclamation-triangle"></i> कैमरा शुरू नहीं हो सका:</strong><br>
+                    <span>${escapeHtml(userAdvice)}</span>
+                    <div style="margin-top:8px; display:flex; gap:8px;">
+                        <button type="button" class="btn-dash btn-dash-primary" style="padding:4px 10px; font-size:0.78rem;" onclick="switchScannerTab('manual')">
+                            <i class="fas fa-keyboard"></i> Use Manual Code
+                        </button>
+                        <button type="button" class="btn-dash btn-dash-secondary" style="padding:4px 10px; font-size:0.78rem;" onclick="switchScannerTab('upload')">
+                            <i class="fas fa-file-image"></i> Upload Image
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+    }
+}
+
+async function stopBarcodeScanner() {
+    if (html5QrScanner && scannerIsRunning) {
+        try {
+            await html5QrScanner.stop();
+        } catch (e) {
+            console.warn('Error stopping scanner:', e);
+        }
+    }
+    scannerIsRunning = false;
+    scannerTorchOn = false;
+    const torchBtn = document.getElementById('scannerTorchBtn');
+    if (torchBtn) {
+        torchBtn.style.display = 'none';
+        torchBtn.innerHTML = '<i class="fas fa-bolt"></i> Flash';
+    }
+    const reticle = document.getElementById('scannerReticle');
+    const laser = document.getElementById('scannerLaser');
+    if (reticle) reticle.style.display = 'none';
+    if (laser) laser.style.display = 'none';
+}
+
+function onScannerCameraChange(newCameraId) {
+    if (!newCameraId) return;
+    scannerActiveCameraId = newCameraId;
+    if (scannerIsRunning) {
+        startBarcodeScanner(newCameraId);
+    }
+}
+
+function toggleCameraFacing() {
+    scannerFacingMode = (scannerFacingMode === 'environment') ? 'user' : 'environment';
+    scannerActiveCameraId = null;
+    startBarcodeScanner(null);
+}
+
+function checkTorchCapability() {
+    const torchBtn = document.getElementById('scannerTorchBtn');
+    if (!torchBtn) return;
+    try {
+        if (html5QrScanner && typeof html5QrScanner.getRunningTrackCapabilities === 'function') {
+            const caps = html5QrScanner.getRunningTrackCapabilities();
+            if (caps && caps.torch) {
+                torchBtn.style.display = 'inline-flex';
+                return;
+            }
+        }
+    } catch (e) {}
+    torchBtn.style.display = 'none';
+}
+
+async function toggleTorch() {
+    const torchBtn = document.getElementById('scannerTorchBtn');
+    if (!html5QrScanner || !scannerIsRunning) return;
+    try {
+        scannerTorchOn = !scannerTorchOn;
+        await html5QrScanner.applyVideoConstraints({
+            advanced: [{ torch: scannerTorchOn }]
+        });
+        if (torchBtn) {
+            torchBtn.innerHTML = scannerTorchOn ? '<i class="fas fa-bolt" style="color:var(--lime-600);"></i> Flash On' : '<i class="fas fa-bolt"></i> Flash';
+        }
+    } catch (e) {
+        console.warn('Torch toggle not supported on this track:', e);
+    }
+}
+
+async function handleScannerFileSelect(event) {
+    const file = event.target.files && event.target.files[0];
+    if (!file) return;
+
+    const statusText = document.getElementById('scannerStatusText');
+    if (statusText) {
+        statusText.innerHTML = '<i class="fas fa-spinner fa-spin" style="color:var(--lime-600);"></i> Decoding image file... / फोटो स्कैन हो रही है...';
+    }
+
+    if (!html5QrScanner) {
+        html5QrScanner = new Html5Qrcode("scannerReader", { verbose: false });
+    }
+
+    try {
+        const decodedText = await html5QrScanner.scanFile(file, true);
+        if (decodedText) {
+            onBarcodeScanSuccess(decodedText, { result: { format: { formatName: "IMAGE_FILE" } } });
+        }
+    } catch (err) {
+        alert('चित्र में कोई स्पष्ट बारकोड या क्यूआर कोड नहीं मिला (No readable barcode found in image). कृपया स्पष्ट फोटो अपलोड करें या मैन्युअल कोड लिखें।');
+        if (statusText) {
+            statusText.innerHTML = '<span style="color:#DC2626;">❌ बारकोड नहीं मिला। कृपया पुनः प्रयास करें।</span>';
+        }
+    }
+    event.target.value = '';
+}
+
+function submitManualScannerCode() {
+    const input = document.getElementById('scannerManualInput');
+    const val = input ? input.value.trim() : '';
+    if (!val) {
+        alert('कृपया कोई बारकोड, ISBN या SKU कोड दर्ज करें (Please enter a code).');
+        return;
+    }
+    lookupScannedCode(val, 'MANUAL_ENTRY');
+}
+
+function onBarcodeScanSuccess(decodedText, decodedResult) {
+    if (!decodedText) return;
+    const clean = decodedText.trim();
+
+    // Debounce duplicate detections of same code within 2.5 seconds
+    const now = Date.now();
+    if (scannerLastScannedCode === clean && (now - scannerLastScannedTime) < 2500) {
+        return;
+    }
+    scannerLastScannedCode = clean;
+    scannerLastScannedTime = now;
+
+    // Visual capture feedback: pause laser line, flash reticle
+    const laser = document.getElementById('scannerLaser');
+    if (laser) {
+        laser.style.display = 'none';
+    }
+    const reticle = document.getElementById('scannerReticle');
+    if (reticle) {
+        reticle.classList.remove('scanner-captured-flash');
+        void reticle.offsetWidth;
+        reticle.classList.add('scanner-captured-flash');
+    }
+
+    // Haptic vibration feedback if supported
+    if (navigator.vibrate) {
+        try { navigator.vibrate([40, 30, 40]); } catch (e) {}
+    }
+
+    const formatName = decodedResult && decodedResult.result && decodedResult.result.format
+        ? (decodedResult.result.format.formatName || 'BARCODE')
+        : 'AUTO';
+
+    lookupScannedCode(clean, formatName);
+}
+
+async function lookupScannedCode(code, formatHint) {
+    const statusText = document.getElementById('scannerStatusText');
+    const resultBox = document.getElementById('scannerResultBox');
+
+    if (statusText) {
+        statusText.innerHTML = `<i class="fas fa-spinner fa-spin" style="color:var(--lime-600);"></i> <span>Searching catalogues for <strong>${escapeHtml(code)}</strong>...</span>`;
+    }
+
+    if (resultBox) {
+        resultBox.style.display = 'block';
+        resultBox.innerHTML = `
+            <div style="text-align:center; padding:20px; color:var(--text-secondary);">
+                <i class="fas fa-spinner fa-spin" style="font-size:1.6rem; color:var(--lime-600); margin-bottom:8px;"></i><br>
+                <span>Looking up product code <strong>${escapeHtml(code)}</strong> in dukaan stock & verified catalogues...</span>
+            </div>
+        `;
+    }
+
+    const token = localStorage.getItem('shopo_auth_token');
+    try {
+        const resp = await fetch('/api/inventory/scan/lookup', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ code: code, format: formatHint })
+        });
+
+        if (!resp.ok) {
+            const errData = await resp.json().catch(() => ({}));
+            renderScannerError(errData.message || 'Lookup failed.');
+            return;
+        }
+
+        const data = await resp.json();
+        renderScannerResult(data);
+    } catch (err) {
+        console.error('Scan lookup error:', err);
+        renderScannerError('Network connection error while looking up barcode.');
+    }
+}
+
+function renderScannerError(msg) {
+    const resultBox = document.getElementById('scannerResultBox');
+    if (!resultBox) return;
+    resultBox.style.display = 'block';
+    resultBox.style.background = '#FEE2E2';
+    resultBox.style.borderColor = '#FCA5A5';
+    resultBox.innerHTML = `
+        <div style="color:#991B1B;">
+            <i class="fas fa-exclamation-circle"></i> <strong>Error:</strong> ${escapeHtml(msg)}<br>
+            <div style="margin-top:10px;">
+                <button type="button" class="btn-dash btn-dash-secondary" style="padding:4px 12px; font-size:0.8rem;" onclick="resetScannerView()">
+                    Try Again / पुनः प्रयास
+                </button>
+            </div>
+        </div>
+    `;
+}
+
+function renderScannerResult(res) {
+    const resultBox = document.getElementById('scannerResultBox');
+    if (!resultBox) return;
+    resultBox.style.display = 'block';
+
+    const status = res.status;
+    const code = res.code || '';
+    const codeType = res.code_type || 'BARCODE';
+
+    // ── CASE A: PRODUCT FOUND IN STORE ──
+    if (status === 'found_in_store') {
+        const p = res.product || {};
+        resultBox.style.background = 'var(--lime-50)';
+        resultBox.style.borderColor = 'var(--lime-400)';
+        resultBox.innerHTML = `
+            <div class="scanner-result-header">
+                <div>
+                    <span class="scanner-badge in-store">
+                        <i class="fas fa-check-circle"></i> In Dukaan Stock / दुकान में उपलब्ध
+                    </span>
+                    <h3 class="scanner-product-title">${escapeHtml(p.product_name)}</h3>
+                </div>
+            </div>
+            <div class="scanner-product-meta">
+                <span><strong>Category:</strong> ${escapeHtml(p.category || 'General')}</span>
+                <span><strong>Available Stock:</strong> <span style="color:var(--lime-800); font-weight:700;">${p.quantity} ${escapeHtml(p.unit || 'pcs')}</span></span>
+                <span><strong>Selling Price:</strong> ₹${p.selling_price}</span>
+                <span><strong>Purchase Cost:</strong> ₹${p.purchase_price}</span>
+                <span><strong>Barcode:</strong> <code>${escapeHtml(code)}</code></span>
+            </div>
+
+            <!-- Action Buttons for Existing Product -->
+            <div class="scanner-action-btn-row">
+                <button type="button" class="btn-dash btn-dash-primary" onclick="toggleScannerReceiveStockForm('${escapeHtml(p.id)}', '${escapeHtml(p.product_name)}', '${escapeHtml(p.unit || 'pcs')}', ${p.purchase_price || 0}, ${p.selling_price || 0})">
+                    <i class="fas fa-plus-circle"></i> Receive Stock (+ माल आया)
+                </button>
+                <button type="button" class="btn-dash btn-dash-secondary" onclick="closeBarcodeModal(); openEditProductModal('${p.id}');">
+                    <i class="fas fa-edit"></i> Edit Product
+                </button>
+                <button type="button" class="btn-dash btn-dash-secondary" onclick="resetScannerView()">
+                    <i class="fas fa-redo"></i> Scan Next
+                </button>
+            </div>
+
+            <!-- Inline Receive Stock Form (Initially Hidden) -->
+            <div id="scannerReceiveStockCard" class="scanner-inline-form-card" style="display:none;">
+                <h4 style="margin:0 0 6px 0; color:var(--text-primary); font-size:0.9rem;">
+                    <i class="fas fa-truck-loading" style="color:var(--lime-600);"></i>
+                    Receive Inbound Stock for ${escapeHtml(p.product_name)}
+                </h4>
+                <div class="scanner-form-grid">
+                    <div class="scanner-form-field">
+                        <label>Quantity to Add / मात्रा</label>
+                        <input type="number" id="scRcvQty" step="any" min="0.1" value="10" placeholder="10">
+                    </div>
+                    <div class="scanner-form-field">
+                        <label>Unit / इकाई</label>
+                        <input type="text" id="scRcvUnit" value="${escapeHtml(p.unit || 'pcs')}" readonly>
+                    </div>
+                    <div class="scanner-form-field">
+                        <label>Purchase Cost (₹) / खरीद दर</label>
+                        <input type="number" id="scRcvCost" step="any" min="0" value="${p.purchase_price || 0}">
+                    </div>
+                    <div class="scanner-form-field">
+                        <label>Retail Price (₹) / बिक्री दर</label>
+                        <input type="number" id="scRcvSell" step="any" min="0" value="${p.selling_price || 0}">
+                    </div>
+                </div>
+                <div style="margin-top:12px; display:flex; gap:8px;">
+                    <button type="button" class="btn-dash btn-dash-primary" onclick="submitInlineStockReceipt('${p.id}', '${escapeHtml(p.product_name)}')">
+                        <i class="fas fa-check"></i> Confirm & Update Stock
+                    </button>
+                    <button type="button" class="btn-dash btn-dash-secondary" onclick="document.getElementById('scannerReceiveStockCard').style.display='none'">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        `;
+        return;
+    }
+
+    // ── CASE B: FOUND IN EXTERNAL CATALOGUE (NOT IN SHOP) ──
+    if (status === 'found_external') {
+        const p = res.product || {};
+        resultBox.style.background = '#F0F9FF';
+        resultBox.style.borderColor = '#7DD3FC';
+        resultBox.innerHTML = `
+            <div class="scanner-result-header">
+                <div>
+                    <span class="scanner-badge external">
+                        <i class="fas fa-globe"></i> ${escapeHtml(res.source || 'Verified Catalogue')}
+                    </span>
+                    <h3 class="scanner-product-title">${escapeHtml(p.product_name)}</h3>
+                </div>
+            </div>
+            <p style="font-size:0.83rem; color:#0369A1; margin:0 0 10px 0;">
+                Product identified externally. Please provide your purchase cost, selling price, and initial stock quantity to add it to your dukaan.
+            </p>
+            <div class="scanner-product-meta">
+                <span><strong>Brand:</strong> ${escapeHtml(p.brand || 'N/A')}</span>
+                <span><strong>Category:</strong> ${escapeHtml(p.category || 'General')}</span>
+                <span><strong>Barcode:</strong> <code>${escapeHtml(code)}</code></span>
+                ${p.mrp ? `<span><strong>MRP:</strong> ₹${p.mrp}</span>` : ''}
+            </div>
+
+            <!-- Inline Product Registration Form -->
+            <div class="scanner-inline-form-card">
+                <h4 style="margin:0 0 6px 0; color:var(--text-primary); font-size:0.9rem;">
+                    <i class="fas fa-plus-circle" style="color:var(--lime-600);"></i>
+                    Register into Dukaan Inventory
+                </h4>
+                <div class="scanner-form-grid">
+                    <div class="scanner-form-field" style="grid-column: 1 / -1;">
+                        <label>Product Name / उत्पाद का नाम *</label>
+                        <input type="text" id="scRegName" value="${escapeHtml(p.product_name)}">
+                    </div>
+                    <div class="scanner-form-field">
+                        <label>Category / श्रेणी *</label>
+                        <select id="scRegCategory">
+                            <option value="Grocery, FMCG, and Supermarkets" ${p.category === 'Grocery, FMCG, and Supermarkets' ? 'selected' : ''}>Grocery & FMCG / किराना</option>
+                            <option value="Dairy, Milk Products, Poultry, and Animal Husbandry" ${p.category && p.category.includes('Dairy') ? 'selected' : ''}>Dairy & Milk / डेयरी</option>
+                            <option value="Pharmacy and Medical Retail" ${p.category && p.category.includes('Pharmacy') ? 'selected' : ''}>Pharmacy & Medical / दवा</option>
+                            <option value="Hardware and Construction Materials" ${p.category && p.category.includes('Hardware') ? 'selected' : ''}>Hardware & Tools / हार्डवेयर</option>
+                            <option value="Cement, Steel, Paint, Pipes, and Electrical Supplies" ${p.category && p.category.includes('Electrical') ? 'selected' : ''}>Electrical & Paints / बिजली</option>
+                            <option value="Textile, Clothing, Fashion, and Apparel" ${p.category && p.category.includes('Textile') ? 'selected' : ''}>Textile & Clothing / कपड़ा</option>
+                            <option value="Electronics, Mobiles, and Computers" ${p.category && p.category.includes('Electronics') ? 'selected' : ''}>Electronics / इलेक्ट्रॉनिक्स</option>
+                            <option value="Stationery, Books, and School Supplies" ${p.category && p.category.includes('Stationery') ? 'selected' : ''}>Books & Stationery / किताबें</option>
+                            <option value="General" ${!p.category || p.category === 'General' ? 'selected' : ''}>Other / सामान्य</option>
+                        </select>
+                    </div>
+                    <div class="scanner-form-field">
+                        <label>Initial Stock / प्रारंभिक स्टॉक *</label>
+                        <input type="number" id="scRegQty" step="any" min="0" placeholder="e.g. 10">
+                    </div>
+                    <div class="scanner-form-field">
+                        <label>Unit / इकाई *</label>
+                        <input type="text" id="scRegUnit" value="${escapeHtml(p.unit || 'pcs')}">
+                    </div>
+                    <div class="scanner-form-field">
+                        <label>Purchase Cost (₹) / खरीद दर *</label>
+                        <input type="number" id="scRegPurchase" step="any" min="0" placeholder="e.g. 80">
+                    </div>
+                    <div class="scanner-form-field">
+                        <label>Selling Price (₹) / बिक्री दर *</label>
+                        <input type="number" id="scRegSelling" step="any" min="0" placeholder="e.g. 95">
+                    </div>
+                </div>
+                <div style="margin-top:12px; display:flex; gap:8px;">
+                    <button type="button" class="btn-dash btn-dash-primary" onclick="submitInlineProductRegistration('${escapeHtml(code)}')">
+                        <i class="fas fa-save"></i> Save Product to Dukaan
+                    </button>
+                    <button type="button" class="btn-dash btn-dash-secondary" onclick="resetScannerView()">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        `;
+        return;
+    }
+
+    // ── CASE C: COMPLETELY UNKNOWN CODE ──
+    if (status === 'unknown_code') {
+        resultBox.style.background = '#FFFBEB';
+        resultBox.style.borderColor = '#FCD34D';
+        resultBox.innerHTML = `
+            <div class="scanner-result-header">
+                <div>
+                    <span class="scanner-badge unknown">
+                        <i class="fas fa-question-circle"></i> New Code / अपरिचित कोड
+                    </span>
+                    <h3 class="scanner-product-title">Code: ${escapeHtml(code)}</h3>
+                </div>
+            </div>
+            <p style="font-size:0.83rem; color:#92400E; margin:0 0 10px 0;">
+                Product code not found in store or external catalogues. You can create a new product using this code.
+            </p>
+
+            <div class="scanner-inline-form-card">
+                <h4 style="margin:0 0 6px 0; color:var(--text-primary); font-size:0.9rem;">
+                    <i class="fas fa-plus-circle" style="color:var(--lime-600);"></i>
+                    Create New Product
+                </h4>
+                <div class="scanner-form-grid">
+                    <div class="scanner-form-field" style="grid-column: 1 / -1;">
+                        <label>Product Name / उत्पाद का नाम *</label>
+                        <input type="text" id="scRegName" placeholder="e.g. Havells 10A Switch, Fortune Mustard Oil 1L">
+                    </div>
+                    <div class="scanner-form-field">
+                        <label>Category / श्रेणी *</label>
+                        <select id="scRegCategory">
+                            <option value="Grocery, FMCG, and Supermarkets">Grocery & FMCG / किराना</option>
+                            <option value="Pharmacy and Medical Retail">Pharmacy & Medical / दवा</option>
+                            <option value="Hardware and Construction Materials">Hardware & Tools / हार्डवेयर</option>
+                            <option value="Cement, Steel, Paint, Pipes, and Electrical Supplies">Electrical & Paints / बिजली</option>
+                            <option value="Textile, Clothing, Fashion, and Apparel">Textile & Clothing / कपड़ा</option>
+                            <option value="Electronics, Mobiles, and Computers">Electronics / इलेक्ट्रॉनिक्स</option>
+                            <option value="Dairy, Milk Products, Poultry, and Animal Husbandry">Dairy / डेयरी</option>
+                            <option value="Stationery, Books, and School Supplies">Books & Stationery / स्टेशनरी</option>
+                            <option value="General">Other / सामान्य</option>
+                        </select>
+                    </div>
+                    <div class="scanner-form-field">
+                        <label>Initial Stock / स्टॉक *</label>
+                        <input type="number" id="scRegQty" step="any" min="0" placeholder="10">
+                    </div>
+                    <div class="scanner-form-field">
+                        <label>Unit / इकाई *</label>
+                        <input type="text" id="scRegUnit" value="pcs" placeholder="pcs, kg, box...">
+                    </div>
+                    <div class="scanner-form-field">
+                        <label>Purchase Cost (₹) / खरीद दर *</label>
+                        <input type="number" id="scRegPurchase" step="any" min="0" placeholder="0">
+                    </div>
+                    <div class="scanner-form-field">
+                        <label>Selling Price (₹) / बिक्री दर *</label>
+                        <input type="number" id="scRegSelling" step="any" min="0" placeholder="0">
+                    </div>
+                </div>
+                <div style="margin-top:12px; display:flex; gap:8px;">
+                    <button type="button" class="btn-dash btn-dash-primary" onclick="submitInlineProductRegistration('${escapeHtml(code)}')">
+                        <i class="fas fa-save"></i> Register Product
+                    </button>
+                    <button type="button" class="btn-dash btn-dash-secondary" onclick="resetScannerView()">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        `;
+        return;
+    }
+
+    // ── CASE D: QR PAYLOAD RATHER THAN PRODUCT IDENTIFIER ──
+    if (status === 'qr_payload') {
+        resultBox.style.background = '#FAF5FF';
+        resultBox.style.borderColor = '#D8B4FE';
+        resultBox.innerHTML = `
+            <div class="scanner-result-header">
+                <div>
+                    <span class="scanner-badge qr-info">
+                        <i class="fas fa-qrcode"></i> ${escapeHtml(res.payload_type || 'QR Code')}
+                    </span>
+                    <h3 class="scanner-product-title">QR Payload Decoded</h3>
+                </div>
+            </div>
+            <p style="font-size:0.85rem; color:#6B21A8; margin:0 0 10px 0;">
+                ${escapeHtml(res.message || 'Scanned code contains a QR payload rather than a product barcode.')}
+            </p>
+            <div style="background:#FFFFFF; border:1px solid #E9D5FF; padding:10px 14px; border-radius:8px; font-size:0.85rem; word-break:break-all; font-family:monospace; margin-bottom:12px;">
+                ${escapeHtml(res.safe_display || code)}
+            </div>
+            <div class="scanner-action-btn-row">
+                <button type="button" class="btn-dash btn-dash-primary" onclick="openAddProductModalWithBarcode('${escapeHtml(code)}')">
+                    <i class="fas fa-plus"></i> Register Product Using this Code
+                </button>
+                <button type="button" class="btn-dash btn-dash-secondary" onclick="resetScannerView()">
+                    <i class="fas fa-redo"></i> Scan Another
+                </button>
+            </div>
+        `;
+        return;
+    }
+
+    // ── CASE E: AMBIGUOUS MATCH (MULTIPLE PRODUCTS) ──
+    if (status === 'ambiguous_match') {
+        const candidates = res.candidates || [];
+        let candHtml = '';
+        candidates.forEach(c => {
+            candHtml += `
+                <div style="background:#FFFFFF; border:1px solid var(--border-color); padding:10px 14px; border-radius:8px; display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                    <div>
+                        <strong>${escapeHtml(c.product_name)}</strong> (${escapeHtml(c.category)})<br>
+                        <span style="font-size:0.8rem; color:var(--text-secondary);">Stock: ${c.quantity} ${escapeHtml(c.unit)} &bull; Price: ₹${c.selling_price}</span>
+                    </div>
+                    <button type="button" class="btn-dash btn-dash-primary" style="padding:4px 10px; font-size:0.8rem;" onclick="toggleScannerReceiveStockForm('${c.id}', '${escapeHtml(c.product_name)}', '${escapeHtml(c.unit)}', 0, ${c.selling_price})">
+                        Select
+                    </button>
+                </div>
+            `;
+        });
+
+        resultBox.style.background = '#F0F9FF';
+        resultBox.style.borderColor = '#7DD3FC';
+        resultBox.innerHTML = `
+            <div class="scanner-result-header">
+                <div>
+                    <span class="scanner-badge external">
+                        <i class="fas fa-layer-group"></i> Multiple Matches / एकाधिक उत्पाद
+                    </span>
+                    <h3 class="scanner-product-title">${candidates.length} Products Found</h3>
+                </div>
+            </div>
+            <p style="font-size:0.83rem; color:var(--text-secondary); margin:0 0 10px 0;">
+                Multiple products match this code in your inventory. Select the correct item:
+            </p>
+            ${candHtml}
+            <div style="margin-top:8px;">
+                <button type="button" class="btn-dash btn-dash-secondary" onclick="resetScannerView()">
+                    Cancel / पुनः स्कैन
+                </button>
+            </div>
+        `;
+        return;
+    }
+}
+
+function toggleScannerReceiveStockForm(id, name, unit, cost, sell) {
+    const card = document.getElementById('scannerReceiveStockCard');
+    if (!card) return;
+    card.style.display = card.style.display === 'none' ? 'block' : 'none';
+    const costInput = document.getElementById('scRcvCost');
+    const sellInput = document.getElementById('scRcvSell');
+    if (costInput && cost) costInput.value = cost;
+    if (sellInput && sell) sellInput.value = sell;
+}
+
+async function submitInlineStockReceipt(productId, productName) {
+    const qtyInput = document.getElementById('scRcvQty');
+    const costInput = document.getElementById('scRcvCost');
+    const sellInput = document.getElementById('scRcvSell');
+
+    const qty = parseFloat(qtyInput ? qtyInput.value : 0) || 0;
+    const cost = parseFloat(costInput ? costInput.value : 0) || 0;
+    const sell = parseFloat(sellInput ? sellInput.value : 0) || 0;
+
+    if (qty <= 0) {
+        alert('कृपया वैध मात्रा दर्ज करें (Quantity must be greater than zero).');
+        return;
+    }
+
+    const token = localStorage.getItem('shopo_auth_token');
+    try {
+        const resp = await fetch('/api/inventory/scan/receive-stock', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                product_id: productId,
+                product_name: productName,
+                quantity: qty,
+                purchase_price: cost,
+                selling_price: sell
+            })
+        });
+
+        const data = await resp.json();
+        if (!resp.ok) {
+            alert('Stock update failed: ' + (data.message || 'Error'));
+            return;
+        }
+
+        alert(`✅ ${data.message}`);
+        // Refresh store inventory table & metrics
+        if (typeof loadInventory === 'function') loadInventory();
+        if (typeof loadInventorySummary === 'function') loadInventorySummary();
+        closeBarcodeModal();
+    } catch (e) {
+        console.error('Receive stock error:', e);
+        alert('Server connection error while receiving stock.');
+    }
+}
+
+async function submitInlineProductRegistration(barcode) {
+    const nameInput = document.getElementById('scRegName');
+    const catInput = document.getElementById('scRegCategory');
+    const qtyInput = document.getElementById('scRegQty');
+    const unitInput = document.getElementById('scRegUnit');
+    const costInput = document.getElementById('scRegPurchase');
+    const sellInput = document.getElementById('scRegSelling');
+
+    const name = nameInput ? nameInput.value.trim() : '';
+    const cat = catInput ? catInput.value : 'General';
+    const qty = parseFloat(qtyInput ? qtyInput.value : 0);
+    const unit = unitInput ? unitInput.value.trim() : 'pcs';
+    const cost = parseFloat(costInput ? costInput.value : 0);
+    const sell = parseFloat(sellInput ? sellInput.value : 0);
+
+    if (!name) {
+        alert('कृपया उत्पाद का नाम दर्ज करें (Product name is required).');
+        return;
+    }
+    if (isNaN(sell) || sell < 0) {
+        alert('कृपया वैध बिक्री मूल्य दर्ज करें (Valid selling price is required).');
+        return;
+    }
+    if (isNaN(qty) || qty < 0) {
+        alert('कृपया वैध प्रारंभिक स्टॉक दर्ज करें (Valid quantity is required).');
+        return;
+    }
+
+    const token = localStorage.getItem('shopo_auth_token');
+    const payload = {
+        product_name: name,
+        category: cat,
+        barcode: barcode || null,
+        quantity: isNaN(qty) ? 0 : qty,
+        unit: unit || 'pcs',
+        purchase_price: isNaN(cost) ? 0 : cost,
+        selling_price: sell
+    };
+
+    try {
+        const resp = await fetch('/api/inventory/scan/register', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(payload)
+        });
+
+        const data = await resp.json();
+        if (!resp.ok) {
+            alert('Product registration failed: ' + (data.message || data.error || 'Conflict or Error'));
+            return;
+        }
+
+        alert(`✅ ${data.message || 'Product registered successfully!'}`);
+        if (typeof loadInventory === 'function') loadInventory();
+        if (typeof loadInventorySummary === 'function') loadInventorySummary();
+        closeBarcodeModal();
+    } catch (e) {
+        console.error('Registration error:', e);
+        alert('Server connection error while registering product.');
+    }
+}
+
+function openAddProductModalWithBarcode(barcode) {
+    closeBarcodeModal();
+    const barcodeInput = document.getElementById('newProdBarcode');
+    if (barcodeInput) barcodeInput.value = barcode;
+    openAddProductModal();
+}
+
+function resetScannerView() {
+    const resultBox = document.getElementById('scannerResultBox');
+    if (resultBox) {
+        resultBox.style.display = 'none';
+        resultBox.innerHTML = '';
+    }
+    const statusText = document.getElementById('scannerStatusText');
+    if (statusText) {
+        statusText.innerHTML = '<i class="fas fa-info-circle" style="color:var(--lime-600);"></i> <span>Point camera at any product barcode or QR code / बारकोड या QR सामने लाएं</span>';
+    }
+    const reticle = document.getElementById('scannerReticle');
+    if (reticle) {
+        reticle.classList.remove('scanner-captured-flash');
+    }
+    const laser = document.getElementById('scannerLaser');
+    if (laser && scannerIsRunning) {
+        laser.style.display = 'block';
+    }
+    scannerLastScannedCode = null;
+}
+
+// Backward-compatibility wrapper for any legacy button or script
+function simulateBarcodeScan(code, defaultName) {
+    lookupScannedCode(code, 'SIMULATION');
+}
+
 function prepareAddScannedProduct(name, barcode) {
-    closeModal('barcodeModal');
-    document.getElementById('newProdName').value = name;
-    document.getElementById('newProdBarcode').value = barcode;
+    closeBarcodeModal();
+    const nameInput = document.getElementById('newProdName');
+    const barInput = document.getElementById('newProdBarcode');
+    if (nameInput) nameInput.value = name;
+    if (barInput) barInput.value = barcode;
     openAddProductModal();
 }
 
@@ -2951,6 +4166,15 @@ function renderLiveWeatherUI(w) {
         if (maxT !== undefined && maxT !== null) maxT = (maxT * 9/5) + 32;
         if (minT !== undefined && minT !== null) minT = (minT * 9/5) + 32;
         unitSymbol = '°F';
+    }
+
+    const headerTempEl = document.getElementById('headerWeatherTemp');
+    const headerIconEl = document.getElementById('headerWeatherIcon');
+    if (headerTempEl && temp !== undefined && temp !== null) {
+        headerTempEl.textContent = `${Math.round(temp)}${unitSymbol}`;
+    }
+    if (headerIconEl && w.icon) {
+        headerIconEl.textContent = w.icon;
     }
 
     if (tempValEl) tempValEl.textContent = (temp !== undefined && temp !== null) ? `${Math.round(temp)}${unitSymbol}` : `--${unitSymbol}`;
@@ -6412,3 +7636,116 @@ document.addEventListener('DOMContentLoaded', () => {
     initDashboard();
 });
 
+
+
+// ── Modern SaaS Helpers (Prompt Redesign) ──
+function renderSalesOverviewChart() {
+    const container = document.getElementById('salesOverviewChartContainer');
+    if (!container) return;
+
+    if (!salesRecords || salesRecords.length === 0) {
+        container.innerHTML = `
+            <div class="empty-sales-chart" id="emptySalesChartNotice">
+                <div class="empty-chart-icon"><i class="fas fa-chart-bar"></i></div>
+                <div class="empty-chart-title">No Sales Transactions Recorded Yet</div>
+                <div class="empty-chart-desc">Record sales to generate live daily volume curves and real revenue analytics.</div>
+            </div>
+        `;
+        return;
+    }
+
+    // Group sales by day (last 7 recorded days)
+    const dailyTotals = {};
+    const sorted = [...salesRecords].sort((a, b) => new Date(a.created_at || 0) - new Date(b.created_at || 0));
+    
+    sorted.forEach(s => {
+        let dateStr = 'Today';
+        if (s.created_at) {
+            try {
+                const d = new Date(s.created_at);
+                dateStr = d.toLocaleDateString('en-IN', { month: 'short', day: 'numeric' });
+            } catch (e) {}
+        }
+        const amt = parseFloat(s.total_price || s.selling_price || 0) || 0;
+        dailyTotals[dateStr] = (dailyTotals[dateStr] || 0) + amt;
+    });
+
+    const entries = Object.entries(dailyTotals).slice(-7);
+    const maxVal = Math.max(...entries.map(e => e[1]), 100);
+
+    let barsHtml = entries.map(([date, total]) => {
+        const heightPct = Math.max(14, Math.round((total / maxVal) * 100));
+        return `
+            <div style="flex:1; display:flex; flex-direction:column; align-items:center; height:120px; justify-content:flex-end;">
+                <div style="font-size:0.72rem; font-weight:700; color:var(--color-primary-green); margin-bottom:4px; font-variant-numeric:tabular-nums;">₹${Math.round(total)}</div>
+                <div style="width:100%; max-width:36px; height:${heightPct}%; background:linear-gradient(180deg, var(--color-primary-green), #22C55E); border-radius:6px 6px 0 0; transition:height 0.4s ease;" title="${date}: ₹${total}"></div>
+                <div style="font-size:0.72rem; color:var(--color-text-secondary); margin-top:6px; white-space:nowrap;">${date}</div>
+            </div>
+        `;
+    }).join('');
+
+    container.innerHTML = `
+        <div style="display:flex; align-items:flex-end; gap:12px; height:140px; padding:12px 10px 0; border-bottom:1px solid var(--color-border);">
+            ${barsHtml}
+        </div>
+    `;
+}
+
+function handleGlobalSearch(event) {
+    if (event.key === 'Enter') {
+        const query = event.target.value.trim();
+        if (!query) return;
+        const isQuestion = query.includes('?') || /^(what|how|why|kya|aaj|mera|stock|mandi|bhav|weather|mausam)/i.test(query);
+        if (isQuestion) {
+            focusAIAssistant();
+            const input = document.getElementById('cmdInput');
+            if (input) {
+                input.value = query;
+                handleCommandSubmit(event);
+            }
+        } else {
+            switchNav('inventory');
+            const searchInput = document.getElementById('inventorySearchInput');
+            if (searchInput) {
+                searchInput.value = query;
+                handleInventorySearchInput(query);
+            }
+        }
+    }
+}
+
+function focusAIAssistant() {
+    const homeView = document.getElementById('view-home');
+    if (!homeView || !homeView.classList.contains('active')) {
+        switchNav('home');
+    }
+    const card = document.getElementById('assistantHeroCard');
+    const input = document.getElementById('cmdInput');
+    if (card) {
+        card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        card.classList.add('pulse-focus');
+        setTimeout(() => card.classList.remove('pulse-focus'), 1400);
+    }
+    if (input) {
+        setTimeout(() => input.focus(), 200);
+    }
+}
+
+function scrollToWeatherWidget() {
+    switchNav('home');
+    const widget = document.getElementById('weatherClockWidget');
+    if (widget) {
+        widget.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+}
+
+function toggleMoreTools() {
+    const sub = document.getElementById('moreToolsSubNav');
+    const arrow = document.getElementById('moreToolsArrow');
+    if (!sub) return;
+    const isHidden = sub.style.display === 'none';
+    sub.style.display = isHidden ? 'flex' : 'none';
+    if (arrow) {
+        arrow.style.transform = isHidden ? 'rotate(0deg)' : 'rotate(-90deg)';
+    }
+}

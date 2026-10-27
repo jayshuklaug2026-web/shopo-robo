@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Shopo Robo — Dukaan Dashboard</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
+    <link rel="shortcut icon" href="/icons/favicon.ico">
     <link rel="icon" href="/icons/icon.svg" type="image/svg+xml">
     <link rel="manifest" href="/manifest.json">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -18,7 +22,7 @@
     <div class="welcome-modal-overlay" id="welcomeModal">
         <div class="welcome-modal-card">
             <div class="robot-mascot-container">
-                <img src="robot.svg" alt="Shopo Robo Mascot" width="160" height="160">
+                <img src="/icons/shopo_robo_mascot.png" alt="Shopo Robo Mascot" width="160" height="160" style="object-fit:contain; border-radius:28px; box-shadow:0 8px 24px rgba(132,204,22,0.3);">
             </div>
             <h2 class="welcome-greeting-hindi">नमस्ते! मैं हूँ Shopo Robo 🙏</h2>
             <h3 class="welcome-greeting-sub">"Namaste! Main hoon Shopo Robo, aapki dukaan ka smart assistant."</h3>
@@ -41,96 +45,113 @@
         <aside class="app-sidebar" id="appSidebar">
             <div class="sidebar-header">
                 <div class="brand-icon-wrap">
-                    <i class="fas fa-robot"></i>
+                    <img src="/icons/shopo_robo_mascot.png" alt="Shopo Robo" class="sidebar-brand-img">
                 </div>
                 <div class="brand-name-group">
                     <span class="brand-title">Shopo Robo</span>
-                    <span class="brand-sub">Smart Dukaan AI</span>
+                    <span class="brand-sub">Your AI Accountant</span>
                 </div>
             </div>
 
             <nav class="sidebar-nav">
+                <!-- Core SaaS Navigation (Prompt Section 2 & 9) -->
                 <button class="nav-item active" data-view="home" onclick="switchNav('home')">
-                    <i class="fas fa-home"></i>
-                    <span data-i18n="nav_home">Home / मुख्य पृष्ठ</span>
+                    <i class="fas fa-th-large"></i>
+                    <span data-i18n="nav_home">Dashboard / मुख्य पृष्ठ</span>
                 </button>
                 <button class="nav-item" data-view="inventory" onclick="switchNav('inventory')">
                     <i class="fas fa-boxes"></i>
                     <span data-i18n="nav_inventory">Inventory / स्टॉक</span>
                 </button>
-                <button class="nav-item" data-view="multi_store" onclick="switchNav('multi_store')">
-                    <i class="fas fa-store-alt"></i>
-                    <span data-i18n="nav_multi_store">Multi-Store Hub / शाखाएं</span>
-                </button>
-                <button class="nav-item" data-view="shelf_scanner" onclick="switchNav('shelf_scanner')">
-                    <i class="fas fa-camera"></i>
-                    <span data-i18n="nav_shelf_scanner">Shelf Scanner / शेल्फ स्कैनर</span>
-                </button>
                 <button class="nav-item" data-view="sales" onclick="switchNav('sales')">
-                    <i class="fas fa-cash-register"></i>
+                    <i class="fas fa-shopping-cart"></i>
                     <span data-i18n="nav_sales">Sales / बिक्री</span>
+                </button>
+                <button class="nav-item" data-action="purchases" onclick="openAddProductModal()">
+                    <i class="fas fa-shopping-bag"></i>
+                    <span>Purchases / खरीद (स्टॉक)</span>
                 </button>
                 <button class="nav-item" data-view="reports" onclick="switchNav('reports')">
                     <i class="fas fa-chart-line"></i>
                     <span data-i18n="nav_reports">Reports / रिपोर्ट्स</span>
                 </button>
-                <button class="nav-item" data-view="time_machine" onclick="switchNav('time_machine')">
-                    <i class="fas fa-history"></i>
-                    <span data-i18n="nav_time_machine">Time Machine / टाइम मशीन</span>
-                </button>
-                <button class="nav-item" data-view="accountant" onclick="switchNav('accountant')">
-                    <i class="fas fa-file-invoice-dollar"></i>
-                    <span data-i18n="nav_accountant">AI Accountant / मुनीम</span>
-                </button>
-                <button class="nav-item" data-view="simulator" onclick="switchNav('simulator')">
-                    <i class="fas fa-calculator"></i>
-                    <span data-i18n="nav_simulator">Simulator / सिमुलेटर</span>
-                </button>
-                <button class="nav-item" data-view="news" onclick="switchNav('news')">
-                    <i class="fas fa-newspaper"></i>
-                    <span data-i18n="nav_news">News & Markets / समाचार</span>
-                </button>
-                <button class="nav-item" data-view="competitor" onclick="switchNav('competitor')">
-                    <i class="fas fa-crosshairs"></i>
-                    <span data-i18n="nav_competitor">Competitor Intel / प्रतिस्पर्धी</span>
-                </button>
-                <button class="nav-item" data-view="demand" onclick="switchNav('demand')">
-                    <i class="fas fa-ear-listen"></i>
-                    <span data-i18n="nav_demand">Customer Demand / मांग</span>
-                </button>
-                <button class="nav-item" data-view="negotiation" onclick="switchNav('negotiation')">
-                    <i class="fas fa-handshake"></i>
-                    <span data-i18n="nav_negotiation">Negotiation Coach / मोलभाव</span>
-                </button>
-                <button class="nav-item" data-view="translator" onclick="switchNav('translator')">
-                    <i class="fas fa-language"></i>
-                    <span data-i18n="nav_translator">Translator / अनुवादक</span>
-                </button>
-                <button class="nav-item" data-view="autopilot" onclick="switchNav('autopilot')">
-                    <i class="fas fa-robot"></i>
-                    <span data-i18n="nav_autopilot">AI Autopilot / ऑटोपायलट</span>
-                </button>
-                <button class="nav-item" data-view="notifications" onclick="switchNav('notifications')">
-                    <i class="fas fa-bell"></i>
-                    <span data-i18n="nav_notifications">Notifications / सूचनाएं</span>
-                </button>
-                <button class="nav-item" data-view="memory" onclick="switchNav('memory')">
-                    <i class="fas fa-brain"></i>
-                    <span data-i18n="nav_memory">Business Memory / व्यापार स्मृति</span>
-                </button>
-                <button class="nav-item" data-view="radar" onclick="switchNav('radar')">
-                    <i class="fas fa-satellite-dish"></i>
-                    <span data-i18n="nav_radar">Opportunity Radar / अवसर रडार</span>
-                </button>
-
                 <button class="nav-item" data-view="assistant" onclick="switchNav('assistant')">
-                    <i class="fas fa-comment-dots"></i>
-                    <span data-i18n="nav_assistant">AI Robo / सहायक</span>
+                    <img src="/icons/favicon-32x32.png" alt="" style="width:20px; height:20px; object-fit:contain; border-radius:4px; flex-shrink:0;">
+                    <span data-i18n="nav_assistant">Your AI Accountant</span>
+                </button>
+                <button class="nav-item" data-action="barcode" onclick="openBarcodeModal()">
+                    <i class="fas fa-qrcode"></i>
+                    <span>Barcode / QR स्कैन</span>
                 </button>
                 <button class="nav-item" data-view="settings" onclick="switchNav('settings')">
                     <i class="fas fa-cog"></i>
                     <span data-i18n="nav_settings">Settings / सेटिंग्स</span>
                 </button>
+
+                <!-- Clean Collapsible Group for Extended Specialized Capabilities -->
+                <div class="sidebar-section-divider"></div>
+                <div class="sidebar-section-header" onclick="toggleMoreTools()" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; padding:8px 14px; font-size:0.75rem; font-weight:700; color:var(--color-text-secondary); text-transform:uppercase; letter-spacing:0.5px;">
+                    <span>Specialized Tools / अन्य टूल्स</span>
+                    <i class="fas fa-chevron-down" id="moreToolsArrow" style="font-size:0.7rem; transition:transform 0.2s ease;"></i>
+                </div>
+                <div id="moreToolsSubNav" style="display:flex; flex-direction:column; gap:4px;">
+                    <button class="nav-item" data-view="multi_store" onclick="switchNav('multi_store')">
+                        <i class="fas fa-store-alt"></i>
+                        <span data-i18n="nav_multi_store">Multi-Store Hub / शाखाएं</span>
+                    </button>
+                    <button class="nav-item" data-view="shelf_scanner" onclick="switchNav('shelf_scanner')">
+                        <i class="fas fa-camera"></i>
+                        <span data-i18n="nav_shelf_scanner">Shelf Scanner / शेल्फ स्कैनर</span>
+                    </button>
+                    <button class="nav-item" data-view="time_machine" onclick="switchNav('time_machine')">
+                        <i class="fas fa-history"></i>
+                        <span data-i18n="nav_time_machine">Time Machine / टाइम मशीन</span>
+                    </button>
+                    <button class="nav-item" data-view="accountant" onclick="switchNav('accountant')">
+                        <i class="fas fa-file-invoice-dollar"></i>
+                        <span data-i18n="nav_accountant">AI Accountant / मुनीम</span>
+                    </button>
+                    <button class="nav-item" data-view="simulator" onclick="switchNav('simulator')">
+                        <i class="fas fa-calculator"></i>
+                        <span data-i18n="nav_simulator">Simulator / सिमुलेटर</span>
+                    </button>
+                    <button class="nav-item" data-view="news" onclick="switchNav('news')">
+                        <i class="fas fa-newspaper"></i>
+                        <span data-i18n="nav_news">News & Markets / समाचार</span>
+                    </button>
+                    <button class="nav-item" data-view="competitor" onclick="switchNav('competitor')">
+                        <i class="fas fa-crosshairs"></i>
+                        <span data-i18n="nav_competitor">Competitor Intel / प्रतिस्पर्धी</span>
+                    </button>
+                    <button class="nav-item" data-view="demand" onclick="switchNav('demand')">
+                        <i class="fas fa-ear-listen"></i>
+                        <span data-i18n="nav_demand">Customer Demand / मांग</span>
+                    </button>
+                    <button class="nav-item" data-view="negotiation" onclick="switchNav('negotiation')">
+                        <i class="fas fa-handshake"></i>
+                        <span data-i18n="nav_negotiation">Negotiation Coach / मोलभाव</span>
+                    </button>
+                    <button class="nav-item" data-view="translator" onclick="switchNav('translator')">
+                        <i class="fas fa-language"></i>
+                        <span data-i18n="nav_translator">Translator / अनुवादक</span>
+                    </button>
+                    <button class="nav-item" data-view="autopilot" onclick="switchNav('autopilot')">
+                        <i class="fas fa-robot"></i>
+                        <span data-i18n="nav_autopilot">AI Autopilot / ऑटोपायलट</span>
+                    </button>
+                    <button class="nav-item" data-view="notifications" onclick="switchNav('notifications')">
+                        <i class="fas fa-bell"></i>
+                        <span data-i18n="nav_notifications">Notifications / सूचनाएं</span>
+                    </button>
+                    <button class="nav-item" data-view="memory" onclick="switchNav('memory')">
+                        <i class="fas fa-brain"></i>
+                        <span data-i18n="nav_memory">Business Memory / व्यापार स्मृति</span>
+                    </button>
+                    <button class="nav-item" data-view="radar" onclick="switchNav('radar')">
+                        <i class="fas fa-satellite-dish"></i>
+                        <span data-i18n="nav_radar">Opportunity Radar / अवसर रडार</span>
+                    </button>
+                </div>
             </nav>
 
             <div class="sidebar-footer">
@@ -157,10 +178,20 @@
                         <span class="shop-status-dot"></span>
                         <span class="shop-name-display" id="headerShopName">Loading Shop...</span>
                     </div>
-                    <span class="prototype-tag" style="background:#FEF3C7; color:#92400E; font-size:0.72rem; font-weight:700; padding:2px 8px; border-radius:10px; border:1px solid #FCD34D;" title="Prototype Demo — Data is temporary and may reset">DEMO PROTOTYPE</span>
+                    <!-- Global Search Field for products, categories, and AI commands (Prompt Section 2) -->
+                    <div class="header-search-wrap">
+                        <i class="fas fa-search header-search-icon"></i>
+                        <input type="text" id="globalSearchInput" class="header-search-input" placeholder="Search products, sales, AI commands..." onkeydown="handleGlobalSearch(event)" aria-label="Global Search">
+                    </div>
                 </div>
 
                 <div class="header-right">
+                    <!-- Compact Header Weather Pill (Prompt Section 2) -->
+                    <div class="header-weather-pill" id="headerWeatherPill" onclick="scrollToWeatherWidget()" title="Live Weather Feed">
+                        <span id="headerWeatherIcon">🌤️</span>
+                        <span id="headerWeatherTemp">--°C</span>
+                    </div>
+
                     <!-- Language selector -->
                     <div class="lang-selector">
                         <button class="lang-btn active" data-lang="hi" onclick="setLanguage('hi')">हिन्दी</button>
@@ -214,16 +245,7 @@
                 <!-- ═══════════════════════════════════════════════ -->
                 <!-- VIEW 1: HOME (Dashboard)                       -->
                 <!-- ═══════════════════════════════════════════════ -->
-                <div class="view-section active" id="view-home">
-
-                    <!-- Live Data Active Banner -->
-                    <div class="demo-data-banner" id="liveDataBanner" style="background:var(--lime-50); border-color:var(--lime-300);">
-                        <div>
-                            <i class="fas fa-check-circle" style="color:var(--lime-700);"></i>
-                            <strong> DATA-DRIVEN DUKAAN:</strong> All stock, revenue, and profit figures are calculated strictly from your saved business records.
-                        </div>
-                        <span class="demo-data-pill" style="background:var(--lime-200); color:var(--lime-800);">Live Data</span>
-                    </div>
+                                <div class="view-section active" id="view-home">
 
                     <!-- First-Time User Welcome Banner (Visible when no products/sales) -->
                     <div class="business-empty-banner" id="firstTimeWelcomeBanner" style="display:none;">
@@ -247,367 +269,441 @@
                         </div>
                     </div>
 
-                    <!-- ── Feature 4: Live Date, Time, Location & Weather Widget ── -->
-                    <div class="weather-clock-widget" id="weatherClockWidget">
-                        <div class="wc-grid">
-                            <div class="wc-clock-side">
-                                <div class="wc-time-display">
-                                    <span id="wcLiveTime">--:--:--</span>
-                                    <span class="wc-ampm" id="wcAmPm">--</span>
-                                </div>
-                                <div class="wc-date-display" id="wcLiveDate">Loading date...</div>
-                                <div class="wc-location-row">
-                                    <select class="wc-city-select" id="wcCitySelect" onchange="handleCityChange(this.value)">
-                                        <option value="Delhi">📍 Delhi (NCR)</option>
-                                        <option value="Mumbai">📍 Mumbai</option>
-                                        <option value="Bengaluru">📍 Bengaluru</option>
-                                        <option value="Kolkata">📍 Kolkata</option>
-                                        <option value="Chennai">📍 Chennai</option>
-                                        <option value="Hyderabad">📍 Hyderabad</option>
-                                        <option value="Ahmedabad">📍 Ahmedabad</option>
-                                        <option value="Pune">📍 Pune</option>
-                                        <option value="Jaipur">📍 Jaipur</option>
-                                        <option value="Lucknow">📍 Lucknow</option>
-                                        <option value="Kanpur">📍 Kanpur</option>
-                                        <option value="Patna">📍 Patna</option>
-                                        <option value="Bhopal">📍 Bhopal</option>
-                                        <option value="Indore">📍 Indore</option>
-                                        <option value="Chandigarh">📍 Chandigarh</option>
-                                        <option value="Surat">📍 Surat</option>
-                                        <option value="Nagpur">📍 Nagpur</option>
-                                        <option value="Visakhapatnam">📍 Visakhapatnam</option>
-                                        <option value="Ludhiana">📍 Ludhiana</option>
-                                        <option value="Agra">📍 Agra</option>
-                                        <option value="Varanasi">📍 Varanasi</option>
-                                        <option value="Srinagar">📍 Srinagar</option>
-                                        <option value="Amritsar">📍 Amritsar</option>
-                                        <option value="Raipur">📍 Raipur</option>
-                                        <option value="Ranchi">📍 Ranchi</option>
-                                        <option value="Guwahati">📍 Guwahati</option>
-                                    </select>
-                                    <button type="button" class="wc-geo-btn" id="wcGeoBtn" onclick="detectUserLocation()" title="Detect my current location">
-                                        <i class="fas fa-crosshairs"></i> Detect Location
-                                    </button>
-                                    <button type="button" class="wc-retry-btn" id="wcRetryBtn" onclick="retryLiveWeather()" title="Refresh Weather" style="background:rgba(255,255,255,0.1); color:#E2E8F0; border:1px solid rgba(255,255,255,0.2); border-radius:var(--radius-sm); padding:4px 9px; cursor:pointer; font-size:0.8rem; display:inline-flex; align-items:center; gap:5px;">
-                                        <i class="fas fa-sync-alt" id="wcRefreshIcon"></i>
-                                    </button>
-                                </div>
+                    <!-- ── Prompt Section 3: Clean Dashboard Welcome Greeting ── -->
+                    <div class="dashboard-welcome-banner" id="dashboardWelcomeBanner">
+                        <div class="welcome-banner-left">
+                            <div class="welcome-banner-icon">
+                                <i class="fas fa-store"></i>
                             </div>
-                            <div class="wc-weather-side" id="wcWeatherSide">
-                                <div class="wc-weather-header">
-                                    <div class="wc-temp-wrap">
-                                        <span class="wc-temp-icon" id="wcTempIcon">🌤️</span>
-                                        <div>
-                                            <div class="wc-temp-val" id="wcTempVal">--°C</div>
-                                            <div class="wc-temp-condition" id="wcTempCondition">Loading Live Weather...</div>
-                                        </div>
-                                    </div>
-                                    <div class="wc-temp-range" id="wcTempRange">H: --° | L: --°</div>
-                                </div>
-                                <div class="wc-stats-row">
-                                    <div class="wc-stat-item">
-                                        <span class="wc-stat-label">Humidity / नमी</span>
-                                        <span class="wc-stat-value" id="wcHumidity">--%</span>
-                                    </div>
-                                    <div class="wc-stat-item">
-                                        <span class="wc-stat-label">Wind / हवा</span>
-                                        <span class="wc-stat-value" id="wcWind">-- km/h</span>
-                                    </div>
-                                    <div class="wc-stat-item">
-                                        <span class="wc-stat-label">Rain / बारिश</span>
-                                        <span class="wc-stat-value" id="wcRain">-- mm</span>
-                                    </div>
-                                </div>
-                                <div class="wc-advisory-pill" id="wcAdvisoryPill">
-                                    <i class="fas fa-warehouse"></i>
-                                    <span id="wcStorageAdvisory">Fetching regional storage advisory...</span>
-                                </div>
-                                <div class="wc-source-badge" id="wcSourceBadge">Verified Feed: Open-Meteo Live API</div>
+                            <div class="welcome-banner-text">
+                                <h2 class="welcome-greeting" id="dashboardWelcomeGreeting">Good Morning! Here's what's happening with your shop today.</h2>
+                                <p class="welcome-subtitle" id="dashboardWelcomeSubtitle">Live dukaan overview &bull; All calculations strictly verified from saved business records.</p>
                             </div>
+                        </div>
+                        <div class="welcome-banner-right">
+                            <button class="welcome-action-pill" onclick="openAddProductModal()">
+                                <i class="fas fa-plus"></i> Add Product
+                            </button>
+                            <button class="welcome-action-pill outline" onclick="openRecordSaleModal()">
+                                <i class="fas fa-cash-register"></i> New Sale
+                            </button>
                         </div>
                     </div>
 
-                    <!-- ── AI Assistant Card (Hero) ── -->
-                    <section class="ai-assistant-card" id="assistantHeroCard">
-                        <div class="ai-card-glow"></div>
-                        <div class="ai-card-inner">
-                            <div class="ai-card-top">
-                                <div class="ai-avatar-group">
-                                    <div class="ai-avatar-circle" onclick="openWelcomeModal()" title="Shopo Robo Mascot">
-                                        <img src="robot.svg" alt="Robot Avatar" class="ai-avatar-svg">
-                                        <span class="ai-status-pulse"></span>
-                                    </div>
-                                    <div class="ai-headline-group">
-                                        <h2>
-                                            <span data-i18n="ai_assistant_title">Shopo Robo Voice Assistant</span>
-                                            <span style="font-size:0.75rem; background:var(--lime-100); color:var(--lime-800); padding:2px 8px; border-radius:12px; font-weight:700;">PROTOTYPE</span>
-                                        </h2>
-                                        <div class="ai-status-text" id="aiStatusText" data-i18n="ai_status_ready">
-                                            Online &bull; Ready to help your shop (तैयार हूँ)
-                                        </div>
-                                    </div>
-                                </div>
-                                <span class="demo-data-pill" id="aiProviderBadge" style="background:var(--lime-100); color:var(--lime-800);"><i class="fas fa-globe-asia"></i> Universal AI & Market Intelligence</span>
-                            </div>
-
-                            <!-- Big Voice Microphone Area -->
-                            <div class="ai-voice-center">
-                                <div class="mic-btn-container" id="micBtnContainer">
-                                    <div class="mic-wave"></div>
-                                    <div class="mic-wave"></div>
-                                    <button class="mic-btn" id="mainMicBtn" onclick="toggleVoiceInput()" aria-label="Start Voice Command">
-                                        <i class="fas fa-microphone"></i>
-                                    </button>
-                                </div>
-                                <div class="mic-helper-text" id="micHelperText" data-i18n="mic_tap_to_speak">
-                                    माइक दबाकर बोलें (Tap Mic to Speak in Hindi, Hinglish, English)
-                                </div>
-                                <div class="mic-sub-text" id="micSubText">
-                                    "आज का गेहूं व प्याज का मंडी भाव?" or "TMT सरिया का रेट" or "Mera stock dikhao"
-                                </div>
-                            </div>
-
-                            <!-- Text Command Input Bar -->
-                            <form class="ai-input-bar" id="aiCommandForm" onsubmit="handleCommandSubmit(event); return false;">
-                                <i class="fas fa-search" style="color:var(--text-muted);"></i>
-                                <input type="text" class="ai-text-input" id="cmdInput"
-                                       placeholder="किसी भी उद्योग, मंडी, मौसम, सरकारी योजना या दुकान के बारे में पूछें..."
-                                       autocomplete="off"
-                                       onkeydown="if(event.key==='Enter'){event.preventDefault();handleCommandSubmit(event);}">
-                                <button type="button" class="ai-send-btn" id="aiSendBtn" aria-label="Send Command" onclick="handleCommandSubmit(event)">
-                                    <i class="fas fa-paper-plane"></i>
-                                </button>
-                            </form>
-
-                            <!-- Quick Preset Prompt Chips (Diverse Indian Industries & Markets) -->
-                            <div class="ai-chips-wrap">
-                                <span class="ai-chip-label" data-i18n="preset_label">Try asking:</span>
-                                <button type="button" class="ai-preset-chip" onclick="applyPresetCommand('Mandi me gehun aur sarson ka bhav kya hai?')">
-                                    🌾 मंडी भाव (APMC Rates)
-                                </button>
-                                <button type="button" class="ai-preset-chip" onclick="applyPresetCommand('Delhi aur Jaipur ka live mausam aur godown storage advisory')">
-                                    🌤️ मौसम व गोदाम सलाह
-                                </button>
-                                <button type="button" class="ai-preset-chip" onclick="applyPresetCommand('TMT Steel sariya aur Cement ka benchmark rate kya hai?')">
-                                    🏗️ सरिया व सीमेंट रेट
-                                </button>
-                                <button type="button" class="ai-preset-chip" onclick="applyPresetCommand('PMEGP subsidy aur Mudra loan scheme details')">
-                                    🏛️ सरकारी योजनाएं (MSME)
-                                </button>
-                                <button type="button" class="ai-preset-chip" onclick="applyPresetCommand('Mera stock aur low items dikhao')">
-                                    📦 दुकान का स्टॉक
-                                </button>
-                                <button type="button" class="ai-preset-chip" onclick="applyPresetCommand('Aaj ka munafa aur bikri dikhao')">
-                                    💰 आज का मुनाफ़ा
-                                </button>
-                                <button type="button" class="ai-preset-chip" onclick="applyPresetCommand('Gold and silver rates today')">
-                                    🪙 सोना-चांदी भाव
-                                </button>
-                            </div>
-
-                            <!-- Interactive Response Box -->
-                            <div class="ai-response-box" id="aiResponseBox">
-                                <div class="ai-response-header">
-                                    <div class="ai-response-sender">
-                                        <i class="fas fa-robot" style="color:var(--lime-600);"></i>
-                                        <span id="aiResponseHeaderTitle">Shopo Robo Intelligence</span>
-                                    </div>
-                                    <span class="demo-data-pill" id="aiIntentBadge" style="background:var(--lime-100); color:var(--lime-800);">Verified Intelligence</span>
-                                </div>
-                                <div class="ai-response-body" id="aiResponseBody">
-                                    Response will appear here...
-                                </div>
-                                <!-- Consequential Action Confirmation Card (Dynamic) -->
-                                <div id="aiActionConfirmCard" style="display:none; margin-top:12px; padding:12px; background:rgba(234, 179, 8, 0.1); border:1px solid #EAB308; border-radius:8px;">
-                                    <div style="font-weight:700; color:#854D0E; margin-bottom:6px;" id="aiActionConfirmTitle">⚠️ Action Confirmation Required</div>
-                                    <div style="font-size:0.875rem; color:#713F12; margin-bottom:10px;" id="aiActionConfirmText"></div>
-                                    <div id="aiActionProposedDetails" style="margin-bottom:12px;"></div>
-                                    <div style="display:flex; gap:10px;">
-                                        <button type="button" class="btn btn-primary" id="btnConfirmAIAction" style="background:#22C55E; color:#fff; border:none; padding:6px 14px; border-radius:6px; font-weight:700; cursor:pointer;">
-                                            <i class="fas fa-check"></i> Confirm & Execute
-                                        </button>
-                                        <button type="button" class="btn btn-outline" id="btnCancelAIAction" style="background:#EF4444; color:#fff; border:none; padding:6px 14px; border-radius:6px; font-weight:700; cursor:pointer;">
-                                            <i class="fas fa-times"></i> Cancel
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
-                    </section>
-
-                    <!-- ── Business Overview Cards (Metrics Grid) ── -->
-                    <div class="section-title-row">
-                        <h3 class="section-title">
-                            <i class="fas fa-chart-pie" style="color:var(--lime-600);"></i>
-                            <span data-i18n="overview_title">Business Overview / आज का हिसाब</span>
-                        </h3>
-                        <span class="demo-data-pill" id="overviewDataBadge" style="background:var(--lime-100); color:var(--lime-800);">Real Data</span>
-                    </div>
-
+                    <!-- ── Prompt Section 4: Four Clean Business KPI Cards ── -->
                     <div class="metrics-grid">
-                        <!-- Metric 1: Today's Sales -->
+                        <!-- Card 1: Today's Sales -->
                         <div class="metric-card">
                             <div class="metric-card-top">
-                                <span class="metric-label" data-i18n="metric_sales">Today's Sales (आज की बिक्री)</span>
-                                <div class="metric-icon-circle metric-icon-green">
+                                <span class="metric-label" data-i18n="metric_sales">Today's Sales / आज की बिक्री</span>
+                                <div class="metric-icon-circle metric-icon-green" aria-hidden="true">
                                     <i class="fas fa-rupee-sign"></i>
                                 </div>
                             </div>
                             <div class="metric-val" id="metricSales">₹0</div>
-                            <div class="metric-trend" style="color:var(--text-muted);" id="metricSalesTrend">
+                            <div class="metric-trend" id="metricSalesTrend">
+                                <i class="fas fa-receipt" style="font-size:0.75rem;"></i>
                                 <span id="metricSalesSub">0 sales recorded today</span>
                             </div>
                         </div>
 
-                        <!-- Metric 2: Today's Gross Profit -->
+                        <!-- Card 2: Total Profit -->
                         <div class="metric-card">
                             <div class="metric-card-top">
-                                <span class="metric-label" data-i18n="metric_profit">Gross Profit (मुनाफ़ा)</span>
-                                <div class="metric-icon-circle metric-icon-lime">
-                                    <i class="fas fa-wallet"></i>
+                                <span class="metric-label" data-i18n="metric_profit">Total Profit / कुल मुनाफ़ा</span>
+                                <div class="metric-icon-circle metric-icon-lime" aria-hidden="true">
+                                    <i class="fas fa-chart-line"></i>
                                 </div>
                             </div>
                             <div class="metric-val" id="metricProfit">₹0</div>
-                            <div class="metric-trend" style="color:var(--text-muted);" id="metricProfitTrend">
+                            <div class="metric-trend" id="metricProfitTrend">
+                                <i class="fas fa-percentage" style="font-size:0.75rem;"></i>
                                 <span id="metricProfitSub">Gross Margin: 0.0%</span>
                             </div>
                         </div>
 
-                        <!-- Metric 3: Total Products -->
+                        <!-- Card 3: Stock Value -->
                         <div class="metric-card">
                             <div class="metric-card-top">
-                                <span class="metric-label" data-i18n="metric_products">Total Products (कुल सामान)</span>
-                                <div class="metric-icon-circle metric-icon-blue">
-                                    <i class="fas fa-cubes"></i>
+                                <span class="metric-label">Stock Value / स्टॉक मूल्य</span>
+                                <div class="metric-icon-circle metric-icon-blue" aria-hidden="true">
+                                    <i class="fas fa-warehouse"></i>
+                                </div>
+                            </div>
+                            <div class="metric-val" id="metricStockValue">₹0</div>
+                            <div class="metric-trend" id="metricStockValueTrend">
+                                <i class="fas fa-tag" style="font-size:0.75rem;"></i>
+                                <span id="metricStockValueSub">Wholesale valuation</span>
+                            </div>
+                        </div>
+
+                        <!-- Card 4: Total Items -->
+                        <div class="metric-card">
+                            <div class="metric-card-top">
+                                <span class="metric-label" data-i18n="metric_products">Total Items / कुल सामान</span>
+                                <div class="metric-icon-circle metric-icon-amber" aria-hidden="true">
+                                    <i class="fas fa-boxes"></i>
                                 </div>
                             </div>
                             <div class="metric-val" id="metricTotalItems">0 items</div>
-                            <div class="metric-trend" style="color:var(--text-muted);">
+                            <div class="metric-trend" id="metricTotalItemsTrend">
+                                <i class="fas fa-layer-group" style="font-size:0.75rem;"></i>
                                 <span id="metricTotalItemsSub">In 0 categories</span>
                             </div>
                         </div>
+                    </div>
 
-                        <!-- Metric 4: Low Stock -->
-                        <div class="metric-card">
-                            <div class="metric-card-top">
-                                <span class="metric-label" data-i18n="metric_low_stock">Low Stock (कम स्टॉक)</span>
-                                <div class="metric-icon-circle metric-icon-yellow">
-                                    <i class="fas fa-exclamation-triangle"></i>
+                    <!-- Hidden status trackers for backward-compatibility with existing updateOverviewMetrics functions -->
+                    <span id="metricLowStock" style="display:none;">0 items</span>
+                    <span id="metricLowStockSub" style="display:none;">All stock levels normal</span>
+                    <span id="metricLowStockTrend" style="display:none;"></span>
+                    <span id="metricNearExpiry" style="display:none;">0 items</span>
+                    <span id="metricNearExpirySub" style="display:none;">No items near expiry</span>
+                    <span id="metricNearExpiryTrend" style="display:none;"></span>
+                    <span id="overviewDataBadge" style="display:none;">Real Data</span>
+
+                    <!-- ── Responsive 2-Column Desktop SaaS Layout (Prompt Section 5 & 8) ── -->
+                    <div class="dashboard-main-layout">
+
+                        <!-- Main Content Column: Quick Actions, Sales Chart, Activity, Widgets -->
+                        <div class="dashboard-content-col">
+
+                            <!-- Prompt Section 7: Four Visually Distinct but Consistent Action Cards -->
+                            <div class="quick-actions-section">
+                                <div class="section-title-row">
+                                    <h3 class="section-title">
+                                        <i class="fas fa-bolt" style="color:var(--color-primary-green);"></i>
+                                        <span data-i18n="actions_title">Quick Actions / त्वरित कार्य</span>
+                                    </h3>
+                                </div>
+                                <div class="quick-actions-grid-4">
+                                    <button type="button" class="quick-action-card qa-stock" onclick="openAddProductModal()" aria-label="Add Stock">
+                                        <div class="qa-icon-wrap qa-icon-stock">
+                                            <i class="fas fa-plus-circle"></i>
+                                        </div>
+                                        <div class="qa-text-wrap">
+                                            <span class="qa-title">Add Stock</span>
+                                            <span class="qa-sub">सामान जोड़ें</span>
+                                        </div>
+                                        <i class="fas fa-chevron-right qa-arrow"></i>
+                                    </button>
+
+                                    <button type="button" class="quick-action-card qa-sale" onclick="openRecordSaleModal()" aria-label="New Sale">
+                                        <div class="qa-icon-wrap qa-icon-sale">
+                                            <i class="fas fa-cash-register"></i>
+                                        </div>
+                                        <div class="qa-text-wrap">
+                                            <span class="qa-title">New Sale</span>
+                                            <span class="qa-sub">नई बिक्री</span>
+                                        </div>
+                                        <i class="fas fa-chevron-right qa-arrow"></i>
+                                    </button>
+
+                                    <button type="button" class="quick-action-card qa-scan" onclick="openBarcodeModal()" aria-label="Scan Barcode">
+                                        <div class="qa-icon-wrap qa-icon-scan">
+                                            <i class="fas fa-qrcode"></i>
+                                        </div>
+                                        <div class="qa-text-wrap">
+                                            <span class="qa-title">Scan Barcode</span>
+                                            <span class="qa-sub">बारकोड स्कैन</span>
+                                        </div>
+                                        <i class="fas fa-chevron-right qa-arrow"></i>
+                                    </button>
+
+                                    <button type="button" class="quick-action-card qa-ai" onclick="focusAIAssistant()" aria-label="AI Assistant">
+                                        <div class="qa-icon-wrap qa-icon-ai">
+                                            <i class="fas fa-robot"></i>
+                                        </div>
+                                        <div class="qa-text-wrap">
+                                            <span class="qa-title">AI Assistant</span>
+                                            <span class="qa-sub">AI से बात करें</span>
+                                        </div>
+                                        <i class="fas fa-chevron-right qa-arrow"></i>
+                                    </button>
                                 </div>
                             </div>
-                            <div class="metric-val" id="metricLowStock" style="color:var(--green-500);">0 items</div>
-                            <div class="metric-trend" id="metricLowStockTrend" style="color:var(--text-muted);">
-                                <span id="metricLowStockSub">All stock levels normal</span>
-                            </div>
-                        </div>
 
-                        <!-- Metric 5: Near Expiry -->
-                        <div class="metric-card">
-                            <div class="metric-card-top">
-                                <span class="metric-label" data-i18n="metric_expiry">Near Expiry (जल्द एक्सपायरी)</span>
-                                <div class="metric-icon-circle metric-icon-red">
-                                    <i class="fas fa-calendar-times"></i>
+                            <!-- Prompt Section 5: Sales Overview Chart & Profit & Loss Summary -->
+                            <div class="sales-chart-card" id="salesOverviewChartCard">
+                                <div class="sales-chart-header">
+                                    <div class="chart-title-group">
+                                        <div class="chart-title-icon">
+                                            <i class="fas fa-chart-line"></i>
+                                        </div>
+                                        <div>
+                                            <div class="chart-title">Sales & Revenue Overview / बिक्री का ग्राफ</div>
+                                            <div class="chart-subtitle">Verified performance calculated from logged transactions</div>
+                                        </div>
+                                    </div>
+                                    <button class="btn-dash btn-dash-secondary" onclick="switchNav('sales')" style="padding:6px 14px; font-size:0.8rem;">
+                                        <i class="fas fa-table"></i> View Full Ledger
+                                    </button>
+                                </div>
+
+                                <!-- Dynamic Sales Bar Chart Container -->
+                                <div id="salesOverviewChartContainer">
+                                    <div class="empty-sales-chart" id="emptySalesChartNotice">
+                                        <div class="empty-chart-icon"><i class="fas fa-chart-bar"></i></div>
+                                        <div class="empty-chart-title">No Sales Transactions Recorded Yet</div>
+                                        <div class="empty-chart-desc">Record sales to generate live daily volume curves and real revenue analytics.</div>
+                                    </div>
+                                </div>
+
+                                <!-- Profit & Loss Summary Grid -->
+                                <div class="pnl-summary-grid" id="pnlSummaryGrid">
+                                    <div class="pnl-item">
+                                        <span class="pnl-label">Gross Revenue</span>
+                                        <span class="pnl-val" id="pnlGrossRevenue">₹0</span>
+                                    </div>
+                                    <div class="pnl-item">
+                                        <span class="pnl-label">COGS (Wholesale)</span>
+                                        <span class="pnl-val" id="pnlCOGS">₹0</span>
+                                    </div>
+                                    <div class="pnl-item">
+                                        <span class="pnl-label">Operating Expenses</span>
+                                        <span class="pnl-val" id="pnlExpenses">₹0</span>
+                                    </div>
+                                    <div class="pnl-item">
+                                        <span class="pnl-label">Net Profit</span>
+                                        <span class="pnl-val profit" id="pnlNetProfit">₹0</span>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="metric-val" id="metricNearExpiry" style="color:var(--green-500);">0 items</div>
-                            <div class="metric-trend" id="metricNearExpiryTrend" style="color:var(--text-muted);">
-                                <span id="metricNearExpirySub">No items near expiry</span>
+
+                            <!-- Recent Activity & Stock Alerts Feed (2-Column Subgrid) -->
+                            <div class="activity-grid">
+                                <!-- Column 1: Recent Sales -->
+                                <div class="activity-card">
+                                    <div class="activity-card-header">
+                                        <h4 style="font-weight:700; font-size:0.95rem; display:flex; align-items:center; gap:8px;">
+                                            <i class="fas fa-receipt" style="color:var(--color-primary-green);"></i>
+                                            <span data-i18n="recent_sales_title">Recent Sales / हाल की बिक्री</span>
+                                        </h4>
+                                        <span class="demo-data-pill" id="recentSalesBadge" style="background:#DCFCE7; color:var(--color-primary-green); font-size:0.72rem; font-weight:700; padding:2px 8px; border-radius:10px;">Live Ledger</span>
+                                    </div>
+                                    <ul class="activity-list" id="recentSalesList">
+                                        <li class="empty-feed-state" id="emptySalesNotice">
+                                            <i class="fas fa-receipt"></i>
+                                            <p>No sales recorded yet. Use 'New Sale' to record transactions.</p>
+                                        </li>
+                                    </ul>
+                                </div>
+
+                                <!-- Column 2: Stock & Expiry Alerts -->
+                                <div class="activity-card">
+                                    <div class="activity-card-header">
+                                        <h4 style="font-weight:700; font-size:0.95rem; display:flex; align-items:center; gap:8px;">
+                                            <i class="fas fa-bell" style="color:var(--color-warning);"></i>
+                                            <span data-i18n="alerts_title">Alerts / चेतावनियाँ</span>
+                                        </h4>
+                                        <span class="demo-data-pill" id="alertsBadge" style="background:#FEF3C7; color:#92400E; font-size:0.72rem; font-weight:700; padding:2px 8px; border-radius:10px;">Live Alerts</span>
+                                    </div>
+                                    <ul class="activity-list" id="alertsList">
+                                        <li class="empty-feed-state" id="emptyAlertsNotice">
+                                            <i class="fas fa-check-circle" style="color:var(--color-success);"></i>
+                                            <p>All stock levels normal • No pending alerts</p>
+                                        </li>
+                                    </ul>
+                                </div>
                             </div>
+
+                            <!-- Weather Clock & Storage Advisory Widget -->
+                            <div class="weather-clock-widget" id="weatherClockWidget">
+                                <div class="wc-grid">
+                                    <div class="wc-clock-side">
+                                        <div class="wc-time-display">
+                                            <span id="wcLiveTime">--:--:--</span>
+                                            <span class="wc-ampm" id="wcAmPm">--</span>
+                                        </div>
+                                        <div class="wc-date-display" id="wcLiveDate">Loading date...</div>
+                                        <div class="wc-location-row">
+                                            <select class="wc-city-select" id="wcCitySelect" onchange="handleCityChange(this.value)">
+                                                <option value="Delhi">📍 Delhi (NCR)</option>
+                                                <option value="Mumbai">📍 Mumbai</option>
+                                                <option value="Bengaluru">📍 Bengaluru</option>
+                                                <option value="Kolkata">📍 Kolkata</option>
+                                                <option value="Chennai">📍 Chennai</option>
+                                                <option value="Hyderabad">📍 Hyderabad</option>
+                                                <option value="Ahmedabad">📍 Ahmedabad</option>
+                                                <option value="Pune">📍 Pune</option>
+                                                <option value="Jaipur">📍 Jaipur</option>
+                                                <option value="Lucknow">📍 Lucknow</option>
+                                                <option value="Kanpur">📍 Kanpur</option>
+                                                <option value="Patna">📍 Patna</option>
+                                                <option value="Bhopal">📍 Bhopal</option>
+                                                <option value="Indore">📍 Indore</option>
+                                                <option value="Chandigarh">📍 Chandigarh</option>
+                                                <option value="Surat">📍 Surat</option>
+                                                <option value="Nagpur">📍 Nagpur</option>
+                                                <option value="Visakhapatnam">📍 Visakhapatnam</option>
+                                                <option value="Ludhiana">📍 Ludhiana</option>
+                                                <option value="Agra">📍 Agra</option>
+                                                <option value="Varanasi">📍 Varanasi</option>
+                                                <option value="Srinagar">📍 Srinagar</option>
+                                                <option value="Amritsar">📍 Amritsar</option>
+                                                <option value="Raipur">📍 Raipur</option>
+                                                <option value="Ranchi">📍 Ranchi</option>
+                                                <option value="Guwahati">📍 Guwahati</option>
+                                            </select>
+                                            <button type="button" class="wc-geo-btn" id="wcGeoBtn" onclick="detectUserLocation()" title="Detect my current location">
+                                                <i class="fas fa-crosshairs"></i> Detect
+                                            </button>
+                                            <button type="button" class="wc-retry-btn" id="wcRetryBtn" onclick="retryLiveWeather()" title="Refresh Weather">
+                                                <i class="fas fa-sync-alt" id="wcRefreshIcon"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="wc-weather-side" id="wcWeatherSide">
+                                        <div class="wc-weather-header">
+                                            <div class="wc-temp-wrap">
+                                                <span class="wc-temp-icon" id="wcTempIcon">🌤️</span>
+                                                <div>
+                                                    <div class="wc-temp-val" id="wcTempVal">--°C</div>
+                                                    <div class="wc-temp-condition" id="wcTempCondition">Loading Live Weather...</div>
+                                                </div>
+                                            </div>
+                                            <div class="wc-temp-range" id="wcTempRange">H: --° | L: --°</div>
+                                        </div>
+                                        <div class="wc-stats-row">
+                                            <div class="wc-stat-item">
+                                                <span class="wc-stat-label">Humidity / नमी</span>
+                                                <span class="wc-stat-value" id="wcHumidity">--%</span>
+                                            </div>
+                                            <div class="wc-stat-item">
+                                                <span class="wc-stat-label">Wind / हवा</span>
+                                                <span class="wc-stat-value" id="wcWind">-- km/h</span>
+                                            </div>
+                                            <div class="wc-stat-item">
+                                                <span class="wc-stat-label">Rain / बारिश</span>
+                                                <span class="wc-stat-value" id="wcRain">-- mm</span>
+                                            </div>
+                                        </div>
+                                        <div class="wc-advisory-pill" id="wcAdvisoryPill">
+                                            <i class="fas fa-warehouse"></i>
+                                            <span id="wcStorageAdvisory">Fetching regional storage advisory...</span>
+                                        </div>
+                                        <div class="wc-source-badge" id="wcSourceBadge">Verified Feed: Open-Meteo Live API</div>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
-                    </div>
 
-                    <!-- ── Quick Actions ── -->
-                    <div class="section-title-row">
-                        <h3 class="section-title">
-                            <i class="fas fa-bolt" style="color:var(--lime-600);"></i>
-                            <span data-i18n="actions_title">Quick Actions / त्वरित कार्य</span>
-                        </h3>
-                    </div>
+                        <!-- ── Prompt Section 8: AI Assistant Panel (Right Column on Desktop) ── -->
+                        <div class="dashboard-sidebar-col">
+                            <section class="ai-assistant-card" id="assistantHeroCard">
+                                <div class="ai-card-glow"></div>
+                                <div class="ai-card-inner">
+                                    <div class="ai-card-top">
+                                        <div class="ai-avatar-group">
+                                            <div class="ai-avatar-circle" onclick="openWelcomeModal()" title="Shopo Robo — Your AI Accountant">
+                                                <img src="/icons/shopo_robo_mascot.png" alt="Your AI Accountant" class="ai-avatar-img">
+                                                <span class="ai-status-pulse"></span>
+                                            </div>
+                                            <div class="ai-headline-group">
+                                                <h2>
+                                                    <span data-i18n="ai_assistant_title">Your AI Accountant</span>
+                                                </h2>
+                                                <div class="ai-status-text" id="aiStatusText" data-i18n="ai_status_ready">
+                                                    Online &bull; Ready to help your shop (तैयार हूँ)
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <span class="demo-data-pill" id="aiProviderBadge" style="background:#ECFCCB; color:#3F6212; font-size:0.72rem; font-weight:700; padding:2px 8px; border-radius:10px;">Universal AI</span>
+                                    </div>
 
-                    <div class="quick-actions-grid">
-                        <button class="quick-action-btn" onclick="openAddProductModal()">
-                            <div class="action-icon-circle action-green">
-                                <i class="fas fa-plus"></i>
-                            </div>
-                            <span class="action-btn-title" data-i18n="act_add_prod">Add Product</span>
-                            <span class="action-btn-sub">नया सामान जोड़ें</span>
-                        </button>
+                                    <!-- Central Interactive Voice Control -->
+                                    <div class="ai-voice-centerpiece">
+                                        <div class="mic-btn-container state-ready" id="micBtnContainer">
+                                            <div class="mic-wave mic-wave-1"></div>
+                                            <div class="mic-wave mic-wave-2"></div>
+                                            <div class="mic-wave mic-wave-3"></div>
+                                            <button type="button" class="mic-btn" id="mainMicBtn" onclick="toggleVoiceInput()" aria-label="Microphone Voice Assistant Button">
+                                                <i class="fas fa-microphone" id="micIcon"></i>
+                                            </button>
+                                        </div>
+                                        <div class="speaking-equalizer" id="speakingEqualizer">
+                                            <span></span><span></span><span></span><span></span><span></span>
+                                        </div>
+                                        <div class="mic-helper-text" id="micHelperText" data-i18n="mic_helper">
+                                            माइक दबाकर बोलें (Tap Mic to Speak in Hindi, Hinglish, English)
+                                        </div>
+                                        <div class="mic-sub-text" id="micSubText" data-i18n="mic_sub">
+                                            Natural voice for stock, sales, prices, weather & schemes
+                                        </div>
+                                    </div>
 
-                        <button class="quick-action-btn" onclick="openBarcodeModal()">
-                            <div class="action-icon-circle action-lime">
-                                <i class="fas fa-barcode"></i>
-                            </div>
-                            <span class="action-btn-title" data-i18n="act_scan">Scan Barcode</span>
-                            <span class="action-btn-sub">बारकोड स्कैन</span>
-                        </button>
+                                    <!-- Command Input Form -->
+                                    <form class="ai-input-form" id="aiCommandForm" onsubmit="event.preventDefault(); handleCommandSubmit(event);">
+                                        <input type="text"
+                                               class="ai-text-input"
+                                               id="cmdInput"
+                                               placeholder="किसी भी उद्योग, मंडी, मौसम या दुकान के बारे में पूछें..."
+                                               autocomplete="off"
+                                               onkeydown="if(event.key==='Enter'){event.preventDefault();handleCommandSubmit(event);}">
+                                        <button type="button" class="ai-send-btn" id="aiSendBtn" aria-label="Send Command" onclick="handleCommandSubmit(event)">
+                                            <i class="fas fa-paper-plane"></i>
+                                        </button>
+                                    </form>
 
-                        <button class="quick-action-btn" onclick="switchNav('inventory')">
-                            <div class="action-icon-circle action-blue">
-                                <i class="fas fa-boxes"></i>
-                            </div>
-                            <span class="action-btn-title" data-i18n="act_inventory">View Inventory</span>
-                            <span class="action-btn-sub">स्टॉक देखें</span>
-                        </button>
+                                    <!-- Quick Preset Prompt Chips -->
+                                    <div class="ai-chips-wrap">
+                                        <span class="ai-chip-label" data-i18n="preset_label">Try asking:</span>
+                                        <button type="button" class="ai-preset-chip" onclick="applyPresetCommand('Mera stock aur low items dikhao')">
+                                            📦 दुकान का स्टॉक
+                                        </button>
+                                        <button type="button" class="ai-preset-chip" onclick="applyPresetCommand('Aaj ka munafa aur bikri dikhao')">
+                                            💰 आज का मुनाफ़ा
+                                        </button>
+                                        <button type="button" class="ai-preset-chip" onclick="applyPresetCommand('Mandi me gehun aur sarson ka bhav kya hai?')">
+                                            🌾 मंडी भाव
+                                        </button>
+                                        <button type="button" class="ai-preset-chip" onclick="applyPresetCommand('Delhi aur Jaipur ka live mausam aur godown storage advisory')">
+                                            🌤️ मौसम सलाह
+                                        </button>
+                                    </div>
 
-                        <button class="quick-action-btn" onclick="openRecordSaleModal()">
-                            <div class="action-icon-circle action-purple">
-                                <i class="fas fa-cash-register"></i>
-                            </div>
-                            <span class="action-btn-title" data-i18n="act_sale">Record Sale</span>
-                            <span class="action-btn-sub">बिक्री दर्ज करें</span>
-                        </button>
+                                    <!-- Interactive Response Box -->
+                                    <div class="ai-response-box" id="aiResponseBox">
+                                        <div class="ai-response-header">
+                                            <div class="ai-response-sender">
+                                                <i class="fas fa-robot" style="color:var(--color-primary-green);"></i>
+                                                <span id="aiResponseHeaderTitle">Shopo Robo Intelligence</span>
+                                            </div>
+                                            <span class="demo-data-pill" id="aiIntentBadge" style="background:#ECFCCB; color:#3F6212; font-size:0.72rem; font-weight:700; padding:2px 8px; border-radius:10px;">Verified Intelligence</span>
+                                        </div>
+                                        <div class="ai-response-body" id="aiResponseBody">
+                                            Ready to assist. Tap the microphone or type above...
+                                        </div>
+                                        <!-- Consequential Action Confirmation Card (Dynamic) -->
+                                        <div id="aiActionConfirmCard" style="display:none; margin-top:14px; padding:16px; background:#FEFCE8; border:1.5px solid #EAB308; border-radius:12px; box-shadow:0 4px 12px rgba(234, 179, 8, 0.15);">
+                                            <div style="font-weight:800; font-size:1rem; color:#854D0E; margin-bottom:6px; display:flex; align-items:center; gap:8px;" id="aiActionConfirmTitle">
+                                                <i class="fas fa-shield-alt" style="color:#D97706;"></i>
+                                                <span>Action Confirmation Required / पुष्टि आवश्यक</span>
+                                            </div>
+                                            <div style="font-size:0.92rem; color:#713F12; margin-bottom:12px; line-height:1.5;" id="aiActionConfirmText"></div>
+                                            <div id="aiActionProposedDetails" style="margin-bottom:14px;"></div>
+                                            <div style="display:flex; gap:12px; flex-wrap:wrap;">
+                                                <button type="button" class="btn btn-primary" id="btnConfirmAIAction" style="background:#16803C; color:#fff; border:none; padding:10px 20px; border-radius:8px; font-weight:700; font-size:0.9rem; cursor:pointer; display:inline-flex; align-items:center; gap:8px;">
+                                                    <i class="fas fa-check"></i> Confirm & Execute / सुरक्षित सहेजें
+                                                </button>
+                                                <button type="button" class="btn btn-outline" id="btnCancelAIAction" style="background:#DC2626; color:#fff; border:none; padding:10px 18px; border-radius:8px; font-weight:700; font-size:0.9rem; cursor:pointer; display:inline-flex; align-items:center; gap:8px;">
+                                                    <i class="fas fa-times"></i> Cancel / रद्द करें
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
 
-                        <button class="quick-action-btn" onclick="switchNav('reports')">
-                            <div class="action-icon-circle action-yellow">
-                                <i class="fas fa-file-invoice-dollar"></i>
-                            </div>
-                            <span class="action-btn-title" data-i18n="act_reports">Reports</span>
-                            <span class="action-btn-sub">मुनाफ़ा रिपोर्ट</span>
-                        </button>
-                    </div>
-
-                    <!-- ── Recent Activity & Alerts Feed ── -->
-                    <div class="activity-grid">
-                        <!-- Column 1: Recent Sales -->
-                        <div class="activity-card">
-                            <div class="activity-card-header">
-                                <h4 style="font-weight:800; font-size:1rem; display:flex; align-items:center; gap:8px;">
-                                    <i class="fas fa-receipt" style="color:var(--green-500);"></i>
-                                    <span data-i18n="recent_sales_title">Recent Sales / हाल की बिक्री</span>
-                                </h4>
-                                <span class="demo-data-pill" id="recentSalesBadge" style="background:var(--lime-100); color:var(--lime-800);">Live Ledger</span>
-                            </div>
-                            <ul class="activity-list" id="recentSalesList">
-                                <li class="empty-feed-state" id="emptySalesNotice">
-                                    <i class="fas fa-receipt"></i>
-                                    <p>No sales recorded yet. Use 'Record Sale' to log transactions.</p>
-                                </li>
-                            </ul>
+                                </div>
+                            </section>
                         </div>
 
-                        <!-- Column 2: Stock & Expiry Alerts -->
-                        <div class="activity-card">
-                            <div class="activity-card-header">
-                                <h4 style="font-weight:800; font-size:1rem; display:flex; align-items:center; gap:8px;">
-                                    <i class="fas fa-bell" style="color:var(--yellow-500);"></i>
-                                    <span data-i18n="alerts_title">Alerts / चेतावनियाँ</span>
-                                </h4>
-                                <span class="demo-data-pill" id="alertsBadge" style="background:var(--lime-100); color:var(--lime-800);">Live Alerts</span>
-                            </div>
-                            <ul class="activity-list" id="alertsList">
-                                <li class="empty-feed-state" id="emptyAlertsNotice">
-                                    <i class="fas fa-check-circle" style="color:var(--green-500);"></i>
-                                    <p>All stock levels normal • No pending alerts</p>
-                                </li>
-                            </ul>
-                        </div>
                     </div>
 
                 </div>
 
                 <!-- ═══════════════════════════════════════════════ -->
-                <!-- VIEW 2: INVENTORY (Preview)                    -->
+                <!-- VIEW 2: INVENTORY<!-- VIEW 2: INVENTORY (Preview)                    -->
                 <!-- ═══════════════════════════════════════════════ -->
                 <div class="view-section" id="view-inventory">
                     <div class="section-title-row">
@@ -859,7 +955,7 @@
                     </div>
 
                     <div style="background:#FFF; border:2px solid var(--lime-400); border-radius:var(--radius-xl); padding:32px; text-align:center;">
-                        <img src="robot.svg" alt="Robot" width="120" height="120" style="margin-bottom:16px;">
+                        <img src="/icons/shopo_robo_mascot.png" alt="Your AI Accountant" width="120" height="120" style="margin-bottom:16px; object-fit:contain; border-radius:24px; box-shadow:0 6px 20px rgba(132,204,22,0.25);">
                         <h3 style="font-size:1.4rem; font-weight:800; margin-bottom:8px;">
                             "नमस्ते! आप क्या पूछना चाहते हैं?"
                         </h3>
@@ -922,16 +1018,19 @@
                                 Response will appear here...
                             </div>
                             <!-- Consequential Action Confirmation Card for Assistant View -->
-                            <div id="assistantViewActionConfirmCard" style="display:none; margin-top:12px; padding:12px; background:rgba(234, 179, 8, 0.1); border:1px solid #EAB308; border-radius:8px;">
-                                <div style="font-weight:700; color:#854D0E; margin-bottom:6px;" id="assistantViewActionConfirmTitle">⚠️ Action Confirmation Required</div>
-                                <div style="font-size:0.875rem; color:#713F12; margin-bottom:10px;" id="assistantViewActionConfirmText"></div>
-                                <div id="assistantViewActionProposedDetails" style="margin-bottom:12px;"></div>
-                                <div style="display:flex; gap:10px;">
-                                    <button type="button" class="btn btn-primary" id="btnConfirmAssistantAction" style="background:#22C55E; color:#fff; border:none; padding:6px 14px; border-radius:6px; font-weight:700; cursor:pointer;">
-                                        <i class="fas fa-check"></i> Confirm & Execute
+                            <div id="assistantViewActionConfirmCard" style="display:none; margin-top:14px; padding:16px; background:#FEFCE8; border:1.5px solid #EAB308; border-radius:12px; box-shadow:0 4px 12px rgba(234, 179, 8, 0.15);">
+                                <div style="font-weight:800; font-size:1rem; color:#854D0E; margin-bottom:6px; display:flex; align-items:center; gap:8px;" id="assistantViewActionConfirmTitle">
+                                    <i class="fas fa-shield-alt" style="color:#D97706;"></i>
+                                    <span>Action Confirmation Required / पुष्टि आवश्यक</span>
+                                </div>
+                                <div style="font-size:0.92rem; color:#713F12; margin-bottom:12px; line-height:1.5;" id="assistantViewActionConfirmText"></div>
+                                <div id="assistantViewActionProposedDetails" style="margin-bottom:14px;"></div>
+                                <div style="display:flex; gap:12px; flex-wrap:wrap;">
+                                    <button type="button" class="btn btn-primary" id="btnConfirmAssistantAction" style="background:#16A34A; color:#fff; border:none; padding:10px 20px; border-radius:8px; font-weight:700; font-size:0.9rem; cursor:pointer; display:inline-flex; align-items:center; gap:8px; box-shadow:0 2px 6px rgba(22,163,74,0.3);">
+                                        <i class="fas fa-check"></i> Confirm & Execute / सुरक्षित सहेजें
                                     </button>
-                                    <button type="button" class="btn btn-outline" id="btnCancelAssistantAction" style="background:#EF4444; color:#fff; border:none; padding:6px 14px; border-radius:6px; font-weight:700; cursor:pointer;">
-                                        <i class="fas fa-times"></i> Cancel
+                                    <button type="button" class="btn btn-outline" id="btnCancelAssistantAction" style="background:#DC2626; color:#fff; border:none; padding:10px 18px; border-radius:8px; font-weight:700; font-size:0.9rem; cursor:pointer; display:inline-flex; align-items:center; gap:8px;">
+                                        <i class="fas fa-times"></i> Cancel / रद्द करें
                                     </button>
                                 </div>
                             </div>
@@ -1146,15 +1245,15 @@
                                             <option value="hinglish">Hinglish</option>
                                             <option value="es">Español</option>
                                             <option value="fr">Français</option>
-                                            <option value="ar">العربية (Arabic)</option>
-                                            <option value="zh">中文 (Chinese)</option>
-                                            <option value="ja">日本語 (Japanese)</option>
-                                            <option value="bn">বাংলা (Bengali)</option>
-                                            <option value="mr">मराठी (Marathi)</option>
-                                            <option value="te">తెలుగు (Telugu)</option>
-                                            <option value="ta">தமிழ் (Tamil)</option>
-                                            <option value="gu">ગુજરાતી (Gujarati)</option>
-                                            <option value="ur">اردو (Urdu)</option>
+                                            <option value="ar">العربية</option>
+                                            <option value="zh">中文</option>
+                                            <option value="ja">日本語</option>
+                                            <option value="bn">বাংলা</option>
+                                            <option value="mr">मराठी</option>
+                                            <option value="te">తెలుగు</option>
+                                            <option value="ta">தமிழ்</option>
+                                            <option value="gu">ગુજરાતી</option>
+                                            <option value="ur">اردو</option>
                                             <option value="de">Deutsch</option>
                                             <option value="ru">Русский</option>
                                         </select>
@@ -1163,8 +1262,8 @@
                                     <div class="pref-field">
                                         <label for="prefNewsLang">News Feed Language / समाचार भाषा</label>
                                         <select id="prefNewsLang">
-                                            <option value="hi">हिन्दी (Hindi RSS Feeds)</option>
                                             <option value="en">English (Google News RSS)</option>
+                                            <option value="hi">हिन्दी (Hindi RSS Feeds)</option>
                                         </select>
                                     </div>
 
@@ -2743,42 +2842,143 @@
     </div>
 
     <!-- ======================================================== -->
-    <!-- MODAL: BARCODE SCANNER SIMULATION                        -->
+    <!-- MODAL: UNIVERSAL BARCODE & QR CODE SCANNER               -->
     <!-- ======================================================== -->
     <div class="modal-overlay" id="barcodeModal">
-        <div class="modal-card">
-            <div class="modal-header">
-                <h3><i class="fas fa-barcode" style="color:var(--lime-600);"></i> Barcode Scanner / स्कैनर</h3>
-                <button class="modal-close-btn" onclick="closeModal('barcodeModal')"><i class="fas fa-times"></i></button>
+        <div class="modal-card scanner-modal-card">
+            <div class="scanner-modal-header">
+                <h3>
+                    <i class="fas fa-qrcode" style="color:var(--lime-600);"></i>
+                    <i class="fas fa-barcode" style="color:var(--lime-600); margin-left:-4px;"></i>
+                    <span>Universal Barcode & QR Scanner / बारकोड स्कैनर</span>
+                </h3>
+                <button type="button" class="modal-close-btn" onclick="closeBarcodeModal()">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
-            <div class="modal-body">
-                <div class="scanner-viewport">
-                    <div class="scanner-laser"></div>
-                    <div class="scanner-reticle">
-                        <span>Align Barcode</span>
+
+            <!-- Tab Navigation Bar -->
+            <div class="scanner-tab-bar">
+                <button type="button" class="scanner-tab-btn active" id="scannerTabCamera" onclick="switchScannerTab('camera')">
+                    <i class="fas fa-camera"></i> Live Camera / कैमरा
+                </button>
+                <button type="button" class="scanner-tab-btn" id="scannerTabUpload" onclick="switchScannerTab('upload')">
+                    <i class="fas fa-file-image"></i> Upload Image / फोटो
+                </button>
+                <button type="button" class="scanner-tab-btn" id="scannerTabManual" onclick="switchScannerTab('manual')">
+                    <i class="fas fa-keyboard"></i> Manual Code / टाइप करें
+                </button>
+                <button type="button" class="scanner-tab-btn" id="scannerTabSamples" onclick="switchScannerTab('samples')">
+                    <i class="fas fa-vial"></i> Sample Codes / टेस्ट कोड
+                </button>
+            </div>
+
+            <div class="scanner-body">
+                <!-- 1. LIVE CAMERA PANEL -->
+                <div id="scannerCameraPanel">
+                    <div class="scanner-camera-controls">
+                        <select id="scannerCameraSelect" class="scanner-select" onchange="onScannerCameraChange(this.value)">
+                            <option value="">Detecting Cameras...</option>
+                        </select>
+                        <button type="button" class="scanner-icon-btn" id="scannerSwitchCameraBtn" onclick="toggleCameraFacing()" title="Switch Front/Back Camera">
+                            <i class="fas fa-sync-alt"></i> Flip Camera
+                        </button>
+                        <button type="button" class="scanner-icon-btn" id="scannerTorchBtn" onclick="toggleTorch()" style="display:none;" title="Flashlight">
+                            <i class="fas fa-bolt"></i> Flash
+                        </button>
+                    </div>
+
+                    <div class="scanner-viewport-box">
+                        <div id="scannerReader"></div>
+                        <div class="scanner-reticle-overlay" id="scannerReticle">
+                            <span>Align Code</span>
+                        </div>
+                        <div class="scanner-laser-line" id="scannerLaser"></div>
+                    </div>
+                    <div class="scanner-status-hint" id="scannerStatusText">
+                        <i class="fas fa-info-circle" style="color:var(--lime-600);"></i>
+                        <span>Point camera at any product barcode or QR code / बारकोड या QR सामने लाएं</span>
                     </div>
                 </div>
-                <p style="font-size:0.85rem; color:var(--text-secondary); text-align:center;">
-                    Point your camera at any FMCG barcode or click sample buttons below to test scanning:
-                </p>
-                <div class="barcode-sample-chips">
-                    <button class="barcode-chip-btn" onclick="simulateBarcodeScan('8901058852393', 'Maggi 2-Minute Noodles')">
-                        🍜 Maggi 2-Min
-                    </button>
-                    <button class="barcode-chip-btn" onclick="simulateBarcodeScan('8904043901005', 'Tata Salt 1kg')">
-                        🧂 Tata Salt
-                    </button>
-                    <button class="barcode-chip-btn" onclick="simulateBarcodeScan('8901719101038', 'Parle-G Glucose')">
-                        🍪 Parle-G
-                    </button>
-                    <button class="barcode-chip-btn" onclick="simulateBarcodeScan('8901262010054', 'Amul Butter 100g')">
-                        🧈 Amul Butter
-                    </button>
+
+                <!-- 2. IMAGE UPLOAD PANEL -->
+                <div id="scannerUploadPanel" style="display:none;">
+                    <div class="scanner-dropzone" onclick="document.getElementById('scannerFileInput').click()">
+                        <i class="fas fa-cloud-upload-alt" style="font-size:2.4rem; color:var(--lime-600); margin-bottom:8px;"></i>
+                        <h4 style="margin:0 0 4px 0; color:var(--text-primary);">Click or Drop Barcode Image</h4>
+                        <p style="margin:0; font-size:0.82rem; color:var(--text-secondary);">
+                            JPG, PNG, or WebP containing a barcode or QR code
+                        </p>
+                        <input type="file" id="scannerFileInput" accept="image/*" style="display:none;" onchange="handleScannerFileSelect(event)">
+                    </div>
                 </div>
-                <div id="barcodeResultBox" style="display:none; background:var(--lime-50); border:1px solid var(--lime-300); padding:10px; border-radius:8px; font-size:0.9rem; font-weight:600; text-align:center; color:var(--lime-800);"></div>
+
+                <!-- 3. MANUAL ENTRY PANEL -->
+                <div id="scannerManualPanel" style="display:none;">
+                    <p style="font-size:0.85rem; color:var(--text-secondary); margin:0 0 8px 0;">
+                        Enter Barcode, GTIN, ISBN, or SKU code manually:
+                    </p>
+                    <div class="scanner-manual-box">
+                        <input type="text" id="scannerManualInput" class="scanner-manual-input" placeholder="e.g. 8901058852393, 9780143428282..." onkeydown="if(event.key==='Enter') submitManualScannerCode()">
+                        <button type="button" class="btn-dash btn-dash-primary" onclick="submitManualScannerCode()">
+                            <i class="fas fa-search"></i> Lookup
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 4. SAMPLE CODES PANEL -->
+                <div id="scannerSamplesPanel" style="display:none;">
+                    <p style="font-size:0.82rem; color:var(--text-secondary); margin:0 0 6px 0;">
+                        Click any sample code to test universal multi-category lookup and registration:
+                    </p>
+                    <div class="barcode-sample-chips">
+                        <button type="button" class="barcode-chip-btn" onclick="lookupScannedCode('8901058852393', 'EAN_13')">
+                            🍜 FMCG (Maggi)
+                        </button>
+                        <button type="button" class="barcode-chip-btn" onclick="lookupScannedCode('8904043901005', 'EAN_13')">
+                            🧂 Grocery (Tata Salt)
+                        </button>
+                        <button type="button" class="barcode-chip-btn" onclick="lookupScannedCode('8901719101038', 'EAN_13')">
+                            🍪 Biscuits (Parle-G)
+                        </button>
+                        <button type="button" class="barcode-chip-btn" onclick="lookupScannedCode('8901262010054', 'EAN_13')">
+                            🧈 Dairy (Amul Butter)
+                        </button>
+                        <button type="button" class="barcode-chip-btn" onclick="lookupScannedCode('8901052002145', 'EAN_13')">
+                            💡 Electrical (Havells LED)
+                        </button>
+                        <button type="button" class="barcode-chip-btn" onclick="lookupScannedCode('8903001002001', 'EAN_13')">
+                            🔩 Hardware (12mm Hex Bolt)
+                        </button>
+                        <button type="button" class="barcode-chip-btn" onclick="lookupScannedCode('8901117001011', 'EAN_13')">
+                            💊 Pharma (Crocin 650)
+                        </button>
+                        <button type="button" class="barcode-chip-btn" onclick="lookupScannedCode('8904123456789', 'EAN_13')">
+                            👕 Apparel (Raymond Shirt)
+                        </button>
+                        <button type="button" class="barcode-chip-btn" onclick="lookupScannedCode('9780143428282', 'ISBN_13')">
+                            📚 Book ISBN (Junior Lives)
+                        </button>
+                        <button type="button" class="barcode-chip-btn" onclick="lookupScannedCode('https://shoporobo.in/product/123', 'QR_CODE')">
+                            🌐 QR Web Link
+                        </button>
+                        <button type="button" class="barcode-chip-btn" onclick="lookupScannedCode('upi://pay?pa=store@okaxis&pn=GuptaStore&am=150', 'QR_CODE')">
+                            📱 QR UPI Payment
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 5. RESULT & WORKFLOW CONTAINER -->
+                <div id="scannerResultBox" class="scanner-result-box" style="display:none;"></div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn-dash btn-dash-secondary" onclick="closeModal('barcodeModal')">Close</button>
+
+            <div class="modal-footer" style="padding:12px 20px; background:#F8FAFC; border-top:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
+                <button type="button" class="btn-dash btn-dash-secondary" onclick="resetScannerView()">
+                    <i class="fas fa-redo"></i> Scan Again / पुनः स्कैन
+                </button>
+                <button type="button" class="btn-dash btn-dash-secondary" onclick="closeBarcodeModal()">
+                    Close / बंद करें
+                </button>
             </div>
         </div>
     </div>
@@ -3408,6 +3608,7 @@
         </div>
     </div>
 
+    <script src="html5-qrcode.min.js"></script>
     <script src="dashboard.js"></script>
 </body>
 </html>

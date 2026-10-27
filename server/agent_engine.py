@@ -69,16 +69,30 @@ def is_direct_confirmation(text: str) -> Optional[str]:
 
 def is_store_command(text: str) -> bool:
     """Detect whether a query is attempting a store operation or private business query."""
+    if not text:
+        return False
     lower = text.lower()
     store_keywords = [
-        "stock", "inventory", "maal", "saman", "item", "product",
-        "bik gaya", "becha", "sale", "sell", "sold", "bika", "bill",
-        "aaya", "aayi", "receive", "kharida", "purchase", "inward",
-        "add", "jodo", "daalo", "kar do", "bache", "kitna hai",
-        "profit", "munafa", "kamai", "loss", "ghata", "kharcha", "expense",
-        "rate", "price", "bhav", "cost", "expiry"
+        "stock", "inventory", "maal", "saman", "item", "product", "godown",
+        "bik gaya", "bik gayi", "bik gaye", "bik gya", "bik gye", "becha", "beche", "bechi",
+        "sale", "sell", "sold", "bika", "bill", "parchi", "grahak",
+        "aaya", "aayi", "aaye", "aya", "ayi", "aye", "receive", "kharida", "khareeda", "kharide",
+        "purchase", "inward", "delivery", "arrival",
+        "add", "jodo", "daalo", "kar do", "bache", "kitna hai", "kitne bache", "kitna bacha", "kitna stock",
+        "profit", "munafa", "kamai", "loss", "ghata", "kharcha", "expense", "kiraya", "rent",
+        "rate", "price", "bhav", "cost", "expiry", "expire",
+        "return", "wapas", "wapsi", "damage", "kharab", "spoilage", "adjust",
+        "shop", "dukan", "dukaan", "store", "rupaye", "rupay", "rupees", "rs"
     ]
-    return any(w in lower for w in store_keywords)
+    if any(w in lower for w in store_keywords):
+        return True
+
+    # Units combined with digits
+    units = ["kg", "kilo", "gm", "gram", "litre", "liter", "packet", "box", "dabba", "bori", "bag", "strip", "bottle", "pcs", "piece", "meter", "metre"]
+    if any(u in lower for u in units) and any(c.isdigit() for c in lower):
+        return True
+
+    return False
 
 
 SPECIALIZED_MODULE_KEYWORDS = [
@@ -347,7 +361,8 @@ class AgenticExecutionEngine:
                             tool_name=fn_name,
                             tool_result=tool_exec,
                             fn_args=fn_args,
-                            system_prompt=sys_prompt
+                            system_prompt=sys_prompt,
+                            model_part=llm_result.get("model_part")
                         )
 
                     if synthesized and synthesized.get("success") and synthesized.get("text"):
@@ -366,6 +381,19 @@ class AgenticExecutionEngine:
             # ── CASE B: LLM Output Text / Clarification ──
             elif res_type == "text":
                 text = llm_result.get("text", "").strip()
+                # If Gemini returned plain text for an active store command, prioritize deterministic business resolution
+                if is_store_command(raw_msg):
+                    reg_action = action_registry.action_router.handle_command(user_id, raw_msg, clean_history)
+                    if reg_action and reg_action.get("action_status") in ("awaiting_confirmation", "needs_clarification", "completed", "cancelled"):
+                        response["intent"] = reg_action.get("intent", "consequential_action_staged")
+                        response["reply_text"] = reg_action.get("reply_text", "")
+                        response["spoken_text"] = reg_action.get("spoken_text", "")
+                        response["action_staged"] = reg_action.get("action_staged")
+                        response["action_status"] = reg_action.get("action_status", "awaiting_confirmation")
+                        if "confirmation_token" in reg_action:
+                            response["confirmation_token"] = reg_action["confirmation_token"]
+                        return response
+
                 response["reply_text"] = text
                 response["spoken_text"] = re.sub(r'[*#_`$]', '', text[:200])
                 response["intent"] = "agent_clarification" if any(q in text for q in ["?", "kis", "kaun", "which", "kripya"]) else "agent_reply"
@@ -382,6 +410,8 @@ class AgenticExecutionEngine:
             response["spoken_text"] = reg_action.get("spoken_text", "")
             response["action_staged"] = reg_action.get("action_staged")
             response["action_status"] = reg_action.get("action_status", "awaiting_confirmation")
+            if "confirmation_token" in reg_action:
+                response["confirmation_token"] = reg_action["confirmation_token"]
             return response
 
         # If user intended a store command but nothing could be extracted, ask clear clarification
@@ -404,7 +434,7 @@ class AgenticExecutionEngine:
         """Format read-only tool results clearly when external model synthesis is unavailable."""
         if tool_name == "get_product_details":
             prod = result.get("product", {})
-            if prod:
+            if prod and result.get("found", True):
                 return (
                     f"📦 **{prod.get('name')} का स्टॉक विवरण (Stock Details):**\n\n"
                     f"- उपलब्ध स्टॉक (Available Stock): **{prod.get('quantity')} {prod.get('unit', 'pcs')}**\n"
@@ -412,7 +442,8 @@ class AgenticExecutionEngine:
                     f"- खरीद मूल्य (Cost Price): **₹{prod.get('purchase_price', 0):,.2f}**\n"
                     f"- श्रेणी (Category): **{prod.get('category', 'General')}**"
                 )
-            return result.get("message", "उत्पाद सूची में नहीं मिला।")
+            p_name = result.get("product_name") or prod.get("name") or "यह उत्पाद"
+            return f"📦 आपकी दुकान की इन्वेंट्री में '{p_name}' अभी उपलब्ध नहीं है (स्टॉक: 0)।"
         elif tool_name == "search_products":
             items = result.get("items", [])
             if items:
@@ -436,11 +467,14 @@ class AgenticExecutionEngine:
                 f"- कम स्टॉक वाले सामान: **{result.get('low_stock_alerts_count', 0)}**"
             )
         elif tool_name == "get_sales_summary":
+            rev_today = result.get("revenue_today", 0)
+            items_today = result.get("items_sold_today", 0)
+            sales_today = result.get("sales_count_today", result.get("total_sales_count", 0))
             return (
-                f"💰 **बिक्री रिपोर्ट (Sales Summary):**\n\n"
-                f"- आज की बिक्री: **₹{result.get('revenue_today', 0):,.2f}**\n"
-                f"- इस महीने की बिक्री: **₹{result.get('revenue_monthly', 0):,.2f}**\n"
-                f"- कुल दर्ज ट्रांजेक्शन: **{result.get('total_sales_count', 0)}**"
+                f"💰 **आज की बिक्री रिपोर्ट (Today's Sales Summary):**\n\n"
+                f"- आज की कुल बिक्री: **₹{rev_today:,.2f}**\n"
+                f"- आज बिके कुल सामान (Quantity): **{items_today:g}**\n"
+                f"- आज के कुल ट्रांजेक्शन: **{sales_today}**"
             )
         elif tool_name == "get_profit_summary":
             rev = result.get("revenue", {}).get("today", 0)

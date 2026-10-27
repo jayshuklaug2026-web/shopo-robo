@@ -104,6 +104,10 @@ CREATE TABLE IF NOT EXISTS inventory (
     selling_price        REAL NOT NULL DEFAULT 0,
     expiry_date          TEXT,
     low_stock_threshold  REAL NOT NULL DEFAULT 5,
+    is_active            INTEGER NOT NULL DEFAULT 1,
+    description          TEXT,
+    packaging_unit       TEXT,
+    pack_size            REAL NOT NULL DEFAULT 1.0,
     created_at           TEXT NOT NULL,
     updated_at           TEXT NOT NULL
 );
@@ -122,6 +126,8 @@ CREATE TABLE IF NOT EXISTS sales (
     gross_profit         REAL NOT NULL DEFAULT 0,
     payment_mode         TEXT NOT NULL DEFAULT 'Cash',
     notes                TEXT,
+    is_return            INTEGER NOT NULL DEFAULT 0,
+    return_reason        TEXT,
     created_at           TEXT NOT NULL,
     updated_at           TEXT NOT NULL
 );
@@ -492,12 +498,24 @@ def init_db():
             conn.execute("ALTER TABLE inventory ADD COLUMN batch_number TEXT")
         if "supplier_name" not in inv_cols:
             conn.execute("ALTER TABLE inventory ADD COLUMN supplier_name TEXT")
+        if "is_active" not in inv_cols:
+            conn.execute("ALTER TABLE inventory ADD COLUMN is_active INTEGER NOT NULL DEFAULT 1")
+        if "description" not in inv_cols:
+            conn.execute("ALTER TABLE inventory ADD COLUMN description TEXT DEFAULT NULL")
+        if "packaging_unit" not in inv_cols:
+            conn.execute("ALTER TABLE inventory ADD COLUMN packaging_unit TEXT DEFAULT NULL")
+        if "pack_size" not in inv_cols:
+            conn.execute("ALTER TABLE inventory ADD COLUMN pack_size REAL NOT NULL DEFAULT 1.0")
 
         # Migration: ensure store_id exists in sales and expenses
         cur_sales = conn.execute("PRAGMA table_info(sales)")
         sales_cols = [r[1] for r in cur_sales.fetchall()]
         if "store_id" not in sales_cols:
             conn.execute("ALTER TABLE sales ADD COLUMN store_id TEXT REFERENCES stores(id)")
+        if "is_return" not in sales_cols:
+            conn.execute("ALTER TABLE sales ADD COLUMN is_return INTEGER NOT NULL DEFAULT 0")
+        if "return_reason" not in sales_cols:
+            conn.execute("ALTER TABLE sales ADD COLUMN return_reason TEXT DEFAULT NULL")
 
         cur_exp = conn.execute("PRAGMA table_info(expenses)")
         exp_cols = [r[1] for r in cur_exp.fetchall()]
@@ -753,6 +771,10 @@ def create_inventory_item(user_id: str, data: dict) -> dict:
     store_id = (data.get("store_id") or "").strip() or None
     batch_number = (data.get("batch_number") or "").strip() or None
     supplier_name = (data.get("supplier_name") or "").strip() or None
+    is_active = int(data.get("is_active", 1))
+    description = (data.get("description") or "").strip() or None
+    packaging_unit = (data.get("packaging_unit") or "").strip() or None
+    pack_size = float(data.get("pack_size", 1.0) or 1.0)
 
     with get_db() as conn:
         conn.execute(
@@ -760,12 +782,14 @@ def create_inventory_item(user_id: str, data: dict) -> dict:
                 id, user_id, product_name, barcode, sku, category, brand,
                 quantity, unit, purchase_price, selling_price, expiry_date,
                 low_stock_threshold, attributes, store_id, batch_number, supplier_name,
+                is_active, description, packaging_unit, pack_size,
                 created_at, updated_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
             (
                 item_id, user_id, product_name, barcode, sku, category, brand,
                 quantity, unit, purchase_price, selling_price, expiry_date,
                 low_stock_threshold, attributes_json, store_id, batch_number, supplier_name,
+                is_active, description, packaging_unit, pack_size,
                 now, now
             ),
         )
@@ -826,10 +850,17 @@ def get_inventory_items(
     near_expiry: bool = False,
     sort_by: str = "created_at",
     sort_dir: str = "desc",
+    is_active: bool = True,
+    limit: int = None,
+    offset: int = 0,
 ) -> list[dict]:
     """Fetch inventory items for the user with search and filtering."""
     query = "SELECT * FROM inventory WHERE user_id = ?"
     params = [user_id]
+
+    if is_active is not None:
+        query += " AND is_active = ?"
+        params.append(1 if is_active else 0)
 
     if q and q.strip():
         search_pattern = f"%{q.strip()}%"
@@ -863,6 +894,10 @@ def get_inventory_items(
     direction = "DESC" if str(sort_dir).lower() == "desc" else "ASC"
     query += f" ORDER BY {col} {direction}"
 
+    if limit is not None and int(limit) > 0:
+        query += " LIMIT ? OFFSET ?"
+        params.extend([int(limit), max(0, int(offset or 0))])
+
     with get_db() as conn:
         rows = conn.execute(query, params).fetchall()
     return [_format_inventory_row(r) for r in rows]
@@ -891,6 +926,10 @@ def update_inventory_item(user_id: str, item_id: str, data: dict) -> dict | None
     
     batch_number = (str(data["batch_number"]).strip() or None) if ("batch_number" in data and data["batch_number"]) else (None if "batch_number" in data else existing.get("batch_number"))
     supplier_name = (str(data["supplier_name"]).strip() or None) if ("supplier_name" in data and data["supplier_name"]) else (None if "supplier_name" in data else existing.get("supplier_name"))
+    is_active = int(data["is_active"]) if ("is_active" in data and data["is_active"] is not None) else existing.get("is_active", 1)
+    description = (str(data["description"]).strip() or None) if ("description" in data and data["description"]) else (None if "description" in data else existing.get("description"))
+    packaging_unit = (str(data["packaging_unit"]).strip() or None) if ("packaging_unit" in data and data["packaging_unit"]) else (None if "packaging_unit" in data else existing.get("packaging_unit"))
+    pack_size = float(data["pack_size"]) if ("pack_size" in data and data["pack_size"] is not None) else float(existing.get("pack_size", 1.0))
 
     if "attributes" in data:
         raw_attrs = data["attributes"]
@@ -911,13 +950,15 @@ def update_inventory_item(user_id: str, item_id: str, data: dict) -> dict | None
                 product_name = ?, barcode = ?, sku = ?, category = ?, brand = ?,
                 quantity = ?, unit = ?, purchase_price = ?, selling_price = ?,
                 expiry_date = ?, low_stock_threshold = ?, attributes = ?,
-                batch_number = ?, supplier_name = ?, updated_at = ?
+                batch_number = ?, supplier_name = ?, is_active = ?,
+                description = ?, packaging_unit = ?, pack_size = ?, updated_at = ?
             WHERE user_id = ? AND id = ?""",
             (
                 product_name, barcode, sku, category, brand,
                 quantity, unit, purchase_price, selling_price,
                 expiry_date, low_stock_threshold, attributes_json,
-                batch_number, supplier_name, now,
+                batch_number, supplier_name, is_active,
+                description, packaging_unit, pack_size, now,
                 user_id, item_id
             ),
         )
@@ -1548,18 +1589,22 @@ def get_user_preferences(user_id: str) -> dict:
                 )
             )
             conn.commit()
-            return {**DEFAULT_USER_PREFERENCES, "user_id": user_id, "updated_at": now}
+            return {
+                **DEFAULT_USER_PREFERENCES,
+                "user_id": user_id,
+                "updated_at": now
+            }
 
         return {
             "user_id": row["user_id"],
-            "ui_language": row["ui_language"],
-            "ai_language": row["ai_language"],
-            "news_language": row["news_language"],
-            "date_format": row["date_format"],
-            "time_format": row["time_format"],
-            "number_format": row["number_format"],
-            "temperature_unit": row["temperature_unit"],
-            "selected_city": row["selected_city"],
+            "ui_language": row["ui_language"] or DEFAULT_USER_PREFERENCES["ui_language"],
+            "ai_language": row["ai_language"] or DEFAULT_USER_PREFERENCES["ai_language"],
+            "news_language": row["news_language"] or DEFAULT_USER_PREFERENCES["news_language"],
+            "date_format": row["date_format"] or DEFAULT_USER_PREFERENCES["date_format"],
+            "time_format": row["time_format"] or DEFAULT_USER_PREFERENCES["time_format"],
+            "number_format": row["number_format"] or DEFAULT_USER_PREFERENCES["number_format"],
+            "temperature_unit": row["temperature_unit"] or DEFAULT_USER_PREFERENCES["temperature_unit"],
+            "selected_city": row["selected_city"] or DEFAULT_USER_PREFERENCES["selected_city"],
             "updated_at": row["updated_at"]
         }
 
@@ -1584,6 +1629,8 @@ def update_user_preferences(user_id: str, updates: dict) -> dict:
             if field in ["ui_language", "ai_language", "news_language"]:
                 if val.lower() in SUPPORTED_LANGUAGES:
                     val = val.lower()
+                else:
+                    continue
             elif field == "date_format" and val not in ["DD/MM/YYYY", "MM/DD/YYYY", "YYYY-MM-DD"]:
                 continue
             elif field == "time_format" and val not in ["12h", "24h"]:
@@ -3528,3 +3575,112 @@ def dismiss_opportunity_radar_item(user_id: str, item_id: str) -> bool:
 get_products = get_inventory_items
 get_transactions = get_sales
 
+
+
+def get_inventory_valuation(user_id: str, category: str = None) -> dict:
+    """
+    Calculate verified stock valuation:
+    - total_items_count
+    - total_quantity_units
+    - total_cost_valuation (Sum of qty * purchase_price)
+    - total_selling_valuation (Sum of qty * selling_price)
+    - potential_gross_profit (Selling - Cost)
+    - potential_margin_pct
+    - category_breakdown
+    """
+    with get_db() as conn:
+        query = """
+            SELECT 
+                category,
+                COUNT(*) as item_count,
+                SUM(quantity) as total_qty,
+                SUM(quantity * purchase_price) as cost_val,
+                SUM(quantity * selling_price) as sell_val
+            FROM inventory
+            WHERE user_id = ? AND is_active = 1
+        """
+        params = [user_id]
+        if category and category.strip().lower() != 'all':
+            query += " AND category = ?"
+            params.append(category.strip())
+        query += " GROUP BY category"
+        rows = conn.execute(query, params).fetchall()
+
+    breakdown = []
+    tot_items = 0
+    tot_qty = 0.0
+    tot_cost = 0.0
+    tot_sell = 0.0
+
+    for r in rows:
+        cat = r["category"] or "General"
+        cnt = int(r["item_count"] or 0)
+        q = float(r["total_qty"] or 0.0)
+        c = float(r["cost_val"] or 0.0)
+        s = float(r["sell_val"] or 0.0)
+        profit = s - c
+        pct = round((profit / s * 100), 2) if s > 0 else 0.0
+
+        breakdown.append({
+            "category": cat,
+            "items_count": cnt,
+            "total_quantity": round(q, 2),
+            "cost_valuation": round(c, 2),
+            "selling_valuation": round(s, 2),
+            "potential_gross_profit": round(profit, 2),
+            "margin_percentage": pct
+        })
+
+        tot_items += cnt
+        tot_qty += q
+        tot_cost += c
+        tot_sell += s
+
+    unrealized_profit = round(tot_sell - tot_cost, 2)
+    overall_margin = round((unrealized_profit / tot_sell * 100), 2) if tot_sell > 0 else 0.0
+
+    return {
+        "has_stock": tot_items > 0,
+        "total_items_count": tot_items,
+        "total_quantity_units": round(tot_qty, 2),
+        "total_cost_valuation": round(tot_cost, 2),
+        "total_selling_valuation": round(tot_sell, 2),
+        "unrealized_gross_profit": unrealized_profit,
+        "unrealized_margin_percentage": overall_margin,
+        "category_breakdown": breakdown
+    }
+
+
+def archive_inventory_item(user_id: str, item_id: str, reason: str = "Product archived by merchant") -> bool:
+    """
+    Soft-delete/archive an inventory product.
+    Preserves all historical sales and financial transaction records while hiding
+    the product from active catalogue lists.
+    """
+    existing = get_inventory_item_by_id(user_id, item_id)
+    if not existing:
+        return False
+
+    now = datetime.now(timezone.utc).isoformat()
+    with get_db() as conn:
+        conn.execute(
+            "UPDATE inventory SET is_active = 0, updated_at = ? WHERE user_id = ? AND id = ?",
+            (now, user_id, item_id)
+        )
+        # Log archival in Product DNA
+        conn.execute(
+            """INSERT INTO product_dna_events (
+                id, user_id, product_id, event_type, previous_values_json,
+                new_values_json, quantity_change, resulting_quantity, reason,
+                created_at
+            ) VALUES (?, ?, ?, 'archive', ?, ?, 0.0, ?, ?, ?)""",
+            (
+                str(uuid.uuid4()), user_id, item_id,
+                json.dumps({"is_active": 1}),
+                json.dumps({"is_active": 0}),
+                float(existing.get("quantity", 0)),
+                reason, now
+            )
+        )
+        conn.commit()
+    return True

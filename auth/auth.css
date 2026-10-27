@@ -23,6 +23,26 @@
     --lime-600: #65A30D;
     --lime-700: #4D7C0F;
 
+    /* Master Design Tokens — Colors */
+    --color-white:          #FFFFFF;
+    --color-primary-lime:   #84CC16;
+    --color-dark-lime:      #65A30D;
+    --color-deep-green:     #4D7C0F;
+    --color-pale-green:     #F7FEE7;
+    --color-light-green:    #ECFCCB;
+    --color-text-main:      #0F172A;
+    --color-text-secondary: #475569;
+    --color-success:        #059669;
+    --color-processing:     #D97706;
+    --color-error:          #DC2626;
+    --color-speaking:       #2563EB;
+
+    /* Master Design Tokens — Motion Guidelines */
+    --dur-button:    160ms;
+    --dur-card:      220ms;
+    --dur-panel:     260ms;
+    --ease-spring:   cubic-bezier(0.16, 1, 0.3, 1);
+
     --bg-main:  #F8FAFC;
     --bg-card:  #FFFFFF;
 
@@ -42,10 +62,10 @@
     --blue-500:   #3B82F6;
     --blue-100:   #DBEAFE;
 
-    --shadow-sm:  0 1px 2px rgba(0,0,0,0.05);
-    --shadow-md:  0 4px 12px rgba(0,0,0,0.08);
-    --shadow-lg:  0 8px 24px rgba(0,0,0,0.12);
-    --shadow-lime: 0 8px 20px -4px rgba(132,204,22,0.25);
+    --shadow-sm:  0 1px 2px rgba(15,23,42,0.05);
+    --shadow-md:  0 4px 12px rgba(15,23,42,0.08);
+    --shadow-lg:  0 12px 28px -4px rgba(15,23,42,0.12);
+    --shadow-lime: 0 8px 20px -4px rgba(132,204,22,0.3);
 
     --radius-sm:   8px;
     --radius-md:  12px;
@@ -53,7 +73,7 @@
     --radius-xl:  20px;
     --radius-full: 9999px;
 
-    --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
 html { font-size: 16px; }
@@ -272,10 +292,14 @@ body {
 .btn-primary:hover {
     background: linear-gradient(135deg, var(--lime-600), var(--lime-700));
     box-shadow: 0 10px 24px -4px rgba(132,204,22,0.35);
-    transform: translateY(-1px);
+    transform: translateY(-2px);
 }
 .btn-primary:active {
-    transform: translateY(0);
+    transform: scale(0.98);
+}
+.btn-primary:focus-visible {
+    outline: 2px solid var(--lime-500);
+    outline-offset: 2px;
 }
 .btn-primary:disabled {
     opacity: 0.6;
@@ -293,6 +317,14 @@ body {
     background: var(--lime-50);
     border-color: var(--lime-300);
     color: var(--lime-700);
+    transform: translateY(-2px);
+}
+.btn-secondary:active {
+    transform: scale(0.98);
+}
+.btn-secondary:focus-visible {
+    outline: 2px solid var(--lime-500);
+    outline-offset: 2px;
 }
 
 .btn-link {
@@ -566,7 +598,8 @@ body {
 
 .otp-box:focus {
     border-color: var(--lime-500);
-    box-shadow: 0 0 0 3px rgba(132,204,22,0.2);
+    box-shadow: 0 0 0 3px rgba(132,204,22,0.25);
+    transform: scale(1.04);
 }
 
 .otp-box.filled {
@@ -1040,5 +1073,442 @@ body {
         animation-duration: 0.01ms !important;
         animation-iteration-count: 1 !important;
         transition-duration: 0.01ms !important;
+    }
+}
+
+
+/* ==========================================================================
+   OFFICIAL MASCOT BRANDING & ACCOUNT CREATION CELEBRATION
+   ========================================================================== */
+
+/* ── Brand Mascot Image & Heading ── */
+.mascot-img-wrap {
+    width: 96px;
+    height: 96px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+    border-radius: 22px;
+    overflow: hidden;
+    background: #FFFFFF;
+    box-shadow: 0 10px 28px -4px rgba(132, 204, 22, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform var(--dur-card, 220ms) var(--ease-spring, cubic-bezier(0.16, 1, 0.3, 1));
+}
+
+.mascot-img-wrap:hover {
+    transform: scale(1.04);
+}
+
+.brand-mascot-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+}
+
+.brand-accountant-title {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: var(--color-primary-green, #16803C);
+    letter-spacing: 0.3px;
+    margin-top: 4px;
+    margin-bottom: 2px;
+}
+
+/* ── Celebration Screen Fullscreen Stage ── */
+#screen-celebration {
+    padding: 0 !important;
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: #FFFFFF;
+}
+
+.celebration-fullscreen {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background: radial-gradient(circle at 50% 28%, rgba(132, 204, 22, 0.15) 0%, rgba(240, 253, 244, 0.45) 45%, #FFFFFF 85%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+}
+
+/* Floating Confetti Container */
+.celebration-confetti-container {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.confetti-particle {
+    position: absolute;
+    border-radius: 4px;
+    animation: confettiFall 3.8s linear infinite;
+    opacity: 0.85;
+}
+
+/* Skip Button */
+.celebration-skip-btn {
+    position: absolute;
+    top: 24px;
+    right: 28px;
+    z-index: 10;
+    background: rgba(255, 255, 255, 0.88);
+    backdrop-filter: blur(8px);
+    border: 1px solid var(--color-border, #E2E8F0);
+    border-radius: var(--radius-full, 9999px);
+    padding: 8px 18px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--color-text-secondary, #64748B);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.celebration-skip-btn:hover {
+    background: #FFFFFF;
+    color: var(--color-primary-green, #16803C);
+    border-color: var(--color-primary-green, #16803C);
+    transform: translateY(-1px);
+}
+
+/* Main Interactive Stage */
+.celebration-stage {
+    position: relative;
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 620px;
+    width: 100%;
+}
+
+/* Robot Actor (Walk in, body bounce, thumbs up) */
+.celebration-robot-actor {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 24px;
+    animation: robotWalkIn 1.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.robot-figure {
+    position: relative;
+    width: 170px;
+    height: 170px;
+    animation: walkSway 0.45s ease-in-out infinite alternate;
+}
+
+.celebration-robot-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 36px;
+    box-shadow: 0 16px 36px -6px rgba(132, 204, 22, 0.38);
+    background: #FFFFFF;
+}
+
+.robot-shadow {
+    width: 130px;
+    height: 14px;
+    background: radial-gradient(ellipse at center, rgba(15, 23, 42, 0.16) 0%, transparent 70%);
+    border-radius: 50%;
+    margin-top: 10px;
+    animation: shadowPulse 0.45s ease-in-out infinite alternate;
+}
+
+/* Friendly Thumbs Up Badge */
+.robot-thumbs-up-badge {
+    position: absolute;
+    bottom: -6px;
+    right: -10px;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: #FFFFFF;
+    border: 3px solid #16803C;
+    box-shadow: 0 6px 18px rgba(22, 128, 60, 0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    transform: scale(0);
+    opacity: 0;
+    animation: thumbsUpPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) 1.9s forwards;
+    z-index: 2;
+}
+
+.thumbs-up-sparkle {
+    position: absolute;
+    top: -8px;
+    right: -6px;
+    font-size: 1rem;
+    animation: sparkleSpin 1.4s infinite ease-in-out;
+}
+
+/* Timed Speech Bubble */
+.celebration-speech-bubble {
+    position: absolute;
+    top: -84px;
+    background: #FFFFFF;
+    border: 2px solid #84CC16;
+    border-radius: 20px;
+    padding: 14px 22px;
+    box-shadow: 0 10px 28px -4px rgba(132, 204, 22, 0.28);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    max-width: 380px;
+    width: max-content;
+    transform: scale(0);
+    opacity: 0;
+    animation: speechBubblePop 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275) 2.1s forwards;
+    z-index: 4;
+}
+
+.speech-tail {
+    position: absolute;
+    bottom: -11px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 11px solid #84CC16;
+}
+
+.speech-tail::after {
+    content: '';
+    position: absolute;
+    top: -12px;
+    left: -8px;
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 9px solid #FFFFFF;
+}
+
+.speech-text {
+    font-size: 0.96rem;
+    font-weight: 800;
+    color: #1F2937;
+    line-height: 1.35;
+    margin: 0;
+}
+
+.speech-audio-btn {
+    background: var(--color-pale-green, #F0FDF4);
+    border: 1px solid #DCFCE7;
+    color: var(--color-primary-green, #16803C);
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+}
+
+.speech-audio-btn:hover {
+    background: #DCFCE7;
+    transform: scale(1.1);
+}
+
+.speech-audio-btn.playing {
+    background: var(--color-primary-green, #16803C);
+    color: #FFFFFF;
+    animation: pulseAudio 0.8s infinite alternate;
+}
+
+/* Welcome Message Card */
+.celebration-message-card {
+    text-align: center;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: messageSlideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 2.7s forwards;
+}
+
+.celebration-welcome-title {
+    font-size: 1.85rem;
+    font-weight: 800;
+    color: #1F2937;
+    letter-spacing: -0.5px;
+    margin-bottom: 8px;
+}
+
+.celebration-welcome-sub {
+    font-size: 1.02rem;
+    color: #4B5563;
+    line-height: 1.5;
+    margin-bottom: 24px;
+    max-width: 480px;
+}
+
+.celebration-continue-btn {
+    background: var(--color-primary-green, #16803C) !important;
+    color: #FFFFFF !important;
+    font-size: 1.05rem !important;
+    font-weight: 700 !important;
+    padding: 14px 34px !important;
+    border-radius: 12px !important;
+    box-shadow: 0 8px 20px -2px rgba(22, 128, 60, 0.35) !important;
+    transition: all 0.2s ease !important;
+    animation: buttonPulse 2.2s infinite ease-in-out 3.4s;
+}
+
+.celebration-continue-btn:hover {
+    background: var(--color-emerald-dark, #15803D) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 12px 28px -4px rgba(22, 128, 60, 0.45) !important;
+}
+
+/* ── Keyframe Animations ── */
+@keyframes robotWalkIn {
+    0% {
+        transform: translateX(-110vw) scale(0.9);
+    }
+    75% {
+        transform: translateX(12px) scale(1.02);
+    }
+    100% {
+        transform: translateX(0) scale(1);
+    }
+}
+
+@keyframes walkSway {
+    0% {
+        transform: rotate(-3deg) translateY(0);
+    }
+    50% {
+        transform: rotate(0deg) translateY(-8px);
+    }
+    100% {
+        transform: rotate(3deg) translateY(0);
+    }
+}
+
+@keyframes shadowPulse {
+    0% {
+        transform: scaleX(0.85);
+        opacity: 0.6;
+    }
+    100% {
+        transform: scaleX(1.1);
+        opacity: 0.9;
+    }
+}
+
+@keyframes thumbsUpPop {
+    0% {
+        transform: scale(0) rotate(-20deg);
+        opacity: 0;
+    }
+    70% {
+        transform: scale(1.25) rotate(10deg);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1) rotate(0deg);
+        opacity: 1;
+    }
+}
+
+@keyframes speechBubblePop {
+    0% {
+        transform: scale(0) translateY(16px);
+        opacity: 0;
+    }
+    75% {
+        transform: scale(1.05) translateY(-4px);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes messageSlideUp {
+    0% {
+        opacity: 0;
+        transform: translateY(24px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes buttonPulse {
+    0%, 100% {
+        box-shadow: 0 8px 20px -2px rgba(22, 128, 60, 0.35);
+    }
+    50% {
+        box-shadow: 0 12px 28px 2px rgba(132, 204, 22, 0.55);
+    }
+}
+
+@keyframes sparkleSpin {
+    0%, 100% {
+        transform: rotate(0deg) scale(0.9);
+    }
+    50% {
+        transform: rotate(180deg) scale(1.2);
+    }
+}
+
+@keyframes pulseAudio {
+    0% { transform: scale(1); }
+    100% { transform: scale(1.15); }
+}
+
+@keyframes confettiFall {
+    0% {
+        transform: translateY(-20px) rotate(0deg);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(105vh) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+/* ── Accessibility: Prefers Reduced Motion ── */
+@media (prefers-reduced-motion: reduce) {
+    .celebration-robot-actor {
+        animation: none !important;
+        transform: none !important;
+    }
+    .robot-figure,
+    .robot-shadow,
+    .robot-thumbs-up-badge,
+    .celebration-speech-bubble,
+    .celebration-message-card,
+    .celebration-continue-btn,
+    .thumbs-up-sparkle {
+        animation: none !important;
+        transform: none !important;
+        opacity: 1 !important;
+    }
+    .celebration-confetti-container {
+        display: none !important;
     }
 }

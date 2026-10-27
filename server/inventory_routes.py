@@ -217,6 +217,11 @@ def create_product():
     if not valid_attrs:
         return jsonify({"success": False, "message": parsed_attrs}), 400
 
+    description = (data.get("description") or "").strip() or None
+    packaging_unit = (data.get("packaging_unit") or "").strip() or None
+    pack_size = float(data.get("pack_size", 1.0) or 1.0)
+    is_active = int(data.get("is_active", 1))
+
     item_payload = {
         "product_name": product_name,
         "category": category,
@@ -229,6 +234,10 @@ def create_product():
         "selling_price": parsed_sell,
         "low_stock_threshold": parsed_thresh,
         "expiry_date": expiry_date,
+        "is_active": is_active,
+        "description": description,
+        "packaging_unit": packaging_unit,
+        "pack_size": pack_size,
         "attributes": parsed_attrs,
     }
 
@@ -351,6 +360,21 @@ def update_product(item_id: str):
             return jsonify({"success": False, "message": parsed_attrs}), 400
         update_payload["attributes"] = parsed_attrs
 
+    if "description" in data:
+        update_payload["description"] = (data["description"] or "").strip() or None
+
+    if "packaging_unit" in data:
+        update_payload["packaging_unit"] = (data["packaging_unit"] or "").strip() or None
+
+    if "pack_size" in data and data["pack_size"] is not None:
+        try:
+            update_payload["pack_size"] = max(1.0, float(data["pack_size"]))
+        except (ValueError, TypeError):
+            pass
+
+    if "is_active" in data and data["is_active"] is not None:
+        update_payload["is_active"] = 1 if bool(data["is_active"]) else 0
+
     try:
         updated = db.update_inventory_item(user_id, item_id, update_payload)
     except ValueError as e:
@@ -376,3 +400,229 @@ def delete_product(item_id: str):
         "success": True,
         "message": "Product deleted successfully.",
     })
+
+
+@inventory_bp.route("/<item_id>/archive", methods=["POST"])
+@login_required
+def archive_product_route(item_id: str):
+    """Safely archive a product without destroying historical sales records."""
+    from inventory_service import inventory_service
+    user_id = g.current_user["id"]
+    data = request.get_json(silent=True) or {}
+    reason = (data.get("reason") or "Archived by merchant").strip()
+    success = inventory_service.archive_product(user_id, item_id, reason=reason)
+    if not success:
+        return jsonify({"success": False, "message": "Product not found or already archived."}), 404
+
+    return jsonify({
+        "success": True,
+        "message": "Product archived successfully. Historical sales and reports remain preserved."
+    }), 200
+
+
+@inventory_bp.route("/valuation", methods=["GET"])
+@login_required
+def stock_valuation_route():
+    """Return wholesale cost and retail selling valuation across inventory categories."""
+    from inventory_service import inventory_service
+    user_id = g.current_user["id"]
+    category = request.args.get("category")
+    val_data = inventory_service.get_stock_valuation(user_id, category=category)
+    return jsonify({
+        "success": True,
+        "data": val_data
+    }), 200
+
+
+@inventory_bp.route("/expiring", methods=["GET"])
+@login_required
+def expiring_products_route():
+    """Return products expiring soon (default 30 days)."""
+    from inventory_service import inventory_service
+    user_id = g.current_user["id"]
+    try:
+        days = int(request.args.get("days", 30))
+    except (ValueError, TypeError):
+        days = 30
+    exp_data = inventory_service.get_expiring_products(user_id, days=days)
+    return jsonify({
+        "success": True,
+        "data": exp_data
+    }), 200
+
+
+@inventory_bp.route("/return", methods=["POST"])
+@login_required
+def record_return_route():
+    """Record customer or supplier return."""
+    from inventory_service import inventory_service
+    user_id = g.current_user["id"]
+    data = request.get_json(silent=True) or {}
+    try:
+        res = inventory_service.record_return(user_id, data)
+        return jsonify({
+            "success": True,
+            "data": res,
+            "message": res.get("message", "Return recorded successfully.")
+        }), 200
+    except ValueError as e:
+        return jsonify({"success": False, "message": str(e)}), 400
+
+
+@inventory_bp.route("/damage", methods=["POST"])
+@login_required
+def record_damage_route():
+    """Record damaged, spoiled, or expired stock write-off."""
+    from inventory_service import inventory_service
+    user_id = g.current_user["id"]
+    data = request.get_json(silent=True) or {}
+    try:
+        res = inventory_service.record_damage(user_id, data)
+        return jsonify({
+            "success": True,
+            "data": res,
+            "message": res.get("message", "Damaged stock successfully removed.")
+        }), 200
+    except ValueError as e:
+        return jsonify({"success": False, "message": str(e)}), 400
+
+
+@inventory_bp.route("/export", methods=["GET"])
+@login_required
+def export_inventory_csv():
+    """Export inventory items as downloadable CSV."""
+    import io
+    import csv
+    from flask import Response
+
+    user_id = g.current_user["id"]
+    items = db.get_inventory_items(user_id=user_id, is_active=None)
+
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow([
+        "Product Name", "Category", "Quantity", "Unit",
+        "Purchase Price (INR)", "Selling Price (INR)",
+        "Barcode", "SKU", "Brand", "Expiry Date", "Batch Number", "Is Active"
+    ])
+
+    for it in items:
+        writer.writerow([
+            it.get("product_name", ""),
+            it.get("category", ""),
+            it.get("quantity", 0),
+            it.get("unit", "pcs"),
+            it.get("purchase_price", 0),
+            it.get("selling_price", 0),
+            it.get("barcode", ""),
+            it.get("sku", ""),
+            it.get("brand", ""),
+            it.get("expiry_date", ""),
+            it.get("batch_number", ""),
+            "Active" if it.get("is_active", 1) == 1 else "Archived"
+        ])
+
+    return Response(
+        output.getvalue(),
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=inventory_catalogue.csv"}
+    )
+
+
+# ────────────────────────────────────────────────────────
+# Universal Barcode & QR Scanner Endpoints
+# ────────────────────────────────────────────────────────
+
+@inventory_bp.route("/scan/lookup", methods=["POST"])
+@login_required
+def scan_lookup():
+    """
+    Universal Barcode & QR Code Catalogue Lookup.
+    Searches merchant's store first, then extensible external providers,
+    or parses QR payloads safely.
+    """
+    from product_scanner_service import scanner_service
+
+    data = request.get_json(silent=True) or {}
+    code = str(data.get("code") or "").strip()
+    format_hint = data.get("format")
+
+    if not code:
+        return jsonify({
+            "success": False,
+            "status": "invalid_request",
+            "message": "Barcode or QR code is required for lookup."
+        }), 400
+
+    user_id = g.current_user["id"]
+    res = scanner_service.lookup_code(user_id=user_id, raw_code=code, format_hint=format_hint)
+    return jsonify(res), 200
+
+
+@inventory_bp.route("/scan/register", methods=["POST"])
+@login_required
+def scan_register():
+    """
+    Register a newly scanned product into the canonical inventory database.
+    Requires explicit validation of required fields and enforces barcode uniqueness per tenant.
+    """
+    from product_scanner_service import scanner_service
+
+    data = request.get_json(silent=True) or {}
+    user_id = g.current_user["id"]
+
+    try:
+        created = scanner_service.register_scanned_product(user_id=user_id, data=data)
+        return jsonify({
+            "success": True,
+            "product": created,
+            "message": f"Product '{created['product_name']}' registered successfully into inventory."
+        }), 201
+    except ValueError as ve:
+        err_msg = str(ve)
+        status_code = 409 if "already exists" in err_msg.lower() else 400
+        return jsonify({
+            "success": False,
+            "error": err_msg,
+            "message": err_msg
+        }), status_code
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "error": "Failed to register product",
+            "message": str(e)
+        }), 500
+
+
+@inventory_bp.route("/scan/receive-stock", methods=["POST"])
+@login_required
+def scan_receive_stock():
+    """
+    Quick stock receiving for an existing scanned product.
+    Updates stock and cost atomically without creating duplicate products.
+    """
+    from product_scanner_service import scanner_service
+
+    data = request.get_json(silent=True) or {}
+    user_id = g.current_user["id"]
+
+    try:
+        result = scanner_service.receive_scanned_stock(user_id=user_id, data=data)
+        new_qty = result.get('resulting_quantity', result.get('new_quantity', 0))
+        return jsonify({
+            "success": True,
+            "result": result,
+            "message": f"Stock received successfully for '{result.get('product_name')}'. New stock: {new_qty} {result.get('unit')}."
+        }), 200
+    except ValueError as ve:
+        return jsonify({
+            "success": False,
+            "error": str(ve),
+            "message": str(ve)
+        }), 400
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "error": "Failed to receive stock",
+            "message": str(e)
+        }), 500
